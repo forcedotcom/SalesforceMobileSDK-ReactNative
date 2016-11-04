@@ -29,6 +29,9 @@
 var { SmartSyncReactBridge, SFSmartSyncReactBridge } = require('react-native').NativeModules;
 var forceCommon = require('./react.force.common.js');
 
+// If param is a storeconfig return the same storeconfig
+// If param is a boolean, returns a storeconfig object  {'isGlobalStore': boolean}
+// Otherwise, returns a default storeconfig object
 var checkFirstArg = function(arg) {
     // Turning arguments into array
     // If first argument is a store config
