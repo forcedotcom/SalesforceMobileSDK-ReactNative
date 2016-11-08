@@ -29,28 +29,51 @@
 var { SmartSyncReactBridge, SFSmartSyncReactBridge } = require('react-native').NativeModules;
 var forceCommon = require('./react.force.common.js');
 
+// If param is a storeconfig return the same storeconfig
+// If param is a boolean, returns a storeconfig object  {'isGlobalStore': boolean}
+// Otherwise, returns a default storeconfig object
+var checkFirstArg = function(arg) {
+    // Turning arguments into array
+    // If first argument is a store config
+    if (typeof(arg) === "object" && arg.hasOwnProperty("isGlobalStore")) {
+         return arg;
+    }
+
+    var isGlobalStore =  false;
+    if (typeof(arg) === "boolean") {
+       isGlobalStore = arg;
+    }
+    return {'isGlobalStore': isGlobalStore};
+};
+
+
 var exec = function(successCB, errorCB, methodName, args) {
     forceCommon.exec("SFSmartSyncReactBridge", "SmartSyncReactBridge", SFSmartSyncReactBridge, SmartSyncReactBridge, successCB, errorCB, methodName, args);
 };
 
-var syncDown = function(isGlobalStore, target, soupName, options, successCB, errorCB) {
-    exec(successCB, errorCB, "syncDown", {"target": target, "soupName": soupName, "options": options, "isGlobalStore":isGlobalStore});        
+var syncDown = function(storeConfig, target, soupName, options, successCB, errorCB) {
+    var storeConfig = checkFirstArg(storeConfig);
+    exec(successCB, errorCB, "syncDown", {"target": target, "soupName": soupName, "options": options,"isGlobalStore": storeConfig.isGlobalStore,"storeName":storeConfig.storeName});
 };
 
-var reSync = function(isGlobalStore, syncId, successCB, errorCB) {
-    exec(successCB, errorCB, "reSync", {"syncId": syncId, "isGlobalStore":isGlobalStore});        
+var reSync = function(storeConfig, syncId, successCB, errorCB) {
+    var storeConfig = checkFirstArg(storeConfig);
+    exec(successCB, errorCB, "reSync", {"syncId": syncId, "isGlobalStore":isGlobalStore});
 };
 
-var cleanResyncGhosts = function(isGlobalStore, syncId, successCB, errorCB) {
-    exec(successCB, errorCB, "cleanResyncGhosts", {"syncId": syncId, "isGlobalStore":isGlobalStore});        
+var cleanResyncGhosts = function(storeConfig, syncId, successCB, errorCB) {
+    var storeConfig = checkFirstArg(storeConfig);
+    exec(successCB, errorCB, "cleanResyncGhosts", {"syncId": syncId, "isGlobalStore":isGlobalStore});
 };
 
-var syncUp = function(isGlobalStore, target, soupName, options, successCB, errorCB) {
-    exec(successCB, errorCB, "syncUp", {"target": target, "soupName": soupName, "options": options, "isGlobalStore":isGlobalStore});        
+var syncUp = function(storeConfig, target, soupName, options, successCB, errorCB) {
+    var storeConfig = checkFirstArg(storeConfig);
+    exec(successCB, errorCB, "syncUp", {"target": target, "soupName": soupName, "options": options, "isGlobalStore": storeConfig.isGlobalStore,"storeName":storeConfig.storeName});
 };
 
-var getSyncStatus = function(isGlobalStore, syncId, successCB, errorCB) {
-    exec(successCB, errorCB, "getSyncStatus", {"syncId": syncId, "isGlobalStore":isGlobalStore});        
+var getSyncStatus = function(storeConfig, syncId, successCB, errorCB) {
+    var storeConfig = checkFirstArg(storeConfig);
+    exec(successCB, errorCB, "getSyncStatus", {"syncId": syncId, "isGlobalStore": storeConfig.isGlobalStore,"storeName":storeConfig.storeName});
 };
 
 var MERGE_MODE = {
