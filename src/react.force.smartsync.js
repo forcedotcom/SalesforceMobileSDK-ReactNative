@@ -53,27 +53,27 @@ var exec = function(successCB, errorCB, methodName, args) {
 
 var syncDown = function(storeConfig, target, soupName, options, successCB, errorCB) {
     var storeConfig = checkFirstArg(storeConfig);
-    exec(successCB, errorCB, "syncDown", {"target": target, "soupName": soupName, "options": options,"isGlobalStore": storeConfig.isGlobalStore,"storeName":storeConfig.storeName});
+    exec(successCB, errorCB, "syncDown", {"target": target, "soupName": soupName, "options": options,"isGlobalStore": storeConfig.isGlobalStore, "storeName": storeConfig.storeName});
 };
 
 var reSync = function(storeConfig, syncId, successCB, errorCB) {
     var storeConfig = checkFirstArg(storeConfig);
-    exec(successCB, errorCB, "reSync", {"syncId": syncId, "isGlobalStore":isGlobalStore});
+    exec(successCB, errorCB, "reSync", {"syncId": syncId, "isGlobalStore": storeConfig.isGlobalStore, "storeName": storeConfig.storeName});
 };
 
 var cleanResyncGhosts = function(storeConfig, syncId, successCB, errorCB) {
     var storeConfig = checkFirstArg(storeConfig);
-    exec(successCB, errorCB, "cleanResyncGhosts", {"syncId": syncId, "isGlobalStore":isGlobalStore});
+    exec(successCB, errorCB, "cleanResyncGhosts", {"syncId": syncId, "isGlobalStore": storeConfig.isGlobalStore, "storeName": storeConfig.storeName});
 };
 
 var syncUp = function(storeConfig, target, soupName, options, successCB, errorCB) {
     var storeConfig = checkFirstArg(storeConfig);
-    exec(successCB, errorCB, "syncUp", {"target": target, "soupName": soupName, "options": options, "isGlobalStore": storeConfig.isGlobalStore,"storeName":storeConfig.storeName});
+    exec(successCB, errorCB, "syncUp", {"target": target, "soupName": soupName, "options": options, "isGlobalStore": storeConfig.isGlobalStore, "storeName": storeConfig.storeName});
 };
 
 var getSyncStatus = function(storeConfig, syncId, successCB, errorCB) {
     var storeConfig = checkFirstArg(storeConfig);
-    exec(successCB, errorCB, "getSyncStatus", {"syncId": syncId, "isGlobalStore": storeConfig.isGlobalStore,"storeName":storeConfig.storeName});
+    exec(successCB, errorCB, "getSyncStatus", {"syncId": syncId, "isGlobalStore": storeConfig.isGlobalStore, "storeName": storeConfig.storeName});
 };
 
 var MERGE_MODE = {
