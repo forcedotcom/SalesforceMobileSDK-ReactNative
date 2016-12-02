@@ -253,11 +253,6 @@ var clearSoup = function (storeConfig, soupName, successCB, errorCB) {
     exec(successCB, errorCB, "clearSoup", {"soupName": soupName, "isGlobalStore": storeConfig.isGlobalStore,"storeName":storeConfig.storeName});
 };
 
-var showInspector = function(storeConfig) {
-    var storeConfig = checkFirstArg(storeConfig);
-    exec("ShowInspector", {"isGlobalStore": storeConfig.isGlobalStore,"storeName":storeConfig.storeName});
-};
-
 var soupExists = function (storeConfig, soupName, successCB, errorCB) {
     var storeConfig = checkFirstArg(storeConfig);
     exec(successCB, errorCB, "soupExists", {"soupName": soupName, "isGlobalStore": storeConfig.isGlobalStore,"storeName":storeConfig.storeName});
@@ -384,7 +379,6 @@ module.exports = {
     removeSoup: removeSoup,
     retrieveSoupEntries: retrieveSoupEntries,
     runSmartQuery: runSmartQuery,
-    showInspector: showInspector,
     soupExists: soupExists,
     upsertSoupEntries: upsertSoupEntries,
     upsertSoupEntriesWithExternalId: upsertSoupEntriesWithExternalId,
