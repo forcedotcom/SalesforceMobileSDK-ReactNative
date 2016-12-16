@@ -290,6 +290,7 @@ var removeFromSoup = function (storeConfig, soupName, entryIdsOrQuerySpec, succe
     var storeConfig = checkFirstArg(storeConfig);
     var execArgs = {"soupName": soupName, "isGlobalStore": storeConfig.isGlobalStore,"storeName":storeConfig.storeName};
     execArgs[entryIdsOrQuerySpec instanceof Array ? "entryIds":"querySpec"] = entryIdsOrQuerySpec;
+    execArgs[entryIdsOrQuerySpec instanceof Array ? "querySpec":"entryIds"] = null;
     exec(successCB, errorCB, "removeFromSoup", execArgs);
 };
 
