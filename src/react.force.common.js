@@ -56,8 +56,12 @@ var exec = function(moduleIOSName, moduleAndroidName, moduleIOS, moduleAndroid, 
             function(result) {
                 console.log(func + " succeeded");
                 if (successCB) {
-                    var resultParsed = result ? JSON.parse(result) : result;
-                    successCB(resultParsed)
+                    try {                        
+                        var resultParsed = result ? JSON.parse(result) : result;
+                        successCB(resultParsed);
+                    } catch(e) {
+                        successCB(result);
+                    }
                 };
             },
             function(error) {
