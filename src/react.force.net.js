@@ -24,39 +24,37 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-'use strict';
+import { NativeModules } from 'react-native';
+const { SalesforceNetReactBridge, SFNetReactBridge } = NativeModules;
+import {exec as forceExec} from './react.force.common.js';
 
-var { SalesforceNetReactBridge, SFNetReactBridge } = require('react-native').NativeModules;
-var forceCommon = require('./react.force.common.js');
-
-var apiVersion = 'v39.0';
+var  apiVersion = 'v39.0';
 
 /**
  * Set apiVersion to be used
  */
-var setApiVersion = function(version) {
+export const setApiVersion = version => {
     apiVersion = version;
-}
+};
 
 /**
  * Return apiVersion used
  */
-var getApiVersion = function() {
-    return apiVersion;
-}
+export const getApiVersion = () => apiVersion;
+
 
 /** 
  * Send arbitray force.com request
  */
-var sendRequest = function(endPoint, path, successCB, errorCB, method, payload, headerParams, fileParams) {
+export const sendRequest = (endPoint, path, successCB, errorCB, method, payload, headerParams, fileParams) => {
     method = method || "GET";
     payload = payload || {};
     headerParams = headerParams || {};
     // File params expected to be of the form:
     // {<fileParamNameInPost>: {fileMimeType:<someMimeType>, fileUrl:<fileUrl>, fileName:<fileNameForPost>}}
     fileParams = fileParams || {}; 
-    var args = {endPoint: endPoint, path:path, method:method, queryParams:payload, headerParams:headerParams, fileParams: fileParams};
-    forceCommon.exec("SFNetReactBridge", "SalesforceNetReactBridge", SFNetReactBridge, SalesforceNetReactBridge, successCB, errorCB, "sendRequest", args);
+    const args = {endPoint, path, method, queryParams:payload, headerParams, fileParams};
+    forceExec("SFNetReactBridge", "SalesforceNetReactBridge", SFNetReactBridge, SalesforceNetReactBridge, successCB, errorCB, "sendRequest", args);
 };
 
 
@@ -67,9 +65,7 @@ var sendRequest = function(endPoint, path, successCB, errorCB, method, payload, 
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-var versions = function(callback, error) {
-    return sendRequest('/services/data', '/', callback, error);
-};
+export const versions = (callback, error) => sendRequest('/services/data', '/', callback, error);
 
 /*
  * Lists available resources for the client's API version, including
@@ -77,9 +73,7 @@ var versions = function(callback, error) {
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-var resources = function(callback, error) {
-    return sendRequest('/services/data', '/' + apiVersion + '/', callback, error);
-};
+export const resources = (callback, error) => sendRequest('/services/data', `/${apiVersion}/`, callback, error);
 
 /*
  * Lists the available objects and their metadata for your organization's
@@ -87,9 +81,7 @@ var resources = function(callback, error) {
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-var describeGlobal = function(callback, error) {
-    return sendRequest('/services/data', '/' + apiVersion + '/sobjects/', callback, error);
-};
+export const describeGlobal = (callback, error) => sendRequest('/services/data', `/${apiVersion}/sobjects/`, callback, error);
 
 /*
  * Describes the individual metadata for the specified object.
@@ -97,10 +89,7 @@ var describeGlobal = function(callback, error) {
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-var metadata = function(objtype, callback, error) {
-    return sendRequest('/services/data', '/' + apiVersion + '/sobjects/' + objtype + '/'
-                       , callback, error);
-};
+export const metadata = (objtype, callback, error) => sendRequest('/services/data', `/${apiVersion}/sobjects/${objtype}/`, callback, error);
 
 /*
  * Completely describes the individual metadata at all levels for the
@@ -109,10 +98,7 @@ var metadata = function(objtype, callback, error) {
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-var describe = function(objtype, callback, error) {
-    return sendRequest('/services/data', '/' + apiVersion + '/sobjects/' + objtype
-                       + '/describe/', callback, error);
-};
+export const describe = (objtype, callback, error) => sendRequest('/services/data', `/${apiVersion}/sobjects/${objtype}/describe/`, callback, error);
 
 /*
  * Fetches the layout configuration for a particular sobject type and record type id.
@@ -121,10 +107,9 @@ var describe = function(objtype, callback, error) {
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-var describeLayout = function(objtype, recordTypeId, callback, error) {
+export const describeLayout = (objtype, recordTypeId, callback, error) => {
     recordTypeId = recordTypeId ? recordTypeId : '';
-    return sendRequest('/services/data', '/' + apiVersion + '/sobjects/' + objtype
-                       + '/describe/layouts/' + recordTypeId, callback, error);
+    return sendRequest('/services/data', `/${apiVersion}/sobjects/${objtype}/describe/layouts/${recordTypeId}`, callback, error);
 };
 
 /*
@@ -136,10 +121,7 @@ var describeLayout = function(objtype, recordTypeId, callback, error) {
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-var create = function(objtype, fields, callback, error) {
-    return sendRequest('/services/data', '/' + apiVersion + '/sobjects/' + objtype + '/'
-                       , callback, error, "POST", fields);
-};
+export const create = (objtype, fields, callback, error) => sendRequest('/services/data', `/${apiVersion}/sobjects/${objtype}/`, callback, error, "POST", fields);
 
 /*
  * Retrieves field values for a record of the given type.
@@ -150,15 +132,14 @@ var create = function(objtype, fields, callback, error) {
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-var retrieve = function(objtype, id, fieldlist, callback, error) {
+export const retrieve = function(objtype, id, fieldlist, callback, error) {
     if (arguments.length == 4) {
         error = callback;
         callback = fieldlist;
         fieldlist = null;
     }
-    var fields = fieldlist ? {fields:fieldlist} : null;
-    return sendRequest('/services/data', '/' + apiVersion + '/sobjects/' + objtype + '/' + id
-                       , callback, error, 'GET', fields);
+    const fields = fieldlist ? {fields:fieldlist} : null;
+    return sendRequest('/services/data', `/${apiVersion}/sobjects/${objtype}/${id}`, callback, error, 'GET', fields);
 };
 
 /*
@@ -173,10 +154,7 @@ var retrieve = function(objtype, id, fieldlist, callback, error) {
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-var upsert = function(objtype, externalIdField, externalId, fields, callback, error) {
-    return sendRequest('/services/data', '/' + apiVersion + '/sobjects/' + objtype + '/' + externalIdField + '/' + externalId
-                       , callback, error, "PATCH", fields);
-};
+export const upsert = (objtype, externalIdField, externalId, fields, callback, error) => sendRequest('/services/data', `/${apiVersion}/sobjects/${objtype}/${externalIdField}/${externalId}`, callback, error, "PATCH", fields);
 
 /*
  * Updates field values on a record of the given type.
@@ -188,10 +166,7 @@ var upsert = function(objtype, externalIdField, externalId, fields, callback, er
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-var update = function(objtype, id, fields, callback, error) {
-    return sendRequest('/services/data', '/' + apiVersion + '/sobjects/' + objtype + '/' + id
-                       , callback, error, "PATCH", fields);
-};
+export const update = (objtype, id, fields, callback, error) => sendRequest('/services/data', `/${apiVersion}/sobjects/${objtype}/${id}`, callback, error, "PATCH", fields);
 
 /*
  * Deletes a record of the given type. Unfortunately, 'delete' is a
@@ -201,10 +176,7 @@ var update = function(objtype, id, fields, callback, error) {
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-var del = function(objtype, id, callback, error) {
-    return sendRequest('/services/data', '/' + apiVersion + '/sobjects/' + objtype + '/' + id
-                       , callback, error, "DELETE");
-};
+export const del = (objtype, id, callback, error) => sendRequest('/services/data', `/${apiVersion}/sobjects/${objtype}/${id}`, callback, error, "DELETE");
 
 /*
  * Executes the specified SOQL query.
@@ -213,10 +185,7 @@ var del = function(objtype, id, callback, error) {
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-var query = function(soql, callback, error) {
-    return sendRequest('/services/data', '/' + apiVersion + '/query'
-                       , callback, error, 'GET', {q: soql});
-};
+export const query = (soql, callback, error) => sendRequest('/services/data', `/${apiVersion}/query`, callback, error, 'GET', {q: soql});
 
 /*
  * Queries the next set of records based on pagination.
@@ -227,8 +196,8 @@ var query = function(soql, callback, error) {
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-var queryMore = function( url, callback, error ){
-    var pathFromUrl = url.match(/https:\/\/[^/]*(.*)/)[1];
+export const queryMore = (url, callback, error) => {
+    const pathFromUrl = url.match(/https:\/\/[^/]*(.*)/)[1];
     return sendRequest('',  pathFromUrl, callback, error );
 };
 
@@ -239,30 +208,4 @@ var queryMore = function( url, callback, error ){
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-var search = function(sosl, callback, error) {
-    return sendRequest('/services/data', '/' + apiVersion + '/search'
-                       , callback, error, 'GET', {q: sosl});
-};
-
-/**
- * Part of the module that is public
- */
-module.exports = {
-    setApiVersion: setApiVersion,
-    getApiVersion: getApiVersion,
-    sendRequest: sendRequest,
-    versions: versions,
-    resources: resources,
-    describeGlobal: describeGlobal,
-    metadata: metadata,
-    describe: describe,
-    describeLayout: describeLayout,
-    create: create,
-    retrieve: retrieve,
-    upsert: upsert,
-    update: update,
-    del: del,
-    query: query,
-    queryMore: queryMore,
-    search: search
-};
+export const search = (sosl, callback, error) => sendRequest('/services/data', `/${apiVersion}/search`, callback, error, 'GET', {q: sosl});
