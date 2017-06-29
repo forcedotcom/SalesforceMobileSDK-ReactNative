@@ -24,57 +24,47 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-'use strict';
-
 /**
  * exec
  */
-var exec = function(moduleIOSName, moduleAndroidName, moduleIOS, moduleAndroid, successCB, errorCB, methodName, args) {
-    // ios
+export const exec = (moduleIOSName, moduleAndroidName, moduleIOS, moduleAndroid, successCB, errorCB, methodName, args) => {
     if (moduleIOS) {
-        var func = moduleIOSName + "." + methodName;
-        console.log(func + " called: " + JSON.stringify(args));
+        const func = `${moduleIOSName}.${methodName}`;
+        console.log(`${func} called: ${JSON.stringify(args)}`);
         moduleIOS[methodName](
             args,
-            function(error, result) {
+            (error, result) => {
                 if (error) {
-                    console.log(func + " failed: " + JSON.stringify(error));
+                    console.log(`${func} failed: ${JSON.stringify(error)}`);
                     if (errorCB) errorCB(error);
                 }
                 else {
-                    console.log(func + " succeeded");
+                    console.log(`${func} succeeded`);
                     if (successCB) successCB(result);
                 }
             });
     }
     // android
     else if (moduleAndroid) {
-        var func = moduleAndroidName + "." + methodName;
-        console.log(func + " called: " + JSON.stringify(args));
+        const func = `${moduleAndroidName}.${methodName}`;
+        console.log(`${func} called: ${JSON.stringify(args)}`);
         moduleAndroid[methodName](
             args,
-            function(result) {
-                console.log(func + " succeeded");
+            result => {
+                console.log(`${func} succeeded`);
                 if (successCB) {
                     try {                        
-                        var resultParsed = result ? JSON.parse(result) : result;
+                        const resultParsed = result ? JSON.parse(result) : result;
                         successCB(resultParsed);
                     } catch(e) {
                         successCB(result);
                     }
                 };
             },
-            function(error) {
-                console.log(func + " failed");
+            error => {
+                console.log(`${func} failed`);
                 if (errorCB) errorCB(error);
             }
         );
     }
-};
-
-/**
- * Part of the module that is public
- */
-module.exports = {
-    exec: exec
 };
