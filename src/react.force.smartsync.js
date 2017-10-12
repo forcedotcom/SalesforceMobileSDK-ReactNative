@@ -75,6 +75,21 @@ export const getSyncStatus = (storeConfig, syncId, successCB, errorCB) => {
     exec(successCB, errorCB, "getSyncStatus", {"syncId": syncId, "isGlobalStore": storeConfig.isGlobalStore, "storeName": storeConfig.storeName});
 };
 
+export const getSyncStatusByName = (storeConfig, name, successCB, errorCB) => {
+    var storeConfig = checkFirstArg(storeConfig);
+    exec(successCB, errorCB, "getSyncStatusByName", {"name": name, "isGlobalStore": storeConfig.isGlobalStore, "storeName": storeConfig.storeName});
+};
+
+export const deleteSyncById = (storeConfig, syncId, successCB, errorCB) => {
+    var storeConfig = checkFirstArg(storeConfig);
+    exec(successCB, errorCB, "deleteSyncById", {"syncId": syncId, "isGlobalStore": storeConfig.isGlobalStore, "storeName": storeConfig.storeName});
+};
+
+export const deleteSyncByName = (storeConfig, name, successCB, errorCB) => {
+    var storeConfig = checkFirstArg(storeConfig);
+    exec(successCB, errorCB, "deleteSyncByName", {"name": name, "isGlobalStore": storeConfig.isGlobalStore, "storeName": storeConfig.storeName});
+};
+
 export const MERGE_MODE = {
     OVERWRITE: "OVERWRITE",
     LEAVE_IF_CHANGED: "LEAVE_IF_CHANGED"
