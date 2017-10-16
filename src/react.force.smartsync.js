@@ -50,8 +50,14 @@ const exec = (successCB, errorCB, methodName, args) => {
     forceExec("SFSmartSyncReactBridge", "SmartSyncReactBridge", SFSmartSyncReactBridge, SmartSyncReactBridge, successCB, errorCB, methodName, args);
 };
 
-export const syncDown = (storeConfig, target, soupName, options, successCB, errorCB) => {
+export const syncDown = (storeConfig, target, soupName, options, syncName, successCB, errorCB) => {
     var storeConfig = checkFirstArg(storeConfig);
+    // syncName optional (new in 6.0)
+    if (typeof syncName === "function") {
+        errorCB = successCB;
+        successCB = syncName;
+        syncName = null;
+    }
     exec(successCB, errorCB, "syncDown", {"target": target, "soupName": soupName, "options": options,"isGlobalStore": storeConfig.isGlobalStore, "storeName": storeConfig.storeName});
 };
 
@@ -65,8 +71,14 @@ export const cleanResyncGhosts = (storeConfig, syncId, successCB, errorCB) => {
     exec(successCB, errorCB, "cleanResyncGhosts", {"syncId": syncId, "isGlobalStore": storeConfig.isGlobalStore, "storeName": storeConfig.storeName});
 };
 
-export const syncUp = (storeConfig, target, soupName, options, successCB, errorCB) => {
+export const syncUp = (storeConfig, target, soupName, options, syncName, successCB, errorCB) => {
     var storeConfig = checkFirstArg(storeConfig);
+    // syncName optional (new in 6.0)
+    if (typeof syncName === "function") {
+        errorCB = successCB;
+        successCB = syncName;
+        syncName = null;
+    }
     exec(successCB, errorCB, "syncUp", {"target": target, "soupName": soupName, "options": options, "isGlobalStore": storeConfig.isGlobalStore, "storeName": storeConfig.storeName});
 };
 
