@@ -58,7 +58,7 @@ export const syncDown = (storeConfig, target, soupName, options, syncName, succe
         successCB = syncName;
         syncName = null;
     }
-    exec(successCB, errorCB, "syncDown", {"target": target, "soupName": soupName, "options": options,"isGlobalStore": storeConfig.isGlobalStore, "storeName": storeConfig.storeName});
+    exec(successCB, errorCB, "syncDown", {"target": target, "soupName": soupName, "options": options,"isGlobalStore": storeConfig.isGlobalStore, "storeName": storeConfig.storeName, syncName: syncName});
 };
 
 export const reSync = (storeConfig, syncIdOrName, successCB, errorCB) => {
@@ -82,7 +82,7 @@ export const syncUp = (storeConfig, target, soupName, options, syncName, success
         successCB = syncName;
         syncName = null;
     }
-    exec(successCB, errorCB, "syncUp", {"target": target, "soupName": soupName, "options": options, "isGlobalStore": storeConfig.isGlobalStore, "storeName": storeConfig.storeName});
+    exec(successCB, errorCB, "syncUp", {"target": target, "soupName": soupName, "options": options, "isGlobalStore": storeConfig.isGlobalStore, "storeName": storeConfig.storeName, syncName: syncName});
 };
 
 export const getSyncStatus = (storeConfig, syncId, successCB, errorCB) => {
