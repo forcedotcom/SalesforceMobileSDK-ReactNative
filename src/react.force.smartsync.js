@@ -61,9 +61,12 @@ export const syncDown = (storeConfig, target, soupName, options, syncName, succe
     exec(successCB, errorCB, "syncDown", {"target": target, "soupName": soupName, "options": options,"isGlobalStore": storeConfig.isGlobalStore, "storeName": storeConfig.storeName});
 };
 
-export const reSync = (storeConfig, syncId, successCB, errorCB) => {
+export const reSync = (storeConfig, syncIdOrName, successCB, errorCB) => {
     var storeConfig = checkFirstArg(storeConfig);
-    exec(successCB, errorCB, "reSync", {"syncId": syncId, "isGlobalStore": storeConfig.isGlobalStore, "storeName": storeConfig.storeName});
+    exec(successCB, errorCB, "reSync",
+         {"syncId": typeof syncIdOrName === "string" ? null : syncIdOrName,
+          "syncName": typeof syncIdOrName === "string" ? syncIdOrName : null,
+          "isGlobalStore": storeConfig.isGlobalStore, "storeName": storeConfig.storeName});
 };
 
 export const cleanResyncGhosts = (storeConfig, syncId, successCB, errorCB) => {
