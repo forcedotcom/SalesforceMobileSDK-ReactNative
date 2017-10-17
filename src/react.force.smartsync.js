@@ -87,22 +87,16 @@ export const syncUp = (storeConfig, target, soupName, options, syncName, success
 
 export const getSyncStatus = (storeConfig, syncId, successCB, errorCB) => {
     var storeConfig = checkFirstArg(storeConfig);
-    exec(successCB, errorCB, "getSyncStatus", {"syncId": syncId, "isGlobalStore": storeConfig.isGlobalStore, "storeName": storeConfig.storeName});
+    exec(successCB, errorCB, "getSyncStatus", {"syncId": typeof syncIdOrName === "string" ? null : syncIdOrName,
+                                               "syncName": typeof syncIdOrName === "string" ? syncIdOrName : null,
+                                               "isGlobalStore": storeConfig.isGlobalStore, "storeName": storeConfig.storeName});
 };
 
-export const getSyncStatusByName = (storeConfig, syncName, successCB, errorCB) => {
+export const deleteSync = (storeConfig, syncId, successCB, errorCB) => {
     var storeConfig = checkFirstArg(storeConfig);
-    exec(successCB, errorCB, "getSyncStatusByName", {"syncName": syncName, "isGlobalStore": storeConfig.isGlobalStore, "storeName": storeConfig.storeName});
-};
-
-export const deleteSyncById = (storeConfig, syncId, successCB, errorCB) => {
-    var storeConfig = checkFirstArg(storeConfig);
-    exec(successCB, errorCB, "deleteSyncById", {"syncId": syncId, "isGlobalStore": storeConfig.isGlobalStore, "storeName": storeConfig.storeName});
-};
-
-export const deleteSyncByName = (storeConfig, syncName, successCB, errorCB) => {
-    var storeConfig = checkFirstArg(storeConfig);
-    exec(successCB, errorCB, "deleteSyncByName", {"syncName": syncName, "isGlobalStore": storeConfig.isGlobalStore, "storeName": storeConfig.storeName});
+    exec(successCB, errorCB, "deleteSync", {"syncId": typeof syncIdOrName === "string" ? null : syncIdOrName,
+                                            "syncName": typeof syncIdOrName === "string" ? syncIdOrName : null,
+                                            "isGlobalStore": storeConfig.isGlobalStore, "storeName": storeConfig.storeName});
 };
 
 export const MERGE_MODE = {
