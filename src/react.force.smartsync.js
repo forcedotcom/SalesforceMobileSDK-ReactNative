@@ -85,14 +85,14 @@ export const syncUp = (storeConfig, target, soupName, options, syncName, success
     exec(successCB, errorCB, "syncUp", {"target": target, "soupName": soupName, "options": options, "isGlobalStore": storeConfig.isGlobalStore, "storeName": storeConfig.storeName, syncName: syncName});
 };
 
-export const getSyncStatus = (storeConfig, syncId, successCB, errorCB) => {
+export const getSyncStatus = (storeConfig, syncIdOrName, successCB, errorCB) => {
     var storeConfig = checkFirstArg(storeConfig);
     exec(successCB, errorCB, "getSyncStatus", {"syncId": typeof syncIdOrName === "string" ? null : syncIdOrName,
                                                "syncName": typeof syncIdOrName === "string" ? syncIdOrName : null,
                                                "isGlobalStore": storeConfig.isGlobalStore, "storeName": storeConfig.storeName});
 };
 
-export const deleteSync = (storeConfig, syncId, successCB, errorCB) => {
+export const deleteSync = (storeConfig, syncIdOrName, successCB, errorCB) => {
     var storeConfig = checkFirstArg(storeConfig);
     exec(successCB, errorCB, "deleteSync", {"syncId": typeof syncIdOrName === "string" ? null : syncIdOrName,
                                             "syncName": typeof syncIdOrName === "string" ? syncIdOrName : null,
