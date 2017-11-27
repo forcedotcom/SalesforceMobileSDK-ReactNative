@@ -1,29 +1,47 @@
 {
-	"name": "react-native-force",
-	"version": "6.0.0",
-	"description": "Salesforce Mobile SDK JavaScript libraries for React Native",
-	"keywords": [ "mobilesdk", "react-native", "salesforce", "mobile", "sdk" ],
-	"homepage": "https://github.com/forcedotcom/SalesforceMobileSDK-ReactNative",
-	"bugs": "https://github.com/forcedotcom/SalesforceMobileSDK-ReactNative/issues",
-	"licenses" : [
-	    { "type": "Salesforce.com Mobile SDK License", "url": "https://github.com/forcedotcom/SalesforceMobileSDK-ReactNative/blob/master/LICENSE.md" }
-	],
-	"repository": {
-		"type" : "git",
-		"url" : "https://github.com/forcedotcom/SalesforceMobileSDK-ReactNative.git"
-	},
-    "engines": {
-        "node": ">=4"
-    },
-	"author": { "name": "Ivan Bogdanov", "email": "ibogdanov@salesforce.com" },
-	"contributors": [
-        { "name": "Wolfgang Mathurin", "email": "wmathurin@salesforce.com" },
-        { "name": "Bharath Hariharan", "email": "bhariharan@salesforce.com" }
-    ],
-    "dependencies": {
-    },
-    "peerDependencies": {
-        "react-native": ">=0.43.1"
+  "name": "react-native-force",
+  "version": "6.0.0",
+  "description": "Salesforce Mobile SDK JavaScript libraries for React Native",
+  "keywords": [
+    "mobilesdk",
+    "react-native",
+    "salesforce",
+    "mobile",
+    "sdk"
+  ],
+  "homepage": "https://github.com/forcedotcom/SalesforceMobileSDK-ReactNative",
+  "bugs": "https://github.com/forcedotcom/SalesforceMobileSDK-ReactNative/issues",
+  "licenses": [
+    {
+      "type": "Salesforce.com Mobile SDK License",
+      "url": "https://github.com/forcedotcom/SalesforceMobileSDK-ReactNative/blob/master/LICENSE.md"
     }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/forcedotcom/SalesforceMobileSDK-ReactNative.git"
+  },
+  "engines": {
+    "node": ">=4"
+  },
+  "author": {
+    "name": "Ivan Bogdanov",
+    "email": "ibogdanov@salesforce.com"
+  },
+  "contributors": [
+    {
+      "name": "Wolfgang Mathurin",
+      "email": "wmathurin@salesforce.com"
+    },
+    {
+      "name": "Bharath Hariharan",
+      "email": "bhariharan@salesforce.com"
+    }
+  ],
+  "dependencies": {
+    "react-native": "^0.50.4"
+  },
+  "peerDependencies": {
+    "react-native": ">=0.50.4"
+  }
 }
-
