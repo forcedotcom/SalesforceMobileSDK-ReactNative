@@ -39,7 +39,8 @@
     }
   ],
   "dependencies": {
-    "react-native": "^0.50.4"
+      "react-native": "^0.50.4",
+      "base-64": "^0.1.0"
   },
   "peerDependencies": {
     "react-native": ">=0.50.4"

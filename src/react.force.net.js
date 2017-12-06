@@ -27,6 +27,7 @@
 import { NativeModules } from 'react-native';
 const { SalesforceNetReactBridge, SFNetReactBridge } = NativeModules;
 import {exec as forceExec} from './react.force.common.js';
+import {atob } from 'base-64';
 
 var  apiVersion = 'v39.0';
 
@@ -46,15 +47,33 @@ export const getApiVersion = () => apiVersion;
 /** 
  * Send arbitray force.com request
  */
-export const sendRequest = (endPoint, path, successCB, errorCB, method, payload, headerParams, fileParams) => {
+export const sendRequest = (endPoint, path, successCB, errorCB, method, payload, headerParams, fileParams, returnResponseAsBlob) => {
     method = method || "GET";
     payload = payload || {};
     headerParams = headerParams || {};
     // File params expected to be of the form:
     // {<fileParamNameInPost>: {fileMimeType:<someMimeType>, fileUrl:<fileUrl>, fileName:<fileNameForPost>}}
     fileParams = fileParams || {}; 
-    const args = {endPoint, path, method, queryParams:payload, headerParams, fileParams};
-    forceExec("SFNetReactBridge", "SalesforceNetReactBridge", SFNetReactBridge, SalesforceNetReactBridge, successCB, errorCB, "sendRequest", args);
+    responseHandler = successCB;
+
+    /* 
+     * When requesting binary, the native code will send us {encodedBody: "base-64-encoded-body", contentType: "mime-type"}
+     * We base-64 decode the body and create a blob from it using the specified contentType
+     */
+    if (returnResponseAsBlob) {
+        responseHandler = (response) => {
+            byteCharacters = atob(response.encodedBody);
+            byteNumbers = new Array(byteCharacters.length);
+            for (var i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            var byteArray = new Uint8Array(byteNumbers);
+            successCB(new Blob([byteArray], {type: response.contentType}));
+        };
+    }
+
+    const args = {endPoint, path, method, queryParams:payload, headerParams, fileParams, returnResponseAsBlob};    
+    forceExec("SFNetReactBridge", "SalesforceNetReactBridge", SFNetReactBridge, SalesforceNetReactBridge, responseHandler, errorCB, "sendRequest", args);
 };
 
 
