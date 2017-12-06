@@ -46,16 +46,16 @@ export const getApiVersion = () => apiVersion;
 /** 
  * Send arbitray force.com request
  */
-export const sendRequest = (endPoint, path, successCB, errorCB, method, payload, headerParams, fileParams, returnResponseAsBlob) => {
+export const sendRequest = (endPoint, path, successCB, errorCB, method, payload, headerParams, fileParams, returnBinary) => {
     method = method || "GET";
     payload = payload || {};
     headerParams = headerParams || {};
     // File params expected to be of the form:
     // {<fileParamNameInPost>: {fileMimeType:<someMimeType>, fileUrl:<fileUrl>, fileName:<fileNameForPost>}}
     fileParams = fileParams || {};
-    returnResponseAsBlob = !!returnResponseAsBlob;
+    returnBinary = !!returnBinary;
 
-    const args = {endPoint, path, method, queryParams:payload, headerParams, fileParams, returnResponseAsBlob};    
+    const args = {endPoint, path, method, queryParams:payload, headerParams, fileParams, returnBinary};    
     forceExec("SFNetReactBridge", "SalesforceNetReactBridge", SFNetReactBridge, SalesforceNetReactBridge, successCB, errorCB, "sendRequest", args);
 };
 
