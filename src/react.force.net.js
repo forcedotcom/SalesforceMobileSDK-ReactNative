@@ -27,7 +27,6 @@
 import { NativeModules } from 'react-native';
 const { SalesforceNetReactBridge, SFNetReactBridge } = NativeModules;
 import {exec as forceExec} from './react.force.common.js';
-import {atob } from 'base-64';
 
 var  apiVersion = 'v39.0';
 
@@ -53,27 +52,11 @@ export const sendRequest = (endPoint, path, successCB, errorCB, method, payload,
     headerParams = headerParams || {};
     // File params expected to be of the form:
     // {<fileParamNameInPost>: {fileMimeType:<someMimeType>, fileUrl:<fileUrl>, fileName:<fileNameForPost>}}
-    fileParams = fileParams || {}; 
-    responseHandler = successCB;
-
-    /* 
-     * When requesting binary, the native code will send us {encodedBody: "base-64-encoded-body", contentType: "mime-type"}
-     * We base-64 decode the body and create a blob from it using the specified contentType
-     */
-    if (returnResponseAsBlob) {
-        responseHandler = (response) => {
-            byteCharacters = atob(response.encodedBody);
-            byteNumbers = new Array(byteCharacters.length);
-            for (var i = 0; i < byteCharacters.length; i++) {
-                byteNumbers[i] = byteCharacters.charCodeAt(i);
-            }
-            var byteArray = new Uint8Array(byteNumbers);
-            successCB(new Blob([byteArray], {type: response.contentType}));
-        };
-    }
+    fileParams = fileParams || {};
+    returnResponseAsBlob = !!returnResponseAsBlob;
 
     const args = {endPoint, path, method, queryParams:payload, headerParams, fileParams, returnResponseAsBlob};    
-    forceExec("SFNetReactBridge", "SalesforceNetReactBridge", SFNetReactBridge, SalesforceNetReactBridge, responseHandler, errorCB, "sendRequest", args);
+    forceExec("SFNetReactBridge", "SalesforceNetReactBridge", SFNetReactBridge, SalesforceNetReactBridge, successCB, errorCB, "sendRequest", args);
 };
 
 
@@ -228,3 +211,11 @@ export const queryMore = (url, callback, error) => {
  * @param [error=null] function called in case of error
  */
 export const search = (sosl, callback, error) => sendRequest('/services/data', `/${apiVersion}/search`, callback, error, 'GET', {q: sosl});
+
+/**
+ * Convenience function to retrieve an attachment
+ * @param id 
+ * @param successHandler
+ * @param errorHandler
+ */
+export const getAttachment = (id, callback, error) => sendRequest('/services/data/', `/${apiVersion}/sobjects/Attachment/${id}/Body`, callback, error, 'GET', null, null, null, true /* return binary */);
