@@ -50,10 +50,8 @@ export const sendRequest = (endPoint, path, successCB, errorCB, method, payload,
     method = method || "GET";
     payload = payload || {};
     headerParams = headerParams || {};
-    // File params expected to be of the form:
-    // {<fileParamNameInPost>: {fileMimeType:<someMimeType>, fileUrl:<fileUrl>, fileName:<fileNameForPost>}}
-    fileParams = fileParams || {};
-    returnBinary = !!returnBinary;
+    fileParams = fileParams || {}; // File params expected to be of the form: {<fileParamNameInPost>: {fileMimeType:<someMimeType>, fileUrl:<fileUrl>, fileName:<fileNameForPost>}}
+    returnBinary = !!returnBinary; // when true response returned as {encodedBody:"base64-encoded-response", contentType:"content-type"}
 
     const args = {endPoint, path, method, queryParams:payload, headerParams, fileParams, returnBinary};    
     forceExec("SFNetReactBridge", "SalesforceNetReactBridge", SFNetReactBridge, SalesforceNetReactBridge, successCB, errorCB, "sendRequest", args);
@@ -215,7 +213,7 @@ export const search = (sosl, callback, error) => sendRequest('/services/data', `
 /**
  * Convenience function to retrieve an attachment
  * @param id 
- * @param successHandler
- * @param errorHandler
+ * @param callback function to which response will be passed (attachment is returned as {encodedBody:"base64-encoded-response", contentType:"content-type"})
+ * @param [error=null] function called in case of error
  */
 export const getAttachment = (id, callback, error) => sendRequest('/services/data/', `/${apiVersion}/sobjects/Attachment/${id}/Body`, callback, error, 'GET', null, null, null, true /* return binary */);
