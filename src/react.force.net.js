@@ -28,7 +28,7 @@ import { NativeModules } from 'react-native';
 const { SalesforceNetReactBridge, SFNetReactBridge } = NativeModules;
 import {exec as forceExec} from './react.force.common.js';
 
-var  apiVersion = 'v39.0';
+var  apiVersion = 'v41.0';
 
 /**
  * Set apiVersion to be used
@@ -46,14 +46,14 @@ export const getApiVersion = () => apiVersion;
 /** 
  * Send arbitray force.com request
  */
-export const sendRequest = (endPoint, path, successCB, errorCB, method, payload, headerParams, fileParams) => {
+export const sendRequest = (endPoint, path, successCB, errorCB, method, payload, headerParams, fileParams, returnBinary) => {
     method = method || "GET";
     payload = payload || {};
     headerParams = headerParams || {};
-    // File params expected to be of the form:
-    // {<fileParamNameInPost>: {fileMimeType:<someMimeType>, fileUrl:<fileUrl>, fileName:<fileNameForPost>}}
-    fileParams = fileParams || {}; 
-    const args = {endPoint, path, method, queryParams:payload, headerParams, fileParams};
+    fileParams = fileParams || {}; // File params expected to be of the form: {<fileParamNameInPost>: {fileMimeType:<someMimeType>, fileUrl:<fileUrl>, fileName:<fileNameForPost>}}
+    returnBinary = !!returnBinary; // when true response returned as {encodedBody:"base64-encoded-response", contentType:"content-type"}
+
+    const args = {endPoint, path, method, queryParams:payload, headerParams, fileParams, returnBinary};    
     forceExec("SFNetReactBridge", "SalesforceNetReactBridge", SFNetReactBridge, SalesforceNetReactBridge, successCB, errorCB, "sendRequest", args);
 };
 
@@ -209,3 +209,11 @@ export const queryMore = (url, callback, error) => {
  * @param [error=null] function called in case of error
  */
 export const search = (sosl, callback, error) => sendRequest('/services/data', `/${apiVersion}/search`, callback, error, 'GET', {q: sosl});
+
+/**
+ * Convenience function to retrieve an attachment
+ * @param id 
+ * @param callback function to which response will be passed (attachment is returned as {encodedBody:"base64-encoded-response", contentType:"content-type"})
+ * @param [error=null] function called in case of error
+ */
+export const getAttachment = (id, callback, error) => sendRequest('/services/data', `/${apiVersion}/sobjects/Attachment/${id}/Body`, callback, error, 'GET', null, null, null, true /* return binary */);

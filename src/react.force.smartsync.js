@@ -50,14 +50,23 @@ const exec = (successCB, errorCB, methodName, args) => {
     forceExec("SFSmartSyncReactBridge", "SmartSyncReactBridge", SFSmartSyncReactBridge, SmartSyncReactBridge, successCB, errorCB, methodName, args);
 };
 
-export const syncDown = (storeConfig, target, soupName, options, successCB, errorCB) => {
+export const syncDown = (storeConfig, target, soupName, options, syncName, successCB, errorCB) => {
     var storeConfig = checkFirstArg(storeConfig);
-    exec(successCB, errorCB, "syncDown", {"target": target, "soupName": soupName, "options": options,"isGlobalStore": storeConfig.isGlobalStore, "storeName": storeConfig.storeName});
+    // syncName optional (new in 6.0)
+    if (typeof syncName === "function") {
+        errorCB = successCB;
+        successCB = syncName;
+        syncName = null;
+    }
+    exec(successCB, errorCB, "syncDown", {"target": target, "soupName": soupName, "options": options,"isGlobalStore": storeConfig.isGlobalStore, "storeName": storeConfig.storeName, syncName: syncName});
 };
 
-export const reSync = (storeConfig, syncId, successCB, errorCB) => {
+export const reSync = (storeConfig, syncIdOrName, successCB, errorCB) => {
     var storeConfig = checkFirstArg(storeConfig);
-    exec(successCB, errorCB, "reSync", {"syncId": syncId, "isGlobalStore": storeConfig.isGlobalStore, "storeName": storeConfig.storeName});
+    exec(successCB, errorCB, "reSync",
+         {"syncId": typeof syncIdOrName === "string" ? null : syncIdOrName,
+          "syncName": typeof syncIdOrName === "string" ? syncIdOrName : null,
+          "isGlobalStore": storeConfig.isGlobalStore, "storeName": storeConfig.storeName});
 };
 
 export const cleanResyncGhosts = (storeConfig, syncId, successCB, errorCB) => {
@@ -65,14 +74,29 @@ export const cleanResyncGhosts = (storeConfig, syncId, successCB, errorCB) => {
     exec(successCB, errorCB, "cleanResyncGhosts", {"syncId": syncId, "isGlobalStore": storeConfig.isGlobalStore, "storeName": storeConfig.storeName});
 };
 
-export const syncUp = (storeConfig, target, soupName, options, successCB, errorCB) => {
+export const syncUp = (storeConfig, target, soupName, options, syncName, successCB, errorCB) => {
     var storeConfig = checkFirstArg(storeConfig);
-    exec(successCB, errorCB, "syncUp", {"target": target, "soupName": soupName, "options": options, "isGlobalStore": storeConfig.isGlobalStore, "storeName": storeConfig.storeName});
+    // syncName optional (new in 6.0)
+    if (typeof syncName === "function") {
+        errorCB = successCB;
+        successCB = syncName;
+        syncName = null;
+    }
+    exec(successCB, errorCB, "syncUp", {"target": target, "soupName": soupName, "options": options, "isGlobalStore": storeConfig.isGlobalStore, "storeName": storeConfig.storeName, syncName: syncName});
 };
 
-export const getSyncStatus = (storeConfig, syncId, successCB, errorCB) => {
+export const getSyncStatus = (storeConfig, syncIdOrName, successCB, errorCB) => {
     var storeConfig = checkFirstArg(storeConfig);
-    exec(successCB, errorCB, "getSyncStatus", {"syncId": syncId, "isGlobalStore": storeConfig.isGlobalStore, "storeName": storeConfig.storeName});
+    exec(successCB, errorCB, "getSyncStatus", {"syncId": typeof syncIdOrName === "string" ? null : syncIdOrName,
+                                               "syncName": typeof syncIdOrName === "string" ? syncIdOrName : null,
+                                               "isGlobalStore": storeConfig.isGlobalStore, "storeName": storeConfig.storeName});
+};
+
+export const deleteSync = (storeConfig, syncIdOrName, successCB, errorCB) => {
+    var storeConfig = checkFirstArg(storeConfig);
+    exec(successCB, errorCB, "deleteSync", {"syncId": typeof syncIdOrName === "string" ? null : syncIdOrName,
+                                            "syncName": typeof syncIdOrName === "string" ? syncIdOrName : null,
+                                            "isGlobalStore": storeConfig.isGlobalStore, "storeName": storeConfig.storeName});
 };
 
 export const MERGE_MODE = {
