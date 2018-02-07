@@ -336,15 +336,12 @@ export const closeCursor = (storeConfig, cursor, successCB, errorCB) => {
 };
 
 //====== Store Operations ======
-export const getAllStores = (storeConfig, successCB, errorCB) => {
-    var storeConfig = checkFirstArg(storeConfig);
+export const getAllStores = (successCB, errorCB) => {
     exec(successCB, errorCB, "getAllStores", {});
 };
 
 export const getAllGlobalStores = (successCB, errorCB) => {
-    const storeConfig = checkFirstArg(storeConfig);
     exec(successCB, errorCB, "getAllGlobalStores", {});
-
 };
 
 export const removeStore = (storeConfig, successCB, errorCB) => {
@@ -353,11 +350,9 @@ export const removeStore = (storeConfig, successCB, errorCB) => {
 };
 
 export const removeAllGlobalStores = (successCB, errorCB) => {
-  const storeConfig = checkFirstArg(storeConfig);
   exec(successCB, errorCB, "removeAllGlobalStores", {});
 };
 
 export const removeAllStores = (successCB, errorCB) => {
-  const storeConfig = checkFirstArg(storeConfig);
   exec(successCB, errorCB, "removeAllStores", {});
 };
