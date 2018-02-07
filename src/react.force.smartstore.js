@@ -336,8 +336,7 @@ export const closeCursor = (storeConfig, cursor, successCB, errorCB) => {
 };
 
 //====== Store Operations ======
-export const getAllStores = (storeConfig, successCB, errorCB) => {
-    var storeConfig = checkFirstArg(storeConfig);
+export const getAllStores = (successCB, errorCB) => {
     exec(successCB, errorCB, "getAllStores", {});
 };
 
