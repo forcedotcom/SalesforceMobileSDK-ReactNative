@@ -341,9 +341,7 @@ export const getAllStores = (successCB, errorCB) => {
 };
 
 export const getAllGlobalStores = (successCB, errorCB) => {
-    const storeConfig = checkFirstArg(storeConfig);
     exec(successCB, errorCB, "getAllGlobalStores", {});
-
 };
 
 export const removeStore = (storeConfig, successCB, errorCB) => {
@@ -352,11 +350,9 @@ export const removeStore = (storeConfig, successCB, errorCB) => {
 };
 
 export const removeAllGlobalStores = (successCB, errorCB) => {
-  const storeConfig = checkFirstArg(storeConfig);
   exec(successCB, errorCB, "removeAllGlobalStores", {});
 };
 
 export const removeAllStores = (successCB, errorCB) => {
-  const storeConfig = checkFirstArg(storeConfig);
   exec(successCB, errorCB, "removeAllStores", {});
 };
