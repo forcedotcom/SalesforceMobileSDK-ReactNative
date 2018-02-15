@@ -53,12 +53,8 @@ export const exec = (moduleIOSName, moduleAndroidName, moduleIOS, moduleAndroid,
             result => {
                 console.log(`${func} succeeded`);
                 if (successCB) {
-                    try {                        
-                        const resultParsed = result ? JSON.parse(result) : result;
-                        successCB(resultParsed);
-                    } catch(e) {
-                        successCB(result);
-                    }
+                    const resultParsed = typeof result === 'string' && result !== '' ? JSON.parse(result) : result;
+                    successCB(resultParsed);
                 };
             },
             error => {
