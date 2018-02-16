@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-present, salesforce.com, inc.
+ * Copyright (c) 2018-present, salesforce.com, inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided
@@ -24,12 +24,20 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-module.exports = {
-    net:require('./src/react.force.net'),
-    oauth:require('./src/react.force.oauth'),
-    smartstore:require('./src/react.force.smartstore'),
-    smartsync:require('./src/react.force.smartsync'),
-    forceClient:require('./src/react.force.net'),
-    forceUtil:require('./src/react.force.util'),
-    forceTest:require('./src/react.force.test')
+import { assert } from 'chai';
+import * as oauth from '../src/react.force.oauth';
+import { registerTest, testDone } from '../src/react.force.test';
+
+testGetAuthCredentials = () => {
+    oauth.getAuthCredentials(
+        (creds) => {
+            assert.containsAllKeys(creds, ["accessToken","instanceUrl","loginUrl","orgId","refreshToken","userAgent","userId"], 'Wrong keys in credentials');
+            testDone();
+        },
+        (error) => { throw error; }
+    );
+    
+    return false; // not done
 };
+
+registerTest(testGetAuthCredentials);

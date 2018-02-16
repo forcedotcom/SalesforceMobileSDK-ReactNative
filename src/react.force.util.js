@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-present, salesforce.com, inc.
+ * Copyright (c) 2018-present, salesforce.com, inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided
@@ -24,12 +24,46 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-module.exports = {
-    net:require('./src/react.force.net'),
-    oauth:require('./src/react.force.oauth'),
-    smartstore:require('./src/react.force.smartstore'),
-    smartsync:require('./src/react.force.smartsync'),
-    forceClient:require('./src/react.force.net'),
-    forceUtil:require('./src/react.force.util'),
-    forceTest:require('./src/react.force.test')
+import React from 'react';
+const timer = require('react-native-timer');
+
+export const promiser = (func) => {
+    var retfn = function() {
+        var args = Array.prototype.slice.call(arguments);
+
+        return new Promise(function(resolve, reject) {
+            args.push(function() {
+                try {
+                    resolve.apply(null, arguments);
+                }
+                catch (err) {
+                    console.error("------> Error when calling successCB for " + func.name);
+                    console.error(err.stack);
+                }
+            });
+            args.push(function() {
+                try {
+                    reject.apply(null, arguments);
+                }
+                catch (err) {
+                    console.error("------> Error when calling errorCB for " + func.name);
+                    console.error(err.stack);
+                }
+            });
+            console.debug("-----> Calling " + func.name);
+            func.apply(null, args);
+        });
+    };
+    return retfn;
+};
+
+
+export const timeoutPromiser = (millis) => {
+    return new Promise((resolve, reject) => {
+        timer.setTimeout(
+            'timeoutTimer',
+            () => {resolve(); },
+            millis
+        );
+    });
 };

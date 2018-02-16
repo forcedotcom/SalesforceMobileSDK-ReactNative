@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-present, salesforce.com, inc.
+ * Copyright (c) 2018-present, salesforce.com, inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided
@@ -24,12 +24,34 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-module.exports = {
-    net:require('./src/react.force.net'),
-    oauth:require('./src/react.force.oauth'),
-    smartstore:require('./src/react.force.smartstore'),
-    smartsync:require('./src/react.force.smartsync'),
-    forceClient:require('./src/react.force.net'),
-    forceUtil:require('./src/react.force.util'),
-    forceTest:require('./src/react.force.test')
+import { assert } from 'chai';
+import { oauth, forceTest } from 'react-native-force';
+const { registerTest, testDone } = forceTest;
+
+testPassing = () => {
+    assert(true, "testPassing should have succeeded");
+    testDone();
 };
+
+testFailing = () => {
+    assert(false, "FAKE_FAILURE");
+};
+
+testAsyncPassing = () => {
+    oauth.getAuthCredentials(
+        (creds) => { testDone(); },
+        (error) => { throw error; }
+    );
+};
+
+testAsyncFailing = () => {
+    oauth.getAuthCredentials(
+        (creds) => { assert(false, "FAKE_FAILURE"); },
+        (error) => { throw error; }
+    );
+};
+
+registerTest(testPassing);
+registerTest(testFailing);
+registerTest(testAsyncPassing);
+registerTest(testAsyncFailing);

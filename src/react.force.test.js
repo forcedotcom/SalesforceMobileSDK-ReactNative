@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-present, salesforce.com, inc.
+ * Copyright (c) 2018-present, salesforce.com, inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided
@@ -24,12 +24,34 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-module.exports = {
-    net:require('./src/react.force.net'),
-    oauth:require('./src/react.force.oauth'),
-    smartstore:require('./src/react.force.smartstore'),
-    smartsync:require('./src/react.force.smartsync'),
-    forceClient:require('./src/react.force.net'),
-    forceUtil:require('./src/react.force.util'),
-    forceTest:require('./src/react.force.test')
+import React from 'react';
+import { AppRegistry, NativeModules, View } from 'react-native';
+const { SalesforceTestBridge, TestModule } = NativeModules;
+const createReactClass = require('create-react-class');
+
+const componentForTest = (test) => {
+    return createReactClass({
+        componentDidMount() {
+            test(); // NB: test must call testDone() when it completes
+        },
+        
+        render() {
+            return (<View/>);
+        }            
+    });
+};
+
+export const registerTest = (test) => {
+    AppRegistry.registerComponent(test.name.substring("test".length), () => componentForTest(test));
+};
+
+export const testDone = () => {
+    // iOS
+    if (TestModule) {
+        TestModule.markTestCompleted();
+    }
+    // Android
+    else if (SalesforceTestBridge) {
+        SalesforceTestBridge.markTestCompleted();
+    }
 };
