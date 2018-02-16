@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-present, salesforce.com, inc.
+ * Copyright (c) 2018-present, salesforce.com, inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided
@@ -24,51 +24,46 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-/**
- * exec
- */
-export const exec = (moduleIOSName, moduleAndroidName, moduleIOS, moduleAndroid, successCB, errorCB, methodName, args) => {
-    if (moduleIOS) {
-        const func = `${moduleIOSName}.${methodName}`;
-        console.log(`${func} called: ${JSON.stringify(args)}`);
-        moduleIOS[methodName](
-            args,
-            (error, result) => {
-                if (error) {
-                    console.log(`${func} failed: ${JSON.stringify(error)}`);
-                    if (errorCB) errorCB(error);
+import React from 'react';
+const timer = require('react-native-timer');
+
+export const promiser = (func) => {
+    var retfn = function() {
+        var args = Array.prototype.slice.call(arguments);
+
+        return new Promise(function(resolve, reject) {
+            args.push(function() {
+                try {
+                    resolve.apply(null, arguments);
                 }
-                else {
-                    console.log(`${func} succeeded`);
-                    if (successCB) successCB(result);
+                catch (err) {
+                    console.error("------> Error when calling successCB for " + func.name);
+                    console.error(err.stack);
                 }
             });
-    }
-    // android
-    else if (moduleAndroid) {
-        const func = `${moduleAndroidName}.${methodName}`;
-        console.log(`${func} called: ${JSON.stringify(args)}`);
-        moduleAndroid[methodName](
-            args,
-            result => {
-                console.log(`${func} succeeded`);
-                if (successCB) {
-                    successCB(safeJSONparse(result));
-                };
-            },
-            error => {
-                console.log(`${func} failed`);
-                if (errorCB) errorCB(safeJSONparse(error));
-            }
-        );
-    }
+            args.push(function() {
+                try {
+                    reject.apply(null, arguments);
+                }
+                catch (err) {
+                    console.error("------> Error when calling errorCB for " + func.name);
+                    console.error(err.stack);
+                }
+            });
+            console.debug("-----> Calling " + func.name);
+            func.apply(null, args);
+        });
+    };
+    return retfn;
 };
 
-const safeJSONparse = (str) => {
-    try {
-        return JSON.parse(str);
-    }
-    catch (e) {
-        return str;
-    }
+
+export const timeoutPromiser = (millis) => {
+    return new Promise((resolve, reject) => {
+        timer.setTimeout(
+            'timeoutTimer',
+            () => {resolve(); },
+            millis
+        );
+    });
 };

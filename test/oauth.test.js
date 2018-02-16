@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-present, salesforce.com, inc.
+ * Copyright (c) 2018-present, salesforce.com, inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided
@@ -24,51 +24,20 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-/**
- * exec
- */
-export const exec = (moduleIOSName, moduleAndroidName, moduleIOS, moduleAndroid, successCB, errorCB, methodName, args) => {
-    if (moduleIOS) {
-        const func = `${moduleIOSName}.${methodName}`;
-        console.log(`${func} called: ${JSON.stringify(args)}`);
-        moduleIOS[methodName](
-            args,
-            (error, result) => {
-                if (error) {
-                    console.log(`${func} failed: ${JSON.stringify(error)}`);
-                    if (errorCB) errorCB(error);
-                }
-                else {
-                    console.log(`${func} succeeded`);
-                    if (successCB) successCB(result);
-                }
-            });
-    }
-    // android
-    else if (moduleAndroid) {
-        const func = `${moduleAndroidName}.${methodName}`;
-        console.log(`${func} called: ${JSON.stringify(args)}`);
-        moduleAndroid[methodName](
-            args,
-            result => {
-                console.log(`${func} succeeded`);
-                if (successCB) {
-                    successCB(safeJSONparse(result));
-                };
-            },
-            error => {
-                console.log(`${func} failed`);
-                if (errorCB) errorCB(safeJSONparse(error));
-            }
-        );
-    }
+import { assert } from 'chai';
+import * as oauth from '../src/react.force.oauth';
+import { registerTest, testDone } from '../src/react.force.test';
+
+testGetAuthCredentials = () => {
+    oauth.getAuthCredentials(
+        (creds) => {
+            assert.containsAllKeys(creds, ["accessToken","instanceUrl","loginUrl","orgId","refreshToken","userAgent","userId"], 'Wrong keys in credentials');
+            testDone();
+        },
+        (error) => { throw error; }
+    );
+    
+    return false; // not done
 };
 
-const safeJSONparse = (str) => {
-    try {
-        return JSON.parse(str);
-    }
-    catch (e) {
-        return str;
-    }
-};
+registerTest(testGetAuthCredentials);
