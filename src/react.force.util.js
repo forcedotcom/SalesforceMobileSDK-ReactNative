@@ -25,9 +25,22 @@
  */
 
 import React from 'react';
+const rejectionTracking = require('promise/setimmediate/rejection-tracking');
 const timer = require('react-native-timer');
 
+const enableErrorOnUnhandledPromiseRejection = () => {
+    rejectionTracking.enable({
+        allRejections: true,
+        onUnhandled: (id, error) => {
+            const strError =  JSON.stringify(error);
+            console.error("------> Unhandled promise rejection with error: " + strError);
+        },
+        onHandled: () => {},
+    });    
+};
+
 export const promiser = (func) => {
+    enableErrorOnUnhandledPromiseRejection();
     var retfn = function() {
         var args = Array.prototype.slice.call(arguments);
 
