@@ -4,13 +4,11 @@
 To run the tests on iOS:
 - clone the https://github.com/forcedotcom/SalesforceMobileSDK-iOS repo
 - run `./install.sh`
-- from `libs/SalesforceReact` run `npm start`
 - in `XCode` run the tests under `SalesforceReactTests`
 
 To run the tests on Android:
 - clone the https://github.com/forcedotcom/SalesforceMobileSDK-Android repo
 - run `./install.sh`
-- from `libs/SalesforceReact` run `npm start`
 - in `Android Studio` run the tests of `SalesforceReactTest`
 
 ## Writing new tests
