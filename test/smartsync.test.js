@@ -181,7 +181,7 @@ testReSync = () => {
             assert.deepEqual(result.currentPageOrderedEntries, [[firstName],[otherFirstName]]);
 
             // Wait a bit before doing update
-            return timeoutPromiser(1000);
+            return timeoutPromiser(2000);
         })
         .then(function() {
             return netUpdate('contact', otherContactId, {FirstName: otherFirstNameUpdated});
