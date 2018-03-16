@@ -26,9 +26,9 @@
 
 import { NativeModules } from 'react-native';
 const { SalesforceNetReactBridge, SFNetReactBridge } = NativeModules;
-import {exec as forceExec} from './react.force.common.js';
+import {exec as forceExec} from './react.force.common';
 
-var  apiVersion = 'v41.0';
+var  apiVersion = 'v42.0';
 
 /**
  * Set apiVersion to be used
@@ -154,7 +154,7 @@ export const retrieve = function(objtype, id, fieldlist, callback, error) {
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const upsert = (objtype, externalIdField, externalId, fields, callback, error) => sendRequest('/services/data', `/${apiVersion}/sobjects/${objtype}/${externalIdField}/${externalId}`, callback, error, "PATCH", fields);
+export const upsert = (objtype, externalIdField, externalId, fields, callback, error) => sendRequest('/services/data', `/${apiVersion}/sobjects/${objtype}/${externalIdField}/${externalId?externalId:''}`, callback, error, externalId ? "PATCH" : "POST", fields);
 
 /*
  * Updates field values on a record of the given type.

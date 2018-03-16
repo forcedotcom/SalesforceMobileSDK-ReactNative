@@ -26,7 +26,7 @@
 
 import { NativeModules } from 'react-native';
 const { SmartSyncReactBridge, SFSmartSyncReactBridge } = NativeModules;
-import {exec as forceExec} from './react.force.common.js';
+import {exec as forceExec} from './react.force.common';
 
 // If param is a storeconfig return the same storeconfig
 // If param is a boolean, returns a storeconfig object  {'isGlobalStore': boolean}

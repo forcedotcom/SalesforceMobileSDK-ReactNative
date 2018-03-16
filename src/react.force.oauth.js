@@ -26,7 +26,7 @@
 
 import { NativeModules } from 'react-native';
 const { SalesforceOauthReactBridge, SFOauthReactBridge } = NativeModules;
-import {exec as forceExec} from './react.force.common.js';
+import {exec as forceExec} from './react.force.common';
 
 const exec = (successCB, errorCB, methodName, args) => {
     forceExec("SFOauthReactBridge", "SalesforceOauthReactBridge", SFOauthReactBridge, SalesforceOauthReactBridge, successCB, errorCB, methodName, args);
