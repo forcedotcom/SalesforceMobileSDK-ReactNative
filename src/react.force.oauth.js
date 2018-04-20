@@ -51,7 +51,7 @@ let logoutInitiated = false;
  *   loginUrl
  *   instanceUrl
  *   userAgent
- *   community id 
+ *   community id
  *   community url
  */
 export const authenticate = (success, fail) => {
@@ -71,7 +71,7 @@ export const authenticate = (success, fail) => {
  *   loginUrl
  *   instanceUrl
  *   userAgent
- *   community id 
+ *   community id
  *   community url
  */
 export const getAuthCredentials = (success, fail) => {
@@ -81,7 +81,7 @@ export const getAuthCredentials = (success, fail) => {
 /**
  * Logout the current authenticated user. This removes any current valid session token
  * as well as any OAuth refresh token.  The user is forced to login again.
- * This method does not call back with a success or failure callback, as 
+ * This method does not call back with a success or failure callback, as
  * (1) this method must not fail and (2) in the success case, the current user
  * will be logged out and asked to re-authenticate.  Note also that this method can only
  * be called once per page load.  Initiating logout will ultimately redirect away from
@@ -89,9 +89,11 @@ export const getAuthCredentials = (success, fail) => {
  * while it's currently processing will result in app state issues.
  */
 export const logout = () => {
+    // only set callback for android, since iOS will not invoke callback.
+    const logoutCb = SalesforceOauthReactBridge ? () => { logoutInitiated = false; } : null;
     if (!logoutInitiated) {
         logoutInitiated = true;
-        exec(null, null, "logoutCurrentUser", {});
+        exec(logoutCb, null, "logoutCurrentUser", {});
     }
 };
 
