@@ -55,7 +55,7 @@ testGetApiVersion = () => {
 testVersions = () => {
     netVersions()
         .then((response) => {
-            assert.deepEqual(response[response.length-1], {'label':'Spring ’18','url':'/services/data/v42.0','version':'42.0'}, 'Wrong latest version');
+            assert.deepInclude(response, {'label':'Spring ’18','url':'/services/data/v42.0','version':'42.0'}, 'Wrong version response');
             testDone();
         });
 };
