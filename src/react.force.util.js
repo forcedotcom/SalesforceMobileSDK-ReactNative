@@ -70,6 +70,30 @@ export const promiser = (func) => {
     return retfn;
 };
 
+export const promiserNoRejection = (func) => {
+    enableErrorOnUnhandledPromiseRejection();
+	var retfn = function() {
+		var args = Array.prototype.slice.call(arguments)
+
+		return new Promise(function(resolve, reject) {
+			// then() will be called whether it succeeded or failed
+			const callback = () => {
+				try {
+					resolve.apply(null, arguments)
+				}
+				catch (err) {
+                    console.error("------> Error when calling callback for " + func.name);
+					console.error(err.stack);
+				}
+			}
+			args.push(callback) 
+			args.push(callback)
+			console.debug("-----> Calling " + func.name)
+			func.apply(null, args)
+		});
+	};
+	return retfn;
+};
 
 export const timeoutPromiser = (millis) => {
     return new Promise((resolve, reject) => {
