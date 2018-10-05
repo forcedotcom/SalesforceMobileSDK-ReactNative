@@ -28,3 +28,4 @@ node_modules/
 npm-debug.log
 package-lock.json.*
 test_credentials.json
+index.ios.bundle

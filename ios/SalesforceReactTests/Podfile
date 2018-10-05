@@ -1,8 +1,6 @@
 platform :ios, '11.0'
 
 project 'SalesforceReactTestApp.xcodeproj'
-target 'SalesforceReactTestApp' do
-
 source 'https://github.com/CocoaPods/Specs.git'
 
 pod 'yoga', :path => './node_modules/react-native/ReactCommon/yoga'
@@ -26,7 +24,8 @@ pod 'React', :path => './node_modules/react-native', :subspecs => [
     'RCTText',
     'RCTVibration',
     'RCTWebSocket',
-    'RCTLinkingIOS'
+    'RCTLinkingIOS',
+    'RCTTest'
 ]
 
 pod 'SalesforceAnalytics', :path => './mobile_sdk/SalesforceMobileSDK-iOS'
@@ -35,6 +34,10 @@ pod 'SmartStore', :path => './mobile_sdk/SalesforceMobileSDK-iOS'
 pod 'SmartSync', :path => './mobile_sdk/SalesforceMobileSDK-iOS'
 pod 'SalesforceReact', :path => '../..'
 
+target 'SalesforceReactTestApp' do
+end
+
+target 'SalesforceReactTests' do
 end
 
 # Fix for xcode9/fmdb/sqlcipher/cocoapod issue - see https://discuss.zetetic.net/t/ios-11-xcode-issue-implicit-declaration-of-function-sqlite3-key-is-invalid-in-c99/2198/27

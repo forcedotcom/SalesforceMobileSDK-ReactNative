@@ -24,6 +24,7 @@
 
 
 #import <SalesforceSDKCore/TestSetupUtils.h>
+#import <SalesforceReact/SFSDKReactLogger.h>
 #import "ReactTestCase.h"
 
 static NSException *authException = nil;
