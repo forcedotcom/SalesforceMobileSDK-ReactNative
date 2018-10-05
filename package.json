@@ -45,6 +45,8 @@
   "files": [
       "index.js",
       "src/**/*",
-      "test/**/*"
+      "test/**/*",
+      "ios/SalesforceReact/**/*",
+      "SalesforceReact.podspec"
   ]
 }
