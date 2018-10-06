@@ -39,7 +39,6 @@
 		4FFF1EF92166DFF900C050EF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4FFF1EFA2166DFF900C050EF /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		4FFF1F322166E11D00C050EF /* SalesforceReactTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SalesforceReactTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		4FFF1F362166E11D00C050EF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; name = Info.plist; path = SalesforceReactTests/Info.plist; sourceTree = "<group>"; };
 		4FFF1F3C2166E14900C050EF /* ReactTestCase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ReactTestCase.m; sourceTree = "<group>"; };
 		4FFF1F3D2166E14900C050EF /* ReactHarnessTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ReactHarnessTests.m; sourceTree = "<group>"; };
 		4FFF1F3E2166E14900C050EF /* ReactSmartSyncTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ReactSmartSyncTests.m; sourceTree = "<group>"; };
@@ -137,7 +136,6 @@
 			isa = PBXGroup;
 			children = (
 				4F0AE69D2167DE6A00128115 /* index.ios.bundle */,
-				4FFF1F362166E11D00C050EF /* Info.plist */,
 				4FFF1F4A2166E50C00C050EF /* test_credentials.json */,
 			);
 			path = "Supporting Files";
@@ -547,7 +545,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				INFOPLIST_FILE = SalesforceReactTests/Info.plist;
+				INFOPLIST_FILE = SalesforceReactTestApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -566,7 +564,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				INFOPLIST_FILE = SalesforceReactTests/Info.plist;
+				INFOPLIST_FILE = SalesforceReactTestApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
