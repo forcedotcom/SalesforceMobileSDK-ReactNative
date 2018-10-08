@@ -1,19 +1,5 @@
 # SalesforceReactTests
-Tests for Salesforce Mobile SDK React Native modules
-
-## To get started do the following from this directory
-``` shell
-node ./prepareios.js (for iOS)
-```
-
-## Make sure to run the react-native packager
-```shell
-npm start
-```
-
-## To run the tests
-```shell
-open SalesforceReactTests.xcworkspace
-```
-And run the tests
-
+Tests for Salesforce Mobile SDK React Native modules.
+To setup the test workspace, run `./prepareios.js` from this directory.
+Run the React Native package, by doing `npm start` from this directory.
+Finally open the workspace, with `open SalesforceReactTests.xcworkspace` and run the tests.
