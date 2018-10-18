@@ -21,8 +21,6 @@ Pod::Spec.new do |s|
 
       salesforcereact.dependency 'React'
       salesforcereact.dependency 'SmartSync'
-      salesforcereact.dependency 'SmartStore'
-      salesforcereact.dependency 'SalesforceSDKCore'
       salesforcereact.source_files = 'ios/SalesforceReact/**/*.{h,m}'
       salesforcereact.public_header_files = 'ios/SalesforceReact/SFNetReactBridge.h', 'ios/SalesforceReact/SFOauthReactBridge.h', 'ios/SalesforceReact/SFSDKReactLogger.h', 'ios/SalesforceReact/SFSmartStoreReactBridge.h', 'ios/SalesforceReact/SFSmartSyncReactBridge.h', 'libs/SalesforceReact/SalesforceReact/SalesforceReact.h', 'ios/SalesforceReact/SalesforceReactSDKManager.h'
       salesforcereact.prefix_header_contents = '#import "SFSDKReactLogger.h"'
