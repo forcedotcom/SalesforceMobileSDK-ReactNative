@@ -1,0 +1,48 @@
+aliases:
+  - &downgrade-cocoapods
+    name: Downgrade to CocoaPods 1.4
+    command:  |
+      echo Y | sudo gem uninstall cocoapods
+      sudo gem install cocoapods -v 1.4
+    when: always
+
+  - &generate-workspace
+    name: Setup
+    command: node ./prepareios.js
+    when: always
+
+mac: &mac
+  working_directory: ~/SalesforceMobileSDK-ReactNative/ios/SalesforceReactTests
+  macos:
+    xcode: "9.4.1"
+  shell: /bin/bash --login -eo pipefail
+
+version: 2
+jobs:
+  build-salesforcereact:
+    <<: *mac
+    steps:
+      - checkout
+      - run: *downgrade-cocoapods
+      - run: *generate-workspace
+
+workflows:
+  version: 2
+
+  pr-build-all-apps:
+    jobs:
+      - build-salesforcereact
+
+  # Cron are on a timezone 8 hours ahead of PST
+  # Build everything at ~11:30pm Tuesday/Thursday Nights
+  weekly-build-all-apps:
+    triggers:
+      - schedule:
+          cron: "30 7 * * 3,5"
+          filters:
+            branches:
+              only:
+                - dev
+
+    jobs:
+      - build-salesforcereact
