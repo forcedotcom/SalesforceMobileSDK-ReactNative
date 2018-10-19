@@ -1,61 +1,5 @@
-aliases:
-  - &save-cocoapods-cache
-    key: cocoapods
-    paths:
-      - /Users/distiller/Library/Caches/Cocoapods/Pods
-
-  - &restore-cocoapods-cache
-    keys:
-      - cocoapods
-  
-  - &save-gem-cache
-    key: v5-gems-{{ checksum ".circleci/Gemfile.lock" }}
-    paths:
-      - /Users/distiller/.gem/ruby/2.5.1
-      - /Users/distiller/.rubies/ruby-2.4.2/lib/ruby/gems/2.5.1
-
-  - &restore-gem-cache
-    keys:
-      - v5-gems-{{ checksum ".circleci/Gemfile.lock" }}
-      - v5-gems-
-
-  - &downgrade-cocoapods
-    name: Downgrade to CocoaPods 1.4
-    command:  |
-      echo Y | sudo gem uninstall cocoapods
-      sudo gem install cocoapods -v 1.4
-    when: always
-
-  - &generate-workspace
-    name: Setup
-    command: |
-      pushd ./ios/SalesforceReactTests
-      node ./prepareios.js
-      popd
-    when: always
-  
-  - &install-dependecies
-    name: Install Dependencies
-    command:  |
-      chruby ${CHRUBY_VER}
-      cd .circleci
-      bundle check || sudo bundle install
-      sudo bundle update
-
-  - &run-tests
-    name: Run Tests
-    command:  |
-      chruby ${CHRUBY_VER}
-      cd .circleci
-      fastlane "PR"
-
-  - &codecov
-    name: Codecov Upload
-    command: bash <(curl -s https://codecov.io/bash) -X gcov -X xcode
-    when: always
-
 defaults: &defaults
-  working_directory: ~/SalesforceMobileSDK-ReactNative
+  working_directory: ~/SalesforceMobileSDK-ReactNative/ios/SalesforceReactTests
   macos:
     xcode: "9.4.1"
   shell: /bin/bash --login -eo pipefail
@@ -70,23 +14,75 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-      - run: *downgrade-cocoapods
-      - restore_cache: *restore-cocoapods-cache
-      - run: *generate-workspace
-      - save_cache: *save-cocoapods-cache
-      - restore_cache: *restore-gem-cache
-      - run: *install-dependecies
-      - save_cache: *save-gem-cache
-      - run: *run-tests
+
+      - restore_cache:
+        key: v5-gems-{{ checksum ".circleci/Gemfile.lock" }}
+        paths:
+          - /Users/distiller/.gem/ruby/2.5.1
+          - /Users/distiller/.rubies/ruby-2.4.2/lib/ruby/gems/2.5.1
+
+      - run:
+        name: Installing gem dependencies
+        command:  |
+          chruby ${CHRUBY_VER}
+          cd .circleci
+          bundle check || sudo bundle install
+          sudo bundle update
+
+      - save_cache:
+        key: v5-gems-{{ checksum ".circleci/Gemfile.lock" }}
+
+      - run: 
+        name: Downgrade to CocoaPods 1.4
+        command:  |
+          echo Y | sudo gem uninstall cocoapods
+          sudo gem install cocoapods -v 1.4
+
+      - run:
+        name: Installing npm dependencies
+        command: npm install
+
+      - restore_cache:
+        key: cocoapods
+
+      - run:
+        name: Installing pod dependencies
+        command: pod install
+
+      - save_cache:
+        key: cocoapods
+        paths:
+          - /Users/distiller/Library/Caches/Cocoapods/Pods
+
+      - run:
+        name: Creating test_credentials.json
+        command: touch test_credentials.json
+
+      - run:
+        name: Creating index.ios.bundle
+        command: node ./updatebundle.js
+      
+      - run:
+        name: Run Tests
+        command:  |
+          chruby ${CHRUBY_VER}
+          cd .circleci
+          fastlane "PR"
+
       - store_test_results:
-          path: /Users/distiller/SalesforceMobileSDK-ReactNative/test_output/
+          path: /Users/distiller/SalesforceMobileSDK-ReactNative/ios/SalesforceReactTests/test_output/
+
       - store_artifacts:
-          path: /Users/distiller/SalesforceMobileSDK-ReactNative/test_output/
+          path: /Users/distiller/SalesforceMobileSDK-ReactNative/ios/SalesforceReactTests/test_output/
           destination: Test-Results
+
       - store_artifacts:
-          path: /Users/distiller/SalesforceMobileSDK-ReactNative/clangReport
+          path: /Users/distiller/SalesforceMobileSDK-ReactNative/ios/SalesforceReactTests/clangReport
           destination: Static-Analysis
-      - run: *codecov
+
+      - run:
+        name: Upload code coverage
+        command: bash <(curl -s https://codecov.io/bash) -X gcov -X xcode
 
 workflows:
   version: 2
