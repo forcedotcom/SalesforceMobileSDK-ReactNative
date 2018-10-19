@@ -45,6 +45,13 @@ jobs:
             npm install
             popd
 
+      - run:
+          name: Installing sdk dependencies
+          command: | 
+            pushd ios/SalesforceReactTests
+            node ./updatesdk.js
+            popd
+
       - restore_cache:
           key: cocoapods
 
