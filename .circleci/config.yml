@@ -8,11 +8,14 @@ aliases:
 
   - &generate-workspace
     name: Setup
-    command: node ./prepareios.js
+    command: |
+      pushd ./ios/SalesforceReactTests
+      node ./prepareios.js
+      popd
     when: always
 
 mac: &mac
-  working_directory: ~/SalesforceMobileSDK-ReactNative/ios/SalesforceReactTests
+  working_directory: ~/SalesforceMobileSDK-ReactNative
   macos:
     xcode: "9.4.1"
   shell: /bin/bash --login -eo pipefail
