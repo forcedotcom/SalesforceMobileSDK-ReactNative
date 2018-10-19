@@ -17,9 +17,6 @@ jobs:
 
       - restore_cache:
           key: v5-gems-{{ checksum ".circleci/Gemfile.lock" }}
-          paths:
-            - /Users/distiller/.gem/ruby/2.5.1
-            - /Users/distiller/.rubies/ruby-2.4.2/lib/ruby/gems/2.5.1
 
       - run:
           name: Installing gem dependencies
@@ -31,6 +28,9 @@ jobs:
 
       - save_cache:
           key: v5-gems-{{ checksum ".circleci/Gemfile.lock" }}
+          paths:
+            - /Users/distiller/.gem/ruby/2.5.1
+            - /Users/distiller/.rubies/ruby-2.4.2/lib/ruby/gems/2.5.1
 
       - run: 
           name: Downgrade to CocoaPods 1.4
