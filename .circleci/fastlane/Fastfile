@@ -1,39 +1,32 @@
-ENV['DEVICE'] = 'iPhone 8' unless ENV.has_key?('DEVICE')
-ENV['IOS_VERSION'] = '11.4' unless ENV.has_key?('IOS_VERSION')
+ENV['DEVICE'] = 'iPhone XR' unless ENV.has_key?('DEVICE')
+ENV['IOS_VERSION'] = '12.0' unless ENV.has_key?('IOS_VERSION')
 
-lane :PR do
+lane :build do
+    analyze_scheme("SalesforceReactTestApp")
+end
+
+lane :test do
     test_scheme("SalesforceReactTestApp")
 end
 
 def test_scheme(scheme)
   analyze_scheme(scheme)
-  begin
-    scan(
-        workspace: 'SalesforceReactTestApp.xcworkspace',
-        scheme: scheme,
-        # (11.4)
-        device: ENV['DEVICE'] + ' (' + ENV['IOS_VERSION'] + ')',
-        output_directory: 'test_output',
-        output_types: 'html,junit',
-        code_coverage: true,
-        skip_build: true
-    )
-  ensure
-    system("mv ../test_output/report.html ../test_output/#{scheme}_results.html")
-  end
+  scan(
+      workspace: '../ios/SalesforceReactTests/SalesforceReactTestApp.xcworkspace',
+      scheme: scheme,
+      device: ENV['DEVICE'] + ' (' + ENV['IOS_VERSION'] + ')',
+      output_directory: 'test_output',
+      output_types: 'html,junit',
+      code_coverage: true,
+      skip_build: true
+  )
 end
 
 def analyze_scheme(scheme)
-    begin
-      xcodebuild(
-          xcargs: 'CLANG_ANALYZER_OUTPUT=plist-html CLANG_ANALYZER_OUTPUT_DIR=./clangReport RUN_CLANG_STATIC_ANALYZER=YES',
-          workspace: 'SalesforceReactTestApp.xcworkspace',
-          scheme: scheme,
-          sdk: 'iphonesimulator',
-          )
-    ensure
-      #move clangReports to one folder
-      system('mkdir -p ../clangReport/StaticAnalyzer')
-#      system('mv ../libs/SmartSync/clangReport/StaticAnalyzer/SmartSync ../clangReport/StaticAnalyzer/')
-    end
+    xcodebuild(
+        xcargs: 'CLANG_ANALYZER_OUTPUT=plist-html CLANG_ANALYZER_OUTPUT_DIR=./clangReport RUN_CLANG_STATIC_ANALYZER=YES',
+        workspace: '../ios/SalesforceReactTests/SalesforceReactTestApp.xcworkspace',
+        scheme: scheme,
+        sdk: 'iphonesimulator',
+    )
 end
