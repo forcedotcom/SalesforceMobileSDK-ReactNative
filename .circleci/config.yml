@@ -1,4 +1,13 @@
 aliases:
+  - &save-cocoapods-cache
+    key: cocoapods
+    paths:
+      - /Users/distiller/Library/Caches/Cocoapods/Pods
+
+  - &restore-cocoapods-cache
+    keys:
+      - cocoapods
+  
   - &save-gem-cache
     key: v5-gems-{{ checksum ".circleci/Gemfile.lock" }}
     paths:
@@ -16,12 +25,6 @@ aliases:
       echo Y | sudo gem uninstall cocoapods
       sudo gem install cocoapods -v 1.4
     when: always
-
-  # Download CocoaPods specs via HTTPS (faster than Git)
-  - &download-cocoapods-specs
-    name: Download Cocoapods Specs
-    command: |
-      curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf  
 
   - &generate-workspace
     name: Setup
@@ -47,7 +50,7 @@ aliases:
       fastlane "PR"
 
   - &codecov
-    name: Codecov Uplaod
+    name: Codecov Upload
     command: bash <(curl -s https://codecov.io/bash) -X gcov -X xcode
     when: always
 
@@ -68,8 +71,9 @@ jobs:
     steps:
       - checkout
       - run: *downgrade-cocoapods
-      - run: *download-cocoapods-specs
+      - restore_cache: *restore-cocoapods-cache
       - run: *generate-workspace
+      - save_cache: *save-cocoapods-cache
       - restore_cache: *restore-gem-cache
       - run: *install-dependecies
       - save_cache: *save-gem-cache
