@@ -1,5 +1,5 @@
 defaults: &defaults
-  working_directory: ~/SalesforceMobileSDK-ReactNative/ios/SalesforceReactTests
+  working_directory: ~/SalesforceMobileSDK-ReactNative
   macos:
     xcode: "9.4.1"
   shell: /bin/bash --login -eo pipefail
@@ -40,14 +40,20 @@ jobs:
 
       - run:
           name: Installing npm dependencies
-          command: npm install
+          command: | 
+            pushd ios/SalesforceReactTests
+            npm install
+            popd
 
       - restore_cache:
           key: cocoapods
 
       - run:
           name: Installing pod dependencies
-          command: pod install
+          command: | 
+            pushd ios/SalesforceReactTests
+            pod install
+            popd
 
       - save_cache:
           key: cocoapods
@@ -56,11 +62,17 @@ jobs:
 
       - run:
           name: Creating test_credentials.json
-          command: touch test_credentials.json
+          command: | 
+            pushd ios/SalesforceReactTests
+            touch test_credentials.json
+            popd
 
       - run:
           name: Creating index.ios.bundle
-          command: node ./updatebundle.js
+          command: | 
+            pushd ios/SalesforceReactTests
+            node ./updatebundle.js
+            popd
       
 #      - run:
 #          name: Run Tests
