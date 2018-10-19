@@ -1,10 +1,27 @@
 aliases:
+  - &save-gem-cache
+    key: v5-gems-{{ checksum ".circleci/Gemfile.lock" }}
+    paths:
+      - /Users/distiller/.gem/ruby/2.5.1
+      - /Users/distiller/.rubies/ruby-2.4.2/lib/ruby/gems/2.5.1
+
+  - &restore-gem-cache
+    keys:
+      - v5-gems-{{ checksum ".circleci/Gemfile.lock" }}
+      - v5-gems-
+
   - &downgrade-cocoapods
     name: Downgrade to CocoaPods 1.4
     command:  |
       echo Y | sudo gem uninstall cocoapods
       sudo gem install cocoapods -v 1.4
     when: always
+
+  # Download CocoaPods specs via HTTPS (faster than Git)
+  - &download-cocoapods-specs
+    name: Download Cocoapods Specs
+    command: |
+      curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf  
 
   - &generate-workspace
     name: Setup
@@ -13,28 +30,66 @@ aliases:
       node ./prepareios.js
       popd
     when: always
+  
+  - &install-dependecies
+    name: Install Dependencies
+    command:  |
+      chruby ${CHRUBY_VER}
+      cd .circleci
+      bundle check || sudo bundle install
+      sudo bundle update
 
-mac: &mac
+  - &run-tests
+    name: Run Tests
+    command:  |
+      chruby ${CHRUBY_VER}
+      cd .circleci
+      fastlane "PR"
+
+  - &codecov
+    name: Codecov Uplaod
+    command: bash <(curl -s https://codecov.io/bash) -X gcov -X xcode
+    when: always
+
+defaults: &defaults
   working_directory: ~/SalesforceMobileSDK-ReactNative
   macos:
     xcode: "9.4.1"
   shell: /bin/bash --login -eo pipefail
+  environment:
+    BASH_ENV: ~/.bashrc
+    FASTLANE_SKIP_UPDATE_CHECK: true
+    CHRUBY_VER: 2.5.1
 
 version: 2
 jobs:
-  build-salesforcereact:
-    <<: *mac
+  test-ios:
+    <<: *defaults
     steps:
       - checkout
       - run: *downgrade-cocoapods
+      - run: *download-cocoapods-specs
       - run: *generate-workspace
+      - restore_cache: *restore-gem-cache
+      - run: *install-dependecies
+      - save_cache: *save-gem-cache
+      - run: *run-tests
+      - store_test_results:
+          path: /Users/distiller/SalesforceMobileSDK-ReactNative/test_output/
+      - store_artifacts:
+          path: /Users/distiller/SalesforceMobileSDK-ReactNative/test_output/
+          destination: Test-Results
+      - store_artifacts:
+          path: /Users/distiller/SalesforceMobileSDK-ReactNative/clangReport
+          destination: Static-Analysis
+      - run: *codecov
 
 workflows:
   version: 2
 
   pr-build-all-apps:
     jobs:
-      - build-salesforcereact
+      - test-ios
 
   # Cron are on a timezone 8 hours ahead of PST
   # Build everything at ~11:30pm Tuesday/Thursday Nights
@@ -48,4 +103,4 @@ workflows:
                 - dev
 
     jobs:
-      - build-salesforcereact
+      - test-ios

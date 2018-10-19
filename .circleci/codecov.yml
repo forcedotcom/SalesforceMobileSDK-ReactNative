@@ -1,0 +1,17 @@
+codecov:
+  branch: dev
+
+coverage:
+  precision: 2
+  round: down
+  range: "25...75"
+
+comment:
+  layout: "reach, diff"
+  behavior: default
+  require_changes: false
+
+coverage:
+  status:
+    project:
+      default: true
