@@ -23,8 +23,9 @@ jobs:
           command:  |
             chruby ${CHRUBY_VER}
             cd .circleci
-            bundle check || sudo bundle install
-            sudo bundle update
+            gem install bundler
+            bundle check || bundle install
+            bundle update
 
       - save_cache:
           key: v5-gems-{{ checksum ".circleci/Gemfile.lock" }}
