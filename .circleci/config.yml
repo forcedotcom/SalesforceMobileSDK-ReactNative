@@ -16,58 +16,58 @@ jobs:
       - checkout
 
       - restore_cache:
-        key: v5-gems-{{ checksum ".circleci/Gemfile.lock" }}
-        paths:
-          - /Users/distiller/.gem/ruby/2.5.1
-          - /Users/distiller/.rubies/ruby-2.4.2/lib/ruby/gems/2.5.1
+          key: v5-gems-{{ checksum ".circleci/Gemfile.lock" }}
 
       - run:
-        name: Installing gem dependencies
-        command:  |
-          chruby ${CHRUBY_VER}
-          cd .circleci
-          bundle check || sudo bundle install
-          sudo bundle update
+          name: Installing gem dependencies
+          command:  |
+            chruby ${CHRUBY_VER}
+            cd .circleci
+            bundle check || sudo bundle install
+            sudo bundle update
 
       - save_cache:
-        key: v5-gems-{{ checksum ".circleci/Gemfile.lock" }}
+          key: v5-gems-{{ checksum ".circleci/Gemfile.lock" }}
+          paths:
+            - /Users/distiller/.gem/ruby/2.5.1
+            - /Users/distiller/.rubies/ruby-2.4.2/lib/ruby/gems/2.5.1
 
       - run: 
-        name: Downgrade to CocoaPods 1.4
-        command:  |
-          echo Y | sudo gem uninstall cocoapods
-          sudo gem install cocoapods -v 1.4
+          name: Downgrade to CocoaPods 1.4
+          command:  |
+            echo Y | sudo gem uninstall cocoapods
+            sudo gem install cocoapods -v 1.4
 
       - run:
-        name: Installing npm dependencies
-        command: npm install
+          name: Installing npm dependencies
+          command: npm install
 
       - restore_cache:
-        key: cocoapods
+          key: cocoapods
 
       - run:
-        name: Installing pod dependencies
-        command: pod install
+          name: Installing pod dependencies
+          command: pod install
 
       - save_cache:
-        key: cocoapods
-        paths:
-          - /Users/distiller/Library/Caches/Cocoapods/Pods
+          key: cocoapods
+          paths:
+            - /Users/distiller/Library/Caches/Cocoapods/Pods
 
       - run:
-        name: Creating test_credentials.json
-        command: touch test_credentials.json
+          name: Creating test_credentials.json
+          command: touch test_credentials.json
 
       - run:
-        name: Creating index.ios.bundle
-        command: node ./updatebundle.js
+          name: Creating index.ios.bundle
+          command: node ./updatebundle.js
       
       - run:
-        name: Run Tests
-        command:  |
-          chruby ${CHRUBY_VER}
-          cd .circleci
-          fastlane "PR"
+          name: Run Tests
+          command:  |
+            chruby ${CHRUBY_VER}
+            cd .circleci
+            fastlane "PR"
 
       - store_test_results:
           path: /Users/distiller/SalesforceMobileSDK-ReactNative/ios/SalesforceReactTests/test_output/
@@ -81,8 +81,8 @@ jobs:
           destination: Static-Analysis
 
       - run:
-        name: Upload code coverage
-        command: bash <(curl -s https://codecov.io/bash) -X gcov -X xcode
+          name: Upload code coverage
+          command: bash <(curl -s https://codecov.io/bash) -X gcov -X xcode
 
 workflows:
   version: 2
