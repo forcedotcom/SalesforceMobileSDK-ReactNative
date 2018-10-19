@@ -42,46 +42,48 @@ jobs:
       - run:
           name: Installing npm dependencies
           command: | 
-            pushd ios/SalesforceReactTests
+            cd ios/SalesforceReactTests
             npm install
-            popd
 
       - run:
           name: Installing sdk dependencies
           command: | 
-            pushd ios/SalesforceReactTests
+            cd ios/SalesforceReactTests
             node ./updatesdk.js
-            popd
 
       - restore_cache:
-          key: cocoapods
+          key: cocoapods-
 
       - run:
           name: Installing pod dependencies
           command: | 
-            pushd ios/SalesforceReactTests
+            cd ios/SalesforceReactTests
             pod install
-            popd
 
       - save_cache:
-          key: cocoapods
+          key: cocoapods-
           paths:
-            - /Users/distiller/Library/Caches/Cocoapods/Pods
+            - /Users/distiller/.cocoapods/repos/master
 
       - run:
           name: Creating test_credentials.json
           command: | 
-            pushd ios/SalesforceReactTests
-            touch test_credentials.json
-            popd
+            cd ios/SalesforceReactTests
+            node ./create_test_credentials_from_env.js
 
       - run:
           name: Creating index.ios.bundle
           command: | 
-            pushd ios/SalesforceReactTests
+            cd ios/SalesforceReactTests
             node ./updatebundle.js
-            popd
       
+      - run:
+          name: Compile
+          command:  |
+            chruby ${CHRUBY_VER}
+            cd .circleci
+            fastlane build
+
       - run:
           name: Run Tests
           command:  |

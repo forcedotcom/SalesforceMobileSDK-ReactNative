@@ -10,7 +10,6 @@ lane :test do
 end
 
 def test_scheme(scheme)
-  analyze_scheme(scheme)
   scan(
       workspace: '../ios/SalesforceReactTests/SalesforceReactTestApp.xcworkspace',
       scheme: scheme,
