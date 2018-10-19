@@ -15,22 +15,22 @@ jobs:
     steps:
       - checkout
 
-      - restore_cache:
-          key: v5-gems-{{ checksum ".circleci/Gemfile.lock" }}
-
-      - run:
-          name: Installing gem dependencies
-          command:  |
-            chruby ${CHRUBY_VER}
-            cd .circleci
-            bundle check || sudo bundle install
-            sudo bundle update
-
-      - save_cache:
-          key: v5-gems-{{ checksum ".circleci/Gemfile.lock" }}
-          paths:
-            - /Users/distiller/.gem/ruby/2.5.1
-            - /Users/distiller/.rubies/ruby-2.4.2/lib/ruby/gems/2.5.1
+#      - restore_cache:
+#          key: v5-gems-{{ checksum ".circleci/Gemfile.lock" }}
+#          paths:
+#            - /Users/distiller/.gem/ruby/2.5.1
+#            - /Users/distiller/.rubies/ruby-2.4.2/lib/ruby/gems/2.5.1
+#
+#      - run:
+#          name: Installing gem dependencies
+#          command:  |
+#            chruby ${CHRUBY_VER}
+#            cd .circleci
+#            bundle check || sudo bundle install
+#            sudo bundle update
+#
+#      - save_cache:
+#          key: v5-gems-{{ checksum ".circleci/Gemfile.lock" }}
 
       - run: 
           name: Downgrade to CocoaPods 1.4
@@ -62,27 +62,27 @@ jobs:
           name: Creating index.ios.bundle
           command: node ./updatebundle.js
       
-      - run:
-          name: Run Tests
-          command:  |
-            chruby ${CHRUBY_VER}
-            cd .circleci
-            fastlane "PR"
-
-      - store_test_results:
-          path: /Users/distiller/SalesforceMobileSDK-ReactNative/ios/SalesforceReactTests/test_output/
-
-      - store_artifacts:
-          path: /Users/distiller/SalesforceMobileSDK-ReactNative/ios/SalesforceReactTests/test_output/
-          destination: Test-Results
-
-      - store_artifacts:
-          path: /Users/distiller/SalesforceMobileSDK-ReactNative/ios/SalesforceReactTests/clangReport
-          destination: Static-Analysis
-
-      - run:
-          name: Upload code coverage
-          command: bash <(curl -s https://codecov.io/bash) -X gcov -X xcode
+#      - run:
+#          name: Run Tests
+#          command:  |
+#            chruby ${CHRUBY_VER}
+#            cd .circleci
+#            fastlane "PR"
+#
+#      - store_test_results:
+#          path: /Users/distiller/SalesforceMobileSDK-ReactNative/ios/SalesforceReactTests/test_output/
+#
+#      - store_artifacts:
+#          path: /Users/distiller/SalesforceMobileSDK-ReactNative/ios/SalesforceReactTests/test_output/
+#          destination: Test-Results
+#
+#      - store_artifacts:
+#          path: /Users/distiller/SalesforceMobileSDK-ReactNative/ios/SalesforceReactTests/clangReport
+#          destination: Static-Analysis
+#
+#      - run:
+#          name: Upload code coverage
+#          command: bash <(curl -s https://codecov.io/bash) -X gcov -X xcode
 
 workflows:
   version: 2
