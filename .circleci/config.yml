@@ -114,11 +114,11 @@ workflows:
       - test-ios
 
   # Cron are on a timezone 8 hours ahead of PST
-  # Build everything at ~11:30pm Tuesday/Thursday Nights
+  # Build everything at ~11:30pm Sunday/Wednesday Nights
   weekly-build-all-apps:
     triggers:
       - schedule:
-          cron: "30 7 * * 3,5"
+          cron: "30 7 * * 1,4"
           filters:
             branches:
               only:
