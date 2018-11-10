@@ -33,12 +33,6 @@ jobs:
             - /Users/distiller/.gem/ruby/2.5.1
             - /Users/distiller/.rubies/ruby-2.4.2/lib/ruby/gems/2.5.1
 
-      - run: 
-          name: Downgrade to CocoaPods 1.4
-          command:  |
-            echo Y | sudo gem uninstall cocoapods
-            sudo gem install cocoapods -v 1.4
-
       - run:
           name: Installing npm dependencies
           command: | 
