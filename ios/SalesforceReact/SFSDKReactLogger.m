@@ -33,8 +33,8 @@ NSString * const kSFSDKReactComponentName = @"SalesforceReact";
 
 @implementation SFSDKReactLogger
 
-+ (instancetype)sharedInstance {
-    return [self sharedInstanceWithComponent:kSFSDKReactComponentName];
++ (instancetype)defaultLogger {
+    return [self loggerForComponent:kSFSDKReactComponentName];
 }
 
 @end
