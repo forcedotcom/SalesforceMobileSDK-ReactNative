@@ -25,7 +25,7 @@
 #import "SFSmartStoreReactBridge.h"
 #import <React/RCTUtils.h>
 #import <SalesforceSDKCore/NSDictionary+SFAdditions.h>
-#import <SalesforceSDKCore/SFJsonUtils.h>
+#import <SalesforceSDKCommon/SFJsonUtils.h>
 #import <SmartStore/SFStoreCursor.h>
 #import <SmartStore/SFSmartStore.h>
 #import <SmartStore/SFQuerySpec.h>
