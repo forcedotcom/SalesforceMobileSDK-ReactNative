@@ -33,13 +33,11 @@
 -(NSArray*) getDevActions:(UIViewController *)presentedViewController
 {
     NSMutableArray * devActions = [NSMutableArray arrayWithArray:[super getDevActions:presentedViewController]];
-    [devActions addObjectsFromArray:@[
-            @"React Native Dev Support", ^{
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTShowDevMenuNotification" object:nil];
-            }
-    ]];
+    SFSDKDevAction *action = [[SFSDKDevAction alloc]initWith:@"React Native Dev Support" handler:^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTShowDevMenuNotification" object:nil];
+    }];
+    [devActions addObjectsFromArray:@[action]];
     return devActions;
 }
-
 @end
 
