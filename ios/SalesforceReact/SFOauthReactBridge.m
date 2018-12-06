@@ -23,6 +23,7 @@
  */
 
 #import "SFOauthReactBridge.h"
+#import "SFSDKReactLogger.h"
 #import <React/RCTUtils.h>
 #import <SalesforceSDKCore/SalesforceSDKManager.h>
 #import <SalesforceSDKCore/SFUserAccountManager.h>
