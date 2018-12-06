@@ -23,6 +23,7 @@
 */
 
 #import "SFSmartStoreReactBridge.h"
+#import "SFSDKReactLogger.h"
 #import <React/RCTUtils.h>
 #import <SalesforceSDKCore/NSDictionary+SFAdditions.h>
 #import <SalesforceSDKCommon/SFJsonUtils.h>
