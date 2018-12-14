@@ -272,13 +272,17 @@ export const querySoup = (storeConfig, soupName, querySpec, successCB, errorCB) 
     var storeConfig = checkFirstArg(storeConfig);
     if (querySpec.queryType == "smart") throw new Error("Smart queries can only be run using runSmartQuery");
     if (querySpec.order != null && querySpec.orderPath == null) querySpec.orderPath = querySpec.indexPath; // for backward compatibility with pre-3.3 code
-    exec(successCB, errorCB, "querySoup", {"soupName": soupName, "querySpec": querySpec, "isGlobalStore": storeConfig.isGlobalStore,"storeName":storeConfig.storeName});
+    // query returns serialized json on iOS starting in 7.0
+    var successCBdeserializing = successCB ? (result) =>  successCB((typeof result === "string") ? JSON.parse(result) : result) : successCB;
+    exec(successCBdeserializing, errorCB, "querySoup", {"soupName": soupName, "querySpec": querySpec, "isGlobalStore": storeConfig.isGlobalStore,"storeName":storeConfig.storeName});
 };
 
 export const runSmartQuery = (storeConfig, querySpec, successCB, errorCB) => {
     var storeConfig = checkFirstArg(storeConfig);
     if (querySpec.queryType != "smart") throw new Error("runSmartQuery can only run smart queries");
-    exec(successCB, errorCB, "runSmartQuery", {"querySpec": querySpec, "isGlobalStore": storeConfig.isGlobalStore,"storeName":storeConfig.storeName});
+    // query returns serialized json on iOS starting in 7.0
+    var successCBdeserializing = successCB ? (result) =>  successCB((typeof result === "string") ? JSON.parse(result) : result) : successCB;
+    exec(successCBdeserializing, errorCB, "runSmartQuery", {"querySpec": querySpec, "isGlobalStore": storeConfig.isGlobalStore,"storeName":storeConfig.storeName});
 };
 
 export const retrieveSoupEntries = (storeConfig, soupName, entryIds, successCB, errorCB) => {

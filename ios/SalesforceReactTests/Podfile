@@ -1,0 +1,43 @@
+platform :ios, '11.0'
+
+project 'SalesforceReactTestApp.xcodeproj'
+target 'SalesforceReactTestApp' do
+end
+
+target 'SalesforceReactTests' do
+
+source 'https://github.com/CocoaPods/Specs.git'
+
+pod 'yoga', :path => './node_modules/react-native/ReactCommon/yoga'
+pod 'DoubleConversion', :podspec => './node_modules/react-native/third-party-podspecs/DoubleConversion.podspec'
+pod 'glog', :podspec => './node_modules/react-native/third-party-podspecs/glog.podspec'
+pod 'Folly', :podspec => './node_modules/react-native/third-party-podspecs/Folly.podspec'
+pod 'React', :path => './node_modules/react-native', :subspecs => [
+    'DevSupport',
+    'jschelpers',
+    'cxxreact',
+    'CxxBridge',
+    'ART',
+    'RCTActionSheet',
+    'RCTAnimation',
+    'RCTCameraRoll',
+    'RCTGeolocation',
+    'RCTImage',
+    'RCTNetwork',
+    'RCTPushNotification',
+    'RCTSettings',
+    'RCTText',
+    'RCTVibration',
+    'RCTWebSocket',
+    'RCTLinkingIOS',
+    'RCTTest'
+]
+
+pod 'SalesforceSDKCommon', :path => './mobile_sdk/SalesforceMobileSDK-iOS'
+pod 'SalesforceAnalytics', :path => './mobile_sdk/SalesforceMobileSDK-iOS'
+pod 'SalesforceSDKCore', :path => './mobile_sdk/SalesforceMobileSDK-iOS'
+pod 'SmartStore', :path => './mobile_sdk/SalesforceMobileSDK-iOS'
+pod 'SmartSync', :path => './mobile_sdk/SalesforceMobileSDK-iOS'
+pod 'SalesforceReact', :path => '../..'
+
+end
