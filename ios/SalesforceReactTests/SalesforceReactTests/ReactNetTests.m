@@ -50,7 +50,7 @@ RCT_TEST(UpsertUpdateRetrieve)
 RCT_TEST(CreateDelRetrieve)
 RCT_TEST(Query)
 RCT_TEST(Search)
-
+RCT_TEST(PublicApiCall)
 @end
 
 
