@@ -44,7 +44,6 @@ netDel = promiser(net.del);
 netQuery = promiser(net.query);
 netSearch = promiser(net.search);
 
-
 const apiVersion = 'v44.0';
 
 const sendUnAuthenticatedNetRequest = (endpoint,path, callback, error) => {
@@ -61,7 +60,7 @@ testGetApiVersion = () => {
 testVersions = () => {
     netVersions()
         .then((response) => {
-            assert.deepInclude(response, {'label':'Winter ’19','url':'/services/data/v44.0','version':'44.0'}, 'Wrong version response');
+            assert.deepInclude(response, {'label':'Winter \'19','url':'/services/data/v44.0','version':'44.0'}, 'Wrong version response');
             testDone();
         });
 };
