@@ -48,7 +48,7 @@ netSearch = promiser(net.search);
 const apiVersion = 'v44.0';
 
 const sendUnAuthenticatedNetRequest = (endpoint,path, callback, error) => {
-    return net.sendRequest(endpoint, path, callback, error,"GET",null,null,null,false,false);
+    return net.sendRequest(endpoint, path, callback, error,"GET",null,null,null,false,true);
 };
 
 netSendRequest = promiser(sendUnAuthenticatedNetRequest);

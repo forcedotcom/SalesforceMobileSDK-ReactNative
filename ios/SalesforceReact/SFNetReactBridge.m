@@ -42,7 +42,7 @@ static NSString * const kReturnBinary    = @"returnBinary";
 static NSString * const kEncodedBody     = @"encodedBody";
 static NSString * const kContentType     = @"contentType";
 static NSString * const kHttpContentType = @"content-type";
-static NSString * const kRequiresAuthentication = @"requiresAuthentication";
+static NSString * const kDoesNotRequireAuthentication = @"doesNotRequireAuthentication";
 
 
 @implementation SFNetReactBridge
@@ -61,7 +61,7 @@ RCT_EXPORT_METHOD(sendRequest:(NSDictionary *)argsDict callback:(RCTResponseSend
     NSDictionary* fileParams = [argsDict nonNullObjectForKey:kfileParams];
     
     //Set to true if boolean is absent.
-    BOOL requiresAuthentication = [argsDict nonNullObjectForKey:kRequiresAuthentication] == nil ? true: [[argsDict nonNullObjectForKey:kRequiresAuthentication] boolValue];
+    BOOL doesNotRequireAuthentication = [argsDict nonNullObjectForKey:kDoesNotRequireAuthentication] != nil && [[argsDict nonNullObjectForKey:kDoesNotRequireAuthentication] boolValue];
     BOOL returnBinary = [argsDict nonNullObjectForKey:kReturnBinary] != nil && [[argsDict nonNullObjectForKey:kReturnBinary] boolValue];
     SFRestRequest* request = nil;
     
@@ -72,7 +72,7 @@ RCT_EXPORT_METHOD(sendRequest:(NSDictionary *)argsDict callback:(RCTResponseSend
     } else {
         request = [SFRestRequest requestWithMethod:method path:path queryParams:queryParams];
     }
-    request.requiresAuthentication = requiresAuthentication;
+    request.requiresAuthentication = !doesNotRequireAuthentication;
     // Custom headers
     [request setCustomHeaders:headerParams];
     if (endPoint) {
@@ -98,7 +98,7 @@ RCT_EXPORT_METHOD(sendRequest:(NSDictionary *)argsDict callback:(RCTResponseSend
     if (returnBinary) {
         request.parseResponse = NO;
     }
-    SFRestAPI *restApiInstance = requiresAuthentication ? [SFRestAPI sharedInstance] :  [SFRestAPI sharedGlobalInstance];
+    SFRestAPI *restApiInstance = doesNotRequireAuthentication ? [SFRestAPI sharedGlobalInstance] : [SFRestAPI sharedInstance];
 
     [restApiInstance sendRESTRequest:request
                                       failBlock:^(NSError *e, NSURLResponse *rawResponse) {
