@@ -46,6 +46,12 @@ netSearch = promiser(net.search);
 
 const apiVersion = 'v44.0';
 
+const sendUnAuthenticatedNetRequest = (endpoint,path, callback, error) => {
+    return net.sendRequest(endpoint, path, callback, error,"GET",null,null,null,false,true);
+};
+
+netSendRequest = promiser(sendUnAuthenticatedNetRequest);
+
 testGetApiVersion = () => {
     assert.equal(net.getApiVersion(), apiVersion);
     testDone();
@@ -110,7 +116,7 @@ testCreateRetrieve = () => {
     const firstName = 'First_' + uniq;
     const lastName = 'Last_' + uniq;
     var contactId;
-    
+
     netCreate('contact', {FirstName: firstName, LastName: lastName})
         .then((response) => {
             assert.isTrue(response.success, 'Create failed');
@@ -136,7 +142,7 @@ testUpsertUpdateRetrieve = () => {
     const lastName = 'Last_' + uniq;
     const lastNameUpdated = lastName + '_updated';
     var contactId;
-    
+
     netUpsert('contact', 'Id', '', {FirstName: firstName, LastName: lastName})
         .then((response) => {
             assert.isTrue(response.success, 'Upsert failed');
@@ -164,7 +170,7 @@ testCreateDelRetrieve = () => {
     const firstName = 'First_' + uniq;
     const lastName = 'Last_' + uniq;
     var contactId;
-    
+
     netCreate('contact', {FirstName: firstName, LastName: lastName})
         .then((response) => {
             assert.isTrue(response.success, 'Create failed');
@@ -201,6 +207,18 @@ testSearch = () => {
         });
 };
 
+testPublicApiCall = () => {
+    netSendRequest( null, 'https://api.ipify.org?format=json')
+        .then((response) => {
+          assert.isObject(response, 'Expected A successful response');
+          testDone();
+       })
+       .catch((error) => {
+           assert.include(JSON.stringify(error), 'The requested resource failed', '');
+           testDone();
+       });
+
+};
 
 registerTest(testGetApiVersion);
 registerTest(testVersions);
@@ -214,3 +232,4 @@ registerTest(testUpsertUpdateRetrieve);
 registerTest(testCreateDelRetrieve);
 registerTest(testQuery);
 registerTest(testSearch);
+registerTest(testPublicApiCall);
