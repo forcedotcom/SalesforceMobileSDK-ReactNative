@@ -47,7 +47,9 @@ getAllGlobalStores = promiser(smartstore.getAllGlobalStores);
 removeStore = promiser(smartstore.removeStore);
 removeAllStores = promiser(smartstore.removeAllStores);
 removeAllGlobalStores = promiser(smartstore.removeAllGlobalStores);
-
+moveCursorToNextPage = promiser(smartstore.moveCursorToNextPage);
+moveCursorToPreviousPage = promiser(smartstore.moveCursorToPreviousPage);
+closeCursor = promiser(smartstore.closeCursor);
 
 const storeConfig = {isGlobalStore:false};
 
@@ -158,6 +160,53 @@ testQuerySoup = () => {
             testDone();
         });
 };
+
+testMoveCursor = () => {
+    const uniq = Math.floor(Math.random() * 1000000);
+    const soupName = 'soup_' + uniq;
+    const indexSpecs = [{path:'Name', type:'string'}];
+    registerSoup(storeConfig, soupName, indexSpecs)
+        .then((result) => {
+            assert.equal(result, soupName, 'Expected soupName');
+            return upsertSoupEntries(storeConfig, soupName, [{Name:'Aaa'}, {Name:'Bbb'}, {Name:'Ccc'}]);
+        })
+        .then((result) => {
+            return querySoup(storeConfig, soupName, {queryType:'range', indexPath:'Name', order: 'ascending', pageSize:2});
+        })
+        .then((result) => {
+            assert.equal(result.totalPages, 2);
+            assert.isDefined(result.cursorId);
+            assert.equal(result.currentPageIndex, 0);
+            assert.equal(result.pageSize, 2);
+            assert.equal(result.currentPageOrderedEntries.length, 2);
+            assert.equal(result.currentPageOrderedEntries[0].Name, 'Aaa');
+            assert.equal(result.currentPageOrderedEntries[1].Name, 'Bbb');
+            return moveCursorToNextPage(storeConfig, result);
+        })
+        .then((result) => {
+            assert.equal(result.totalPages, 2);
+            assert.isDefined(result.cursorId);
+            assert.equal(result.currentPageIndex, 1);
+            assert.equal(result.pageSize, 2);
+            assert.equal(result.currentPageOrderedEntries.length, 1);
+            assert.equal(result.currentPageOrderedEntries[0].Name, 'Ccc');
+            return moveCursorToPreviousPage(storeConfig, result);
+        })
+        .then((result) => {
+            assert.equal(result.totalPages, 2);
+            assert.isDefined(result.cursorId);
+            assert.equal(result.currentPageIndex, 0);
+            assert.equal(result.pageSize, 2);
+            assert.equal(result.currentPageOrderedEntries.length, 2);
+            assert.equal(result.currentPageOrderedEntries[0].Name, 'Aaa');
+            assert.equal(result.currentPageOrderedEntries[1].Name, 'Bbb');
+            return closeCursor(storeConfig, result);
+        })
+        .then((result) => {
+            testDone();
+        });
+};
+
 
 testSmartQuerySoup = () => {
     const uniq = Math.floor(Math.random() * 1000000);
@@ -298,6 +347,7 @@ registerTest(testGetSoupSpec);
 registerTest(testGetSoupIndexSpecs);
 registerTest(testUpsertRetrieve);
 registerTest(testQuerySoup);
+registerTest(testMoveCursor);
 registerTest(testSmartQuerySoup);
 registerTest(testRemoveFromSoup);
 registerTest(testClearSoup);
