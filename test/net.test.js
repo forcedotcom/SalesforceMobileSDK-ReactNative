@@ -46,8 +46,8 @@ netSearch = promiser(net.search);
 
 const apiVersion = 'v44.0';
 
-const sendUnAuthenticatedNetRequest = (endpoint,path, callback, error) => {
-    return net.sendRequest(endpoint, path, callback, error,"GET",null,null,null,false,true);
+const sendUnAuthenticatedNetRequest = (url, callback, error) => {
+    return net.sendRequest(null, url, callback, error,"GET", null, null, null, false, true);
 };
 
 netSendRequest = promiser(sendUnAuthenticatedNetRequest);
@@ -208,7 +208,7 @@ testSearch = () => {
 };
 
 testPublicApiCall = () => {
-    netSendRequest( null, 'https://api.ipify.org?format=json')
+    netSendRequest( 'https://api.ipify.org?format=json')
         .then((response) => {
           assert.isObject(response, 'Expected A successful response');
           testDone();
