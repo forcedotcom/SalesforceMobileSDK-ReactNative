@@ -44,8 +44,13 @@ netDel = promiser(net.del);
 netQuery = promiser(net.query);
 netSearch = promiser(net.search);
 
+const apiVersion = 'v44.0';
 
-const apiVersion = 'v42.0';
+const sendUnAuthenticatedNetRequest = (url, callback, error) => {
+    return net.sendRequest(null, url, callback, error,"GET", null, null, null, false, true);
+};
+
+netSendRequest = promiser(sendUnAuthenticatedNetRequest);
 
 testGetApiVersion = () => {
     assert.equal(net.getApiVersion(), apiVersion);
@@ -55,7 +60,7 @@ testGetApiVersion = () => {
 testVersions = () => {
     netVersions()
         .then((response) => {
-            assert.deepInclude(response, {'label':'Spring ’18','url':'/services/data/v42.0','version':'42.0'}, 'Wrong version response');
+            assert.deepInclude(response, {'label':'Winter \'19','url':'/services/data/v44.0','version':'44.0'}, 'Wrong version response');
             testDone();
         });
 };
@@ -111,7 +116,7 @@ testCreateRetrieve = () => {
     const firstName = 'First_' + uniq;
     const lastName = 'Last_' + uniq;
     var contactId;
-    
+
     netCreate('contact', {FirstName: firstName, LastName: lastName})
         .then((response) => {
             assert.isTrue(response.success, 'Create failed');
@@ -137,7 +142,7 @@ testUpsertUpdateRetrieve = () => {
     const lastName = 'Last_' + uniq;
     const lastNameUpdated = lastName + '_updated';
     var contactId;
-    
+
     netUpsert('contact', 'Id', '', {FirstName: firstName, LastName: lastName})
         .then((response) => {
             assert.isTrue(response.success, 'Upsert failed');
@@ -165,7 +170,7 @@ testCreateDelRetrieve = () => {
     const firstName = 'First_' + uniq;
     const lastName = 'Last_' + uniq;
     var contactId;
-    
+
     netCreate('contact', {FirstName: firstName, LastName: lastName})
         .then((response) => {
             assert.isTrue(response.success, 'Create failed');
@@ -202,6 +207,18 @@ testSearch = () => {
         });
 };
 
+testPublicApiCall = () => {
+    netSendRequest( 'https://api.ipify.org?format=json')
+        .then((response) => {
+          assert.isObject(response, 'Expected A successful response');
+          testDone();
+       })
+       .catch((error) => {
+           assert.include(JSON.stringify(error), 'The requested resource failed', '');
+           testDone();
+       });
+
+};
 
 registerTest(testGetApiVersion);
 registerTest(testVersions);
@@ -215,3 +232,4 @@ registerTest(testUpsertUpdateRetrieve);
 registerTest(testCreateDelRetrieve);
 registerTest(testQuery);
 registerTest(testSearch);
+registerTest(testPublicApiCall);

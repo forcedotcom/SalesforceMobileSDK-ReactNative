@@ -311,7 +311,9 @@ export const removeFromSoup = (storeConfig, soupName, entryIdsOrQuerySpec, succe
 //====== Cursor manipulation ======
 export const moveCursorToPageIndex = (storeConfig, cursor, newPageIndex, successCB, errorCB) => {
     var storeConfig = checkFirstArg(storeConfig);
-    exec(successCB, errorCB, "moveCursorToPageIndex", {"cursorId": cursor.cursorId, "index": newPageIndex, "isGlobalStore": storeConfig.isGlobalStore,"storeName":storeConfig.storeName});
+    // query returns serialized json on iOS starting in 7.0
+    var successCBdeserializing = successCB ? (result) =>  successCB((typeof result === "string") ? JSON.parse(result) : result) : successCB;
+    exec(successCBdeserializing, errorCB, "moveCursorToPageIndex", {"cursorId": cursor.cursorId, "index": newPageIndex, "isGlobalStore": storeConfig.isGlobalStore,"storeName":storeConfig.storeName});
 };
 
 export const moveCursorToNextPage = (storeConfig, cursor, successCB, errorCB) => {
