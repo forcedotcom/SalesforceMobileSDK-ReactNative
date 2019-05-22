@@ -11,6 +11,10 @@ execSync('node ./updatesdk.js', {stdio: [0,1,2]});
 console.log('=== Installing pod dependencies');
 execSync('pod update', {stdio:[0,1,2]});
 
+console.log('=== Switch to legacy build');
+execSync('mkdir -p ./SalesforceReactTestApp.xcworkspace/xcshareddata', {stdio: [0,1,2]});
+execSync('cp WorkspaceSettings.xcsettings ./SalesforceReactTestApp.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings', {stdio: [0,1,2]});
+
 console.log('=== Creating test_credentials.json');
 execSync('touch test_credentials.json', {stdio:[0,1,2]});
 
