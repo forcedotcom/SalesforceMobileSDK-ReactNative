@@ -6,7 +6,7 @@ defaults: &defaults
   environment:
     BASH_ENV: ~/.bashrc
     FASTLANE_SKIP_UPDATE_CHECK: true
-    CHRUBY_VER: 2.5.1
+    CHRUBY_VER: 2.5.5
 
 version: 2
 jobs:
@@ -30,8 +30,8 @@ jobs:
       - save_cache:
           key: v5-gems-{{ checksum ".circleci/Gemfile.lock" }}
           paths:
-            - /Users/distiller/.gem/ruby/2.5.1
-            - /Users/distiller/.rubies/ruby-2.4.2/lib/ruby/gems/2.5.1
+            - /Users/distiller/.gem/ruby/${CHRUBY_VER}
+            - /Users/distiller/.rubies/ruby-2.4.2/lib/ruby/gems/${CHRUBY_VER}
 
       - run:
           name: Installing npm dependencies
