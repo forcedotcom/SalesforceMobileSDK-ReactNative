@@ -1,7 +1,7 @@
 defaults: &defaults
   working_directory: ~/SalesforceMobileSDK-ReactNative
   macos:
-    xcode: "10.0.0"
+    xcode: "10.2.1"
   shell: /bin/bash --login -eo pipefail
   environment:
     BASH_ENV: ~/.bashrc
@@ -103,13 +103,13 @@ jobs:
 workflows:
   version: 2
 
-  pr-build-all-apps:
+  pr-run-tests:
     jobs:
       - test-ios
 
   # Cron are on a timezone 8 hours ahead of PST
   # Build everything at ~11:30pm Sunday/Wednesday Nights
-  weekly-build-all-apps:
+  weekly-run-tests:
     triggers:
       - schedule:
           cron: "30 7 * * 1,4"
@@ -117,6 +117,19 @@ workflows:
             branches:
               only:
                 - dev
-
     jobs:
       - test-ios
+
+  # Cron are on a timezone 8 hours ahead of PST
+  # Build everything at ~12:00pm Sunday/Wednesday Nights
+  weekly-run-tests-ios11:
+    triggers:
+      - schedule:
+          cron: "00 8 * * 1,4"
+          filters:
+            branches:
+              only:
+                - dev
+    jobs:
+      - test-ios:
+            context: nightly-test-ios11
