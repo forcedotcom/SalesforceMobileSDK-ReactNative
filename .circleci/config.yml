@@ -14,10 +14,10 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-
       - restore_cache:
           key: v5-gems-{{ checksum ".circleci/Gemfile.lock" }}
-
+      - restore_cache:
+          key: cocoapods1.6.1
       - run:
           name: Installing gem dependencies
           command:  |
@@ -25,77 +25,46 @@ jobs:
             cd .circleci
             gem install bundler
             bundle check || bundle install
-            bundle update
-
+            bundle update      
+      - run:
+          name: Installing Dependencies
+          command: | 
+            cd ios/SalesforceReactTests
+            ./prepareios.js 
       - save_cache:
           key: v5-gems-{{ checksum ".circleci/Gemfile.lock" }}
           paths:
             - /Users/distiller/.gem/ruby/${CHRUBY_VER}
             - /Users/distiller/.rubies/ruby-2.4.2/lib/ruby/gems/${CHRUBY_VER}
-
-      - run:
-          name: Installing npm dependencies
-          command: | 
-            cd ios/SalesforceReactTests
-            npm install
-
-      - run:
-          name: Installing sdk dependencies
-          command: | 
-            cd ios/SalesforceReactTests
-            node ./updatesdk.js
-
-      - restore_cache:
-          key: cocoapods-
-
-      - run:
-          name: Installing pod dependencies
-          command: | 
-            cd ios/SalesforceReactTests
-            pod install
-
       - save_cache:
-          key: cocoapods-
+          key: cocoapods1.6.1
           paths:
             - /Users/distiller/.cocoapods/repos/master
-
       - run:
           name: Creating test_credentials.json
           command: | 
             cd ios/SalesforceReactTests
             node ./create_test_credentials_from_env.js
-
-      - run:
-          name: Creating index.ios.bundle
-          command: | 
-            cd ios/SalesforceReactTests
-            node ./updatebundle.js
-      
       - run:
           name: Compile
           command:  |
             chruby ${CHRUBY_VER}
             cd .circleci
             fastlane build
-
       - run:
           name: Run Tests
           command:  |
             chruby ${CHRUBY_VER}
             cd .circleci
             fastlane test
-
       - store_test_results:
           path: /Users/distiller/SalesforceMobileSDK-ReactNative/.circleci/test_output
-
       - store_artifacts:
           path: /Users/distiller/SalesforceMobileSDK-ReactNative/.circleci/test_output
           destination: Test-Results
-
       - store_artifacts:
           path: /Users/distiller/SalesforceMobileSDK-ReactNative/.circleci/clangReport
           destination: Static-Analysis
-
       - run:
           name: Upload code coverage
           command: bash <(curl -s https://codecov.io/bash) -X gcov -X xcode
