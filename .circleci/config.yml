@@ -16,16 +16,14 @@ jobs:
       - checkout
       - restore_cache:
           key: v5-gems-{{ checksum ".circleci/Gemfile.lock" }}
-      - restore_cache:
-          key: cocoapods1.6.1
       - run:
           name: Installing gem dependencies
           command:  |
             chruby ${CHRUBY_VER}
             cd .circleci
             gem install bundler
-            bundle check || bundle install
-            bundle update      
+            bundle update  
+            bundle check || bundle install      
       - run:
           name: Installing Dependencies
           command: | 
@@ -36,10 +34,6 @@ jobs:
           paths:
             - /Users/distiller/.gem/ruby/${CHRUBY_VER}
             - /Users/distiller/.rubies/ruby-2.4.2/lib/ruby/gems/${CHRUBY_VER}
-      - save_cache:
-          key: cocoapods1.6.1
-          paths:
-            - /Users/distiller/.cocoapods/repos/master
       - run:
           name: Creating test_credentials.json
           command: | 
