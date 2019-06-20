@@ -1,3 +1,7 @@
 node_modules/
 package-lock.json
 sfdx/yarn.lock
+.circleci/fastlane/report.*
+.circleci/fastlane/README.md
+.circleci/test_output/
+ios/SalesforceReactTests/clangReport/

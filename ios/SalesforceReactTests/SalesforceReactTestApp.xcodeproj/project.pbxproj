@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -160,9 +160,7 @@
 				5398E09648E1B765BD5E2DD3 /* [CP] Check Pods Manifest.lock */,
 				4FFF1EE42166DFF900C050EF /* Sources */,
 				4FFF1EE52166DFF900C050EF /* Frameworks */,
-				4FFF1EE62166DFF900C050EF /* Resources */,
-				6B3888CF9F67C36E22998124 /* [CP] Embed Pods Frameworks */,
-				B31110F207859E9A33EE5413 /* [CP] Copy Pods Resources */,
+				A3A0A38E22BBF50300B8FC5B /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -181,7 +179,6 @@
 				4FFF1F2E2166E11D00C050EF /* Sources */,
 				4FFF1F2F2166E11D00C050EF /* Frameworks */,
 				4FFF1F302166E11D00C050EF /* Resources */,
-				6C4F6B5317096FBCA85BF9B9 /* [CP] Embed Pods Frameworks */,
 				A9D2104F047FD4A2B5E23A93 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
@@ -232,13 +229,6 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		4FFF1EE62166DFF900C050EF /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		4FFF1F302166E11D00C050EF /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -287,74 +277,47 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		6B3888CF9F67C36E22998124 /* [CP] Embed Pods Frameworks */ = {
+		A3A0A38E22BBF50300B8FC5B /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
+			inputFileListPaths = (
+			);
 			inputPaths = (
 			);
-			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SalesforceReactTestApp/Pods-SalesforceReactTestApp-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		6C4F6B5317096FBCA85BF9B9 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SalesforceReactTests/Pods-SalesforceReactTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
+			shellScript = "cp -a ${TARGET_BUILD_DIR}/SalesforceReactTestApp.app/PlugIns/SalesforceReactTests.xctest ${TARGET_BUILD_DIR}/\n";
 		};
 		A9D2104F047FD4A2B5E23A93 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SalesforceReactTests/Pods-SalesforceReactTests-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-SalesforceReactTests/Pods-SalesforceReactTests-resources.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-SalesforceReactTests/Pods-SalesforceReactTests-resources.sh",
 				"${PODS_ROOT}/../mobile_sdk/SalesforceMobileSDK-iOS/shared/resources/SalesforceSDKAssets.xcassets",
 				"${PODS_CONFIGURATION_BUILD_DIR}/SalesforceSDKCore/SalesforceSDKResources.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SalesforceReactTests/Pods-SalesforceReactTests-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SalesforceSDKAssets.xcassets",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Assets.car",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SalesforceSDKResources.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SalesforceReactTests/Pods-SalesforceReactTests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		B31110F207859E9A33EE5413 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-SalesforceReactTestApp/Pods-SalesforceReactTestApp-resources.sh",
-				"${PODS_ROOT}/../mobile_sdk/SalesforceMobileSDK-iOS/shared/resources/SalesforceSDKAssets.xcassets",
-				"${PODS_CONFIGURATION_BUILD_DIR}/SalesforceSDKCore/SalesforceSDKResources.bundle",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SalesforceSDKAssets.xcassets",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SalesforceSDKResources.bundle",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SalesforceReactTestApp/Pods-SalesforceReactTestApp-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SalesforceReactTests/Pods-SalesforceReactTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
