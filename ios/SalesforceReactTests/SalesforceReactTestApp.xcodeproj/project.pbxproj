@@ -160,7 +160,6 @@
 				5398E09648E1B765BD5E2DD3 /* [CP] Check Pods Manifest.lock */,
 				4FFF1EE42166DFF900C050EF /* Sources */,
 				4FFF1EE52166DFF900C050EF /* Frameworks */,
-				A3A0A38E22BBF50300B8FC5B /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -179,6 +178,7 @@
 				4FFF1F2E2166E11D00C050EF /* Sources */,
 				4FFF1F2F2166E11D00C050EF /* Frameworks */,
 				4FFF1F302166E11D00C050EF /* Resources */,
+				A34CE17122BD40C30033A467 /* ShellScript */,
 				A9D2104F047FD4A2B5E23A93 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
@@ -277,7 +277,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		A3A0A38E22BBF50300B8FC5B /* ShellScript */ = {
+		A34CE17122BD40C30033A467 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -292,7 +292,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp -a ${TARGET_BUILD_DIR}/SalesforceReactTestApp.app/PlugIns/SalesforceReactTests.xctest ${TARGET_BUILD_DIR}/\n";
+			shellScript = "cp -a ${TARGET_BUILD_DIR}/SalesforceReactTests.xctest ${TARGET_BUILD_DIR}/../../\n";
 		};
 		A9D2104F047FD4A2B5E23A93 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
