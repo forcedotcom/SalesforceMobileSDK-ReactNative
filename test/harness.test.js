@@ -33,10 +33,6 @@ testPassing = () => {
     testDone();
 };
 
-testFailing = () => {
-    assert(false, "FAKE_FAILURE");
-};
-
 testAsyncPassing = () => {
     oauth.getAuthCredentials(
         (creds) => { testDone(); },
@@ -44,14 +40,5 @@ testAsyncPassing = () => {
     );
 };
 
-testAsyncFailing = () => {
-    oauth.getAuthCredentials(
-        (creds) => { assert(false, "FAKE_FAILURE"); },
-        (error) => { throw error; }
-    );
-};
-
 registerTest(testPassing);
-registerTest(testFailing);
 registerTest(testAsyncPassing);
-registerTest(testAsyncFailing);

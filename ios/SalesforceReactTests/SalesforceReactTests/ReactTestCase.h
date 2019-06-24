@@ -44,13 +44,6 @@
     [self.runner runTest:_cmd module:@#name]; \
 }
 
-#define RCT_TEST_FAKE_FAILURE(name)                        \
-- (void)test##name                            \
-{                                             \
-[self.runner runTest:_cmd module:@#name initialProps:nil configurationBlock:nil expectErrorRegex:@"FAKE_FAILURE"]; \
-}
-
-
 @interface ReactTestCase : XCTestCase
 
 @property (nonatomic, strong) RCTTestRunner* runner;
