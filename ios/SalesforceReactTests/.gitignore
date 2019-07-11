@@ -29,4 +29,4 @@ npm-debug.log
 package-lock.json.*
 test_credentials.json
 index.ios.bundle
-react-native/
+RCTTest/

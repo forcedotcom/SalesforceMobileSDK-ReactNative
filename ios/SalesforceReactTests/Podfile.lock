@@ -152,7 +152,7 @@ DEPENDENCIES:
   - React-RCTLinking (from `./node_modules/react-native/Libraries/LinkingIOS`)
   - React-RCTNetwork (from `./node_modules/react-native/Libraries/Network`)
   - React-RCTSettings (from `./node_modules/react-native/Libraries/Settings`)
-  - React-RCTTest (from `./react-native/RNTester/RCTTest`)
+  - React-RCTTest (from `./RCTTest`)
   - React-RCTText (from `./node_modules/react-native/Libraries/Text`)
   - React-RCTVibration (from `./node_modules/react-native/Libraries/Vibration`)
   - React-RCTWebSocket (from `./node_modules/react-native/Libraries/WebSocket`)
@@ -208,7 +208,7 @@ EXTERNAL SOURCES:
   React-RCTSettings:
     :path: "./node_modules/react-native/Libraries/Settings"
   React-RCTTest:
-    :path: "./react-native/RNTester/RCTTest"
+    :path: "./RCTTest"
   React-RCTText:
     :path: "./node_modules/react-native/Libraries/Text"
   React-RCTVibration:
@@ -251,7 +251,7 @@ SPEC CHECKSUMS:
   React-RCTLinking: d65b9f56cf0b8e171575a86764df7bb019ac28d6
   React-RCTNetwork: 783ee2f430740e58f724e46adc79fe7feff64202
   React-RCTSettings: aa28315aadfbfaf94206d865673ae509f1e97c07
-  React-RCTTest: 4330f82598234891fd5dbdbc7039bd7a5d167598
+  React-RCTTest: 3703c23155a50b5ff20b8646728cad620019105c
   React-RCTText: 685fca2e13b024271048e7e247ef24476f28a41e
   React-RCTVibration: 4ee1cf208ab17a50fafb1c16ffe28fe594a64e4f
   React-RCTWebSocket: fca087d583724aa0e5fef7d911f0f2a28d0f2736
@@ -264,6 +264,6 @@ SPEC CHECKSUMS:
   SQLCipher: 0187a2180ac288ea686b670b7141da62cd013b16
   yoga: 616fde658be980aa60a2158835170f3f9c2d04b4
 
-PODFILE CHECKSUM: 6d93c764969661c6bebbb130a5e5834d40a88c8f
+PODFILE CHECKSUM: d15049a4060d42798bb1bb3d1481e2bd91278f5a
 
 COCOAPODS: 1.6.2
