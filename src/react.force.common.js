@@ -64,7 +64,7 @@ export const exec = (moduleIOSName, moduleAndroidName, moduleIOS, moduleAndroid,
     }
 };
 
-const safeJSONparse = (str) => {
+export const safeJSONparse = (str) => {
     try {
         return JSON.parse(str);
     }
