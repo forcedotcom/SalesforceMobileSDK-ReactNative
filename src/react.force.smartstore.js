@@ -25,8 +25,8 @@
  */
 
 import { NativeModules } from 'react-native';
+import {exec as forceExec, safeJSONparse} from './react.force.common';
 const { SmartStoreReactBridge, SFSmartStoreReactBridge } = NativeModules;
-import {exec as forceExec} from './react.force.common';
 
 
 const exec = (successCB, errorCB, methodName, args) => {
@@ -273,7 +273,7 @@ export const querySoup = (storeConfig, soupName, querySpec, successCB, errorCB) 
     if (querySpec.queryType == "smart") throw new Error("Smart queries can only be run using runSmartQuery");
     if (querySpec.order != null && querySpec.orderPath == null) querySpec.orderPath = querySpec.indexPath; // for backward compatibility with pre-3.3 code
     // query returns serialized json on iOS starting in 7.0
-    var successCBdeserializing = successCB ? (result) =>  successCB((typeof result === "string") ? JSON.parse(result) : result) : successCB;
+    var successCBdeserializing = successCB ? (result) =>  successCB((typeof result === "string") ? safeJSONparse(result) : result) : successCB;
     exec(successCBdeserializing, errorCB, "querySoup", {"soupName": soupName, "querySpec": querySpec, "isGlobalStore": storeConfig.isGlobalStore,"storeName":storeConfig.storeName});
 };
 
@@ -281,7 +281,7 @@ export const runSmartQuery = (storeConfig, querySpec, successCB, errorCB) => {
     var storeConfig = checkFirstArg(storeConfig);
     if (querySpec.queryType != "smart") throw new Error("runSmartQuery can only run smart queries");
     // query returns serialized json on iOS starting in 7.0
-    var successCBdeserializing = successCB ? (result) =>  successCB((typeof result === "string") ? JSON.parse(result) : result) : successCB;
+    var successCBdeserializing = successCB ? (result) =>  successCB((typeof result === "string") ? safeJSONparse(result) : result) : successCB;
     exec(successCBdeserializing, errorCB, "runSmartQuery", {"querySpec": querySpec, "isGlobalStore": storeConfig.isGlobalStore,"storeName":storeConfig.storeName});
 };
 
@@ -312,7 +312,7 @@ export const removeFromSoup = (storeConfig, soupName, entryIdsOrQuerySpec, succe
 export const moveCursorToPageIndex = (storeConfig, cursor, newPageIndex, successCB, errorCB) => {
     var storeConfig = checkFirstArg(storeConfig);
     // query returns serialized json on iOS starting in 7.0
-    var successCBdeserializing = successCB ? (result) =>  successCB((typeof result === "string") ? JSON.parse(result) : result) : successCB;
+    var successCBdeserializing = successCB ? (result) =>  successCB((typeof result === "string") ? safeJSONparse(result) : result) : successCB;
     exec(successCBdeserializing, errorCB, "moveCursorToPageIndex", {"cursorId": cursor.cursorId, "index": newPageIndex, "isGlobalStore": storeConfig.isGlobalStore,"storeName":storeConfig.storeName});
 };
 

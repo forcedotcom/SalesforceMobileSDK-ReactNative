@@ -39,9 +39,7 @@
 #pragma mark - JS tests
 
 RCT_TEST(Passing)
-RCT_TEST_FAKE_FAILURE(Failing)
 RCT_TEST(AsyncPassing)
-RCT_TEST_FAKE_FAILURE(AsyncFailing)
 
 @end
 
