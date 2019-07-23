@@ -22,8 +22,10 @@ jobs:
           key: *pods-cache-key
       - run:
           name: Installing Dependencies
-          command: | 
-            cd ios/SalesforceReactTests
+          command: |
+            cd .circleci
+            bundle update 
+            cd ../ios/SalesforceReactTests
             ./prepareios.js 
       - save_cache:
           key: *pods-cache-key
