@@ -13,115 +13,115 @@ PODS:
     - DoubleConversion
     - glog
   - glog (0.3.5)
-  - React (0.60.0):
-    - React-Core (= 0.60.0)
-    - React-DevSupport (= 0.60.0)
-    - React-RCTActionSheet (= 0.60.0)
-    - React-RCTAnimation (= 0.60.0)
-    - React-RCTBlob (= 0.60.0)
-    - React-RCTImage (= 0.60.0)
-    - React-RCTLinking (= 0.60.0)
-    - React-RCTNetwork (= 0.60.0)
-    - React-RCTSettings (= 0.60.0)
-    - React-RCTText (= 0.60.0)
-    - React-RCTVibration (= 0.60.0)
-    - React-RCTWebSocket (= 0.60.0)
-  - React-Core (0.60.0):
+  - React (0.60.4):
+    - React-Core (= 0.60.4)
+    - React-DevSupport (= 0.60.4)
+    - React-RCTActionSheet (= 0.60.4)
+    - React-RCTAnimation (= 0.60.4)
+    - React-RCTBlob (= 0.60.4)
+    - React-RCTImage (= 0.60.4)
+    - React-RCTLinking (= 0.60.4)
+    - React-RCTNetwork (= 0.60.4)
+    - React-RCTSettings (= 0.60.4)
+    - React-RCTText (= 0.60.4)
+    - React-RCTVibration (= 0.60.4)
+    - React-RCTWebSocket (= 0.60.4)
+  - React-Core (0.60.4):
     - Folly (= 2018.10.22.00)
-    - React-cxxreact (= 0.60.0)
-    - React-jsiexecutor (= 0.60.0)
-    - yoga (= 0.60.0.React)
-  - React-cxxreact (0.60.0):
+    - React-cxxreact (= 0.60.4)
+    - React-jsiexecutor (= 0.60.4)
+    - yoga (= 0.60.4.React)
+  - React-cxxreact (0.60.4):
     - boost-for-react-native (= 1.63.0)
     - DoubleConversion
     - Folly (= 2018.10.22.00)
     - glog
-    - React-jsinspector (= 0.60.0)
-  - React-DevSupport (0.60.0):
-    - React-Core (= 0.60.0)
-    - React-RCTWebSocket (= 0.60.0)
-  - React-fishhook (0.60.0)
-  - React-jsi (0.60.0):
+    - React-jsinspector (= 0.60.4)
+  - React-DevSupport (0.60.4):
+    - React-Core (= 0.60.4)
+    - React-RCTWebSocket (= 0.60.4)
+  - React-fishhook (0.60.4)
+  - React-jsi (0.60.4):
     - boost-for-react-native (= 1.63.0)
     - DoubleConversion
     - Folly (= 2018.10.22.00)
     - glog
-    - React-jsi/Default (= 0.60.0)
-  - React-jsi/Default (0.60.0):
+    - React-jsi/Default (= 0.60.4)
+  - React-jsi/Default (0.60.4):
     - boost-for-react-native (= 1.63.0)
     - DoubleConversion
     - Folly (= 2018.10.22.00)
     - glog
-  - React-jsiexecutor (0.60.0):
+  - React-jsiexecutor (0.60.4):
     - DoubleConversion
     - Folly (= 2018.10.22.00)
     - glog
-    - React-cxxreact (= 0.60.0)
-    - React-jsi (= 0.60.0)
-  - React-jsinspector (0.60.0)
-  - React-RCTActionSheet (0.60.0):
-    - React-Core (= 0.60.0)
-  - React-RCTAnimation (0.60.0):
-    - React-Core (= 0.60.0)
-  - React-RCTBlob (0.60.0):
-    - React-Core (= 0.60.0)
-    - React-RCTNetwork (= 0.60.0)
-    - React-RCTWebSocket (= 0.60.0)
-  - React-RCTImage (0.60.0):
-    - React-Core (= 0.60.0)
-    - React-RCTNetwork (= 0.60.0)
-  - React-RCTLinking (0.60.0):
-    - React-Core (= 0.60.0)
-  - React-RCTNetwork (0.60.0):
-    - React-Core (= 0.60.0)
-  - React-RCTSettings (0.60.0):
-    - React-Core (= 0.60.0)
-  - React-RCTTest (0.60.0):
-    - React-Core (= 0.60.0)
-  - React-RCTText (0.60.0):
-    - React-Core (= 0.60.0)
-  - React-RCTVibration (0.60.0):
-    - React-Core (= 0.60.0)
-  - React-RCTWebSocket (0.60.0):
-    - React-Core (= 0.60.0)
-    - React-fishhook (= 0.60.0)
-  - SalesforceAnalytics (7.2.0):
-    - SalesforceAnalytics/SalesforceAnalytics (= 7.2.0)
-  - SalesforceAnalytics/SalesforceAnalytics (7.2.0):
+    - React-cxxreact (= 0.60.4)
+    - React-jsi (= 0.60.4)
+  - React-jsinspector (0.60.4)
+  - React-RCTActionSheet (0.60.4):
+    - React-Core (= 0.60.4)
+  - React-RCTAnimation (0.60.4):
+    - React-Core (= 0.60.4)
+  - React-RCTBlob (0.60.4):
+    - React-Core (= 0.60.4)
+    - React-RCTNetwork (= 0.60.4)
+    - React-RCTWebSocket (= 0.60.4)
+  - React-RCTImage (0.60.4):
+    - React-Core (= 0.60.4)
+    - React-RCTNetwork (= 0.60.4)
+  - React-RCTLinking (0.60.4):
+    - React-Core (= 0.60.4)
+  - React-RCTNetwork (0.60.4):
+    - React-Core (= 0.60.4)
+  - React-RCTSettings (0.60.4):
+    - React-Core (= 0.60.4)
+  - React-RCTTest (0.60.4):
+    - React-Core (= 0.60.4)
+  - React-RCTText (0.60.4):
+    - React-Core (= 0.60.4)
+  - React-RCTVibration (0.60.4):
+    - React-Core (= 0.60.4)
+  - React-RCTWebSocket (0.60.4):
+    - React-Core (= 0.60.4)
+    - React-fishhook (= 0.60.4)
+  - SalesforceAnalytics (7.3.0):
+    - SalesforceAnalytics/SalesforceAnalytics (= 7.3.0)
+  - SalesforceAnalytics/SalesforceAnalytics (7.3.0):
     - SalesforceSDKCommon
-  - SalesforceReact (7.2.0):
-    - SalesforceReact/SalesforceReact (= 7.2.0)
-  - SalesforceReact/SalesforceReact (7.2.0):
+  - SalesforceReact (7.3.0):
+    - SalesforceReact/SalesforceReact (= 7.3.0)
+  - SalesforceReact/SalesforceReact (7.3.0):
     - React
     - SmartSync
-  - SalesforceSDKCommon (7.2.0):
-    - SalesforceSDKCommon/SalesforceSDKCommon (= 7.2.0)
-  - SalesforceSDKCommon/SalesforceSDKCommon (7.2.0)
-  - SalesforceSDKCore (7.2.0):
-    - SalesforceSDKCore/SalesforceSDKCore (= 7.2.0)
-  - SalesforceSDKCore/SalesforceSDKCore (7.2.0):
+  - SalesforceSDKCommon (7.3.0):
+    - SalesforceSDKCommon/SalesforceSDKCommon (= 7.3.0)
+  - SalesforceSDKCommon/SalesforceSDKCommon (7.3.0)
+  - SalesforceSDKCore (7.3.0):
+    - SalesforceSDKCore/SalesforceSDKCore (= 7.3.0)
+  - SalesforceSDKCore/SalesforceSDKCore (7.3.0):
     - SalesforceAnalytics
-    - SalesforceSDKCore/SalesforceSDKCore/arc (= 7.2.0)
-    - SalesforceSDKCore/SalesforceSDKCore/base (= 7.2.0)
-    - SalesforceSDKCore/SalesforceSDKCore/no-arc (= 7.2.0)
-  - SalesforceSDKCore/SalesforceSDKCore/arc (7.2.0):
+    - SalesforceSDKCore/SalesforceSDKCore/arc (= 7.3.0)
+    - SalesforceSDKCore/SalesforceSDKCore/base (= 7.3.0)
+    - SalesforceSDKCore/SalesforceSDKCore/no-arc (= 7.3.0)
+  - SalesforceSDKCore/SalesforceSDKCore/arc (7.3.0):
     - SalesforceAnalytics
     - SalesforceSDKCore/SalesforceSDKCore/base
     - SalesforceSDKCore/SalesforceSDKCore/no-arc
-  - SalesforceSDKCore/SalesforceSDKCore/base (7.2.0):
+  - SalesforceSDKCore/SalesforceSDKCore/base (7.3.0):
     - SalesforceAnalytics
-  - SalesforceSDKCore/SalesforceSDKCore/no-arc (7.2.0):
+  - SalesforceSDKCore/SalesforceSDKCore/no-arc (7.3.0):
     - SalesforceAnalytics
     - SalesforceSDKCore/SalesforceSDKCore/base
-  - SmartStore (7.2.0):
-    - SmartStore/SmartStore (= 7.2.0)
-  - SmartStore/SmartStore (7.2.0):
+  - SmartStore (7.3.0):
+    - SmartStore/SmartStore (= 7.3.0)
+  - SmartStore/SmartStore (7.3.0):
     - FMDB/SQLCipher (~> 2.7.5)
     - SalesforceSDKCore
     - SQLCipher/fts (~> 4.2.0)
-  - SmartSync (7.2.0):
-    - SmartSync/SmartSync (= 7.2.0)
-  - SmartSync/SmartSync (7.2.0):
+  - SmartSync (7.3.0):
+    - SmartSync/SmartSync (= 7.3.0)
+  - SmartSync/SmartSync (7.3.0):
     - SalesforceSDKCore
     - SmartStore
   - SQLCipher (4.2.0):
@@ -131,7 +131,7 @@ PODS:
     - SQLCipher/common
   - SQLCipher/standard (4.2.0):
     - SQLCipher/common
-  - yoga (0.60.0.React)
+  - yoga (0.60.4.React)
 
 DEPENDENCIES:
   - DoubleConversion (from `./node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
@@ -236,33 +236,33 @@ SPEC CHECKSUMS:
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
   glog: 1f3da668190260b06b429bb211bfbee5cd790c28
-  React: 4b3c068e793e96672dcd186a2b572fac43e4b031
-  React-Core: 3dc86b22920597f813c62a96db3165950b64826b
-  React-cxxreact: 0dacb291e59b81e7c3f22a2118bee853ba8a60d2
-  React-DevSupport: 4eb4135386acd10c2586cc9c759bf96b4dac035e
-  React-fishhook: 86ca737527bb9d860efbb943c11c729a5b69aa3d
-  React-jsi: 8e128c4d0d8febc2977ef617d1c09bb54326069c
-  React-jsiexecutor: 7a3554f703a58963ec80b860144ea0f0e9b910e1
-  React-jsinspector: d4ed52225912efe0019bb7f1a225aec20f23049a
-  React-RCTActionSheet: b27ff3cf3a68f917c46d2b94abf938b625b96570
-  React-RCTAnimation: 9e4708e5bd65fca8285ce7c0aa076f3f4fa5c2f8
-  React-RCTBlob: 6eafcc3a24f33785692a7be24918ade607bc8719
-  React-RCTImage: 46b965d7225b428ea11580ead08a4318aef1d6be
-  React-RCTLinking: d65b9f56cf0b8e171575a86764df7bb019ac28d6
-  React-RCTNetwork: 783ee2f430740e58f724e46adc79fe7feff64202
-  React-RCTSettings: aa28315aadfbfaf94206d865673ae509f1e97c07
-  React-RCTTest: 3703c23155a50b5ff20b8646728cad620019105c
-  React-RCTText: 685fca2e13b024271048e7e247ef24476f28a41e
-  React-RCTVibration: 4ee1cf208ab17a50fafb1c16ffe28fe594a64e4f
-  React-RCTWebSocket: fca087d583724aa0e5fef7d911f0f2a28d0f2736
-  SalesforceAnalytics: 7d6be542607f363b769c3d992256b79fc3c2839d
-  SalesforceReact: 10a2ee46c68a371e0148ca61ccab3701988789ef
-  SalesforceSDKCommon: 9c36db67ede8e7ca251c4ec2cb4fad28513f2b3f
-  SalesforceSDKCore: cae164a91602d7a6f4c3389cd9e547c2d623ac60
-  SmartStore: 9d95ca75cdd960b0e0fe531d544c6f206246a0d7
-  SmartSync: 94971d2363a3421b64bd078a3eff1cd9fe880c50
+  React: ff7ee2ae5ee1c1d9ae2183b4111045b25294bb01
+  React-Core: 8e0ea421cae5609d2562850f98421b15030476fa
+  React-cxxreact: 326880209990151a7182a813311054e9772ba510
+  React-DevSupport: e9f10e6721e78e87622fc985db695c0c0168db8a
+  React-fishhook: 1f0e5b08449403fa75c3fb3881a0beefbada14af
+  React-jsi: 21d3153b1153fbf6510a92b6b11e33e725cb7432
+  React-jsiexecutor: 7549641e48bafae7bfee3f3ea19bf4901639c5de
+  React-jsinspector: 73f24a02fa684ed6a2b828ba116874a2191ded88
+  React-RCTActionSheet: 9f71d7ae3e8fb10e08d162cbf14c621349dbfab3
+  React-RCTAnimation: 981d8c95b0e30918a9832ccac32af83562a27fae
+  React-RCTBlob: 21e73d1020a302a75fed30dbaee9f15287b80baa
+  React-RCTImage: c0bc6ac0926517b6fb7e4c279b04843113e99d1d
+  React-RCTLinking: 1af3f3c59114bed3deec0107c62e7efad0932ee5
+  React-RCTNetwork: 35df9de46e19cda5c56380be1a7759b9b8cb2fcd
+  React-RCTSettings: f580504c2cd1f44e25add10fb9ed3954f67f8ac5
+  React-RCTTest: 48fcbe1a72b68675f81a4d3d4acf38f881f72f89
+  React-RCTText: e0f224898b13af9aa036ea7cb3d438daa68c1044
+  React-RCTVibration: 0bea40cd51bd089bd591a8f74c86e91fdf2666c5
+  React-RCTWebSocket: 163873f4cdd5f1058a9483443404fc3801581cb6
+  SalesforceAnalytics: 9edbf6c0a95a069aa208b46f31871997cde3db77
+  SalesforceReact: 4027c95da1c20b882d194a3639d90b5d91f175f9
+  SalesforceSDKCommon: a55a4aa041724189b7335d10b04f479304b58983
+  SalesforceSDKCore: f0e29d5f6d58460604b87ab5fb62c7f47a8d3a19
+  SmartStore: 1f7505bb6c8495c2bcc78f833c4cf77c0f5e7f45
+  SmartSync: 8581471ae37e17b63a113b56b2316568dcd467d7
   SQLCipher: 0187a2180ac288ea686b670b7141da62cd013b16
-  yoga: 616fde658be980aa60a2158835170f3f9c2d04b4
+  yoga: c2c050f6ae6e222534760cc82f559b89214b67e2
 
 PODFILE CHECKSUM: d15049a4060d42798bb1bb3d1481e2bd91278f5a
 
