@@ -2,10 +2,11 @@
 
 const path = require('path')
 var execSync = require('child_process').execSync;
-var rimraf = require('rimraf');
 
 console.log('=== Installing npm dependencies');
 execSync('npm install', {stdio:[0,1,2]});
+
+var rimraf = require('rimraf');
 
 console.log('=== Getting react native git repo (for test runner classes)');
 const rnVersion = require(path.join(__dirname, '..', '..', 'package.json')).peerDependencies['react-native']
