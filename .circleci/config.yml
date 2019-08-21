@@ -5,7 +5,7 @@ aliases:
 defaults: &defaults
   working_directory: ~/SalesforceMobileSDK-ReactNative
   macos:
-    xcode: "10.2.1"
+    xcode: "10.3.0"
   shell: /bin/bash --login -eo pipefail
   environment:
     BASH_ENV: ~/.bashrc
