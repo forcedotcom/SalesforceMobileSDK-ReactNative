@@ -6,141 +6,153 @@ PODS:
   - Folly (2018.10.22.00):
     - boost-for-react-native
     - DoubleConversion
+    - Folly/Default (= 2018.10.22.00)
+    - glog
+  - Folly/Default (2018.10.22.00):
+    - boost-for-react-native
+    - DoubleConversion
     - glog
   - glog (0.3.5)
-  - React (0.59.9):
-    - React/Core (= 0.59.9)
-  - React/ART (0.59.9):
-    - React/Core
-  - React/Core (0.59.9):
-    - yoga (= 0.59.9.React)
-  - React/CxxBridge (0.59.9):
+  - React (0.60.5):
+    - React-Core (= 0.60.5)
+    - React-DevSupport (= 0.60.5)
+    - React-RCTActionSheet (= 0.60.5)
+    - React-RCTAnimation (= 0.60.5)
+    - React-RCTBlob (= 0.60.5)
+    - React-RCTImage (= 0.60.5)
+    - React-RCTLinking (= 0.60.5)
+    - React-RCTNetwork (= 0.60.5)
+    - React-RCTSettings (= 0.60.5)
+    - React-RCTText (= 0.60.5)
+    - React-RCTVibration (= 0.60.5)
+    - React-RCTWebSocket (= 0.60.5)
+  - React-Core (0.60.5):
     - Folly (= 2018.10.22.00)
-    - React/Core
-    - React/cxxreact
-    - React/jsiexecutor
-  - React/cxxreact (0.59.9):
+    - React-cxxreact (= 0.60.5)
+    - React-jsiexecutor (= 0.60.5)
+    - yoga (= 0.60.5.React)
+  - React-cxxreact (0.60.5):
     - boost-for-react-native (= 1.63.0)
     - DoubleConversion
     - Folly (= 2018.10.22.00)
     - glog
-    - React/jsinspector
-  - React/DevSupport (0.59.9):
-    - React/Core
-    - React/RCTWebSocket
-  - React/fishhook (0.59.9)
-  - React/jsi (0.59.9):
+    - React-jsinspector (= 0.60.5)
+  - React-DevSupport (0.60.5):
+    - React-Core (= 0.60.5)
+    - React-RCTWebSocket (= 0.60.5)
+  - React-jsi (0.60.5):
+    - boost-for-react-native (= 1.63.0)
     - DoubleConversion
     - Folly (= 2018.10.22.00)
     - glog
-  - React/jsiexecutor (0.59.9):
+    - React-jsi/Default (= 0.60.5)
+  - React-jsi/Default (0.60.5):
+    - boost-for-react-native (= 1.63.0)
     - DoubleConversion
     - Folly (= 2018.10.22.00)
     - glog
-    - React/cxxreact
-    - React/jsi
-  - React/jsinspector (0.59.9)
-  - React/RCTActionSheet (0.59.9):
-    - React/Core
-  - React/RCTAnimation (0.59.9):
-    - React/Core
-  - React/RCTBlob (0.59.9):
-    - React/Core
-  - React/RCTCameraRoll (0.59.9):
-    - React/Core
-    - React/RCTImage
-  - React/RCTGeolocation (0.59.9):
-    - React/Core
-  - React/RCTImage (0.59.9):
-    - React/Core
-    - React/RCTNetwork
-  - React/RCTLinkingIOS (0.59.9):
-    - React/Core
-  - React/RCTNetwork (0.59.9):
-    - React/Core
-  - React/RCTPushNotification (0.59.9):
-    - React/Core
-  - React/RCTSettings (0.59.9):
-    - React/Core
-  - React/RCTTest (0.59.9):
-    - React/Core
-  - React/RCTText (0.59.9):
-    - React/Core
-  - React/RCTVibration (0.59.9):
-    - React/Core
-  - React/RCTWebSocket (0.59.9):
-    - React/Core
-    - React/fishhook
-    - React/RCTBlob
-  - SalesforceAnalytics (7.2.0):
-    - SalesforceAnalytics/SalesforceAnalytics (= 7.2.0)
-  - SalesforceAnalytics/SalesforceAnalytics (7.2.0):
+  - React-jsiexecutor (0.60.5):
+    - DoubleConversion
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-cxxreact (= 0.60.5)
+    - React-jsi (= 0.60.5)
+  - React-jsinspector (0.60.5)
+  - React-RCTActionSheet (0.60.5):
+    - React-Core (= 0.60.5)
+  - React-RCTAnimation (0.60.5):
+    - React-Core (= 0.60.5)
+  - React-RCTBlob (0.60.5):
+    - React-Core (= 0.60.5)
+    - React-RCTNetwork (= 0.60.5)
+    - React-RCTWebSocket (= 0.60.5)
+  - React-RCTImage (0.60.5):
+    - React-Core (= 0.60.5)
+    - React-RCTNetwork (= 0.60.5)
+  - React-RCTLinking (0.60.5):
+    - React-Core (= 0.60.5)
+  - React-RCTNetwork (0.60.5):
+    - React-Core (= 0.60.5)
+  - React-RCTSettings (0.60.5):
+    - React-Core (= 0.60.5)
+  - React-RCTTest (0.60.5):
+    - React-Core (= 0.60.5)
+  - React-RCTText (0.60.5):
+    - React-Core (= 0.60.5)
+  - React-RCTVibration (0.60.5):
+    - React-Core (= 0.60.5)
+  - React-RCTWebSocket (0.60.5):
+    - React-Core (= 0.60.5)
+  - SalesforceAnalytics (7.3.0):
+    - SalesforceAnalytics/SalesforceAnalytics (= 7.3.0)
+  - SalesforceAnalytics/SalesforceAnalytics (7.3.0):
     - SalesforceSDKCommon
-  - SalesforceReact (7.2.0):
-    - SalesforceReact/SalesforceReact (= 7.2.0)
-  - SalesforceReact/SalesforceReact (7.2.0):
+  - SalesforceReact (7.3.0):
+    - SalesforceReact/SalesforceReact (= 7.3.0)
+  - SalesforceReact/SalesforceReact (7.3.0):
     - React
     - SmartSync
-  - SalesforceSDKCommon (7.2.0):
-    - SalesforceSDKCommon/SalesforceSDKCommon (= 7.2.0)
-  - SalesforceSDKCommon/SalesforceSDKCommon (7.2.0)
-  - SalesforceSDKCore (7.2.0):
-    - SalesforceSDKCore/SalesforceSDKCore (= 7.2.0)
-  - SalesforceSDKCore/SalesforceSDKCore (7.2.0):
+  - SalesforceSDKCommon (7.3.0):
+    - SalesforceSDKCommon/SalesforceSDKCommon (= 7.3.0)
+  - SalesforceSDKCommon/SalesforceSDKCommon (7.3.0)
+  - SalesforceSDKCore (7.3.0):
+    - SalesforceSDKCore/SalesforceSDKCore (= 7.3.0)
+  - SalesforceSDKCore/SalesforceSDKCore (7.3.0):
     - SalesforceAnalytics
-    - SalesforceSDKCore/SalesforceSDKCore/arc (= 7.2.0)
-    - SalesforceSDKCore/SalesforceSDKCore/base (= 7.2.0)
-    - SalesforceSDKCore/SalesforceSDKCore/no-arc (= 7.2.0)
-  - SalesforceSDKCore/SalesforceSDKCore/arc (7.2.0):
+    - SalesforceSDKCore/SalesforceSDKCore/arc (= 7.3.0)
+    - SalesforceSDKCore/SalesforceSDKCore/base (= 7.3.0)
+    - SalesforceSDKCore/SalesforceSDKCore/no-arc (= 7.3.0)
+  - SalesforceSDKCore/SalesforceSDKCore/arc (7.3.0):
     - SalesforceAnalytics
     - SalesforceSDKCore/SalesforceSDKCore/base
     - SalesforceSDKCore/SalesforceSDKCore/no-arc
-  - SalesforceSDKCore/SalesforceSDKCore/base (7.2.0):
+  - SalesforceSDKCore/SalesforceSDKCore/base (7.3.0):
     - SalesforceAnalytics
-  - SalesforceSDKCore/SalesforceSDKCore/no-arc (7.2.0):
+  - SalesforceSDKCore/SalesforceSDKCore/no-arc (7.3.0):
     - SalesforceAnalytics
     - SalesforceSDKCore/SalesforceSDKCore/base
-  - SmartStore (7.2.0):
-    - SmartStore/SmartStore (= 7.2.0)
-  - SmartStore/SmartStore (7.2.0):
+  - SmartStore (7.3.0):
+    - SmartStore/SmartStore (= 7.3.0)
+  - SmartStore/SmartStore (7.3.0):
     - FMDB/SQLCipher (~> 2.7.5)
     - SalesforceSDKCore
-    - SQLCipher/fts (~> 4.0.1)
-  - SmartSync (7.2.0):
-    - SmartSync/SmartSync (= 7.2.0)
-  - SmartSync/SmartSync (7.2.0):
+    - SQLCipher/fts (~> 4.2.0)
+  - SmartSync (7.3.0):
+    - SmartSync/SmartSync (= 7.3.0)
+  - SmartSync/SmartSync (7.3.0):
     - SalesforceSDKCore
     - SmartStore
-  - SQLCipher (4.0.1):
-    - SQLCipher/standard (= 4.0.1)
-  - SQLCipher/common (4.0.1)
-  - SQLCipher/fts (4.0.1):
+  - SQLCipher (4.2.0):
+    - SQLCipher/standard (= 4.2.0)
+  - SQLCipher/common (4.2.0)
+  - SQLCipher/fts (4.2.0):
     - SQLCipher/common
-  - SQLCipher/standard (4.0.1):
+  - SQLCipher/standard (4.2.0):
     - SQLCipher/common
-  - yoga (0.59.9.React)
+  - yoga (0.60.5.React)
 
 DEPENDENCIES:
   - DoubleConversion (from `./node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - Folly (from `./node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `./node_modules/react-native/third-party-podspecs/glog.podspec`)
-  - React/ART (from `./node_modules/react-native`)
-  - React/CxxBridge (from `./node_modules/react-native`)
-  - React/cxxreact (from `./node_modules/react-native`)
-  - React/DevSupport (from `./node_modules/react-native`)
-  - React/RCTActionSheet (from `./node_modules/react-native`)
-  - React/RCTAnimation (from `./node_modules/react-native`)
-  - React/RCTCameraRoll (from `./node_modules/react-native`)
-  - React/RCTGeolocation (from `./node_modules/react-native`)
-  - React/RCTImage (from `./node_modules/react-native`)
-  - React/RCTLinkingIOS (from `./node_modules/react-native`)
-  - React/RCTNetwork (from `./node_modules/react-native`)
-  - React/RCTPushNotification (from `./node_modules/react-native`)
-  - React/RCTSettings (from `./node_modules/react-native`)
-  - React/RCTTest (from `./node_modules/react-native`)
-  - React/RCTText (from `./node_modules/react-native`)
-  - React/RCTVibration (from `./node_modules/react-native`)
-  - React/RCTWebSocket (from `./node_modules/react-native`)
+  - React (from `./node_modules/react-native/`)
+  - React-Core (from `./node_modules/react-native/React`)
+  - React-cxxreact (from `./node_modules/react-native/ReactCommon/cxxreact`)
+  - React-DevSupport (from `./node_modules/react-native/React`)
+  - React-jsi (from `./node_modules/react-native/ReactCommon/jsi`)
+  - React-jsiexecutor (from `./node_modules/react-native/ReactCommon/jsiexecutor`)
+  - React-jsinspector (from `./node_modules/react-native/ReactCommon/jsinspector`)
+  - React-RCTActionSheet (from `./node_modules/react-native/Libraries/ActionSheetIOS`)
+  - React-RCTAnimation (from `./node_modules/react-native/Libraries/NativeAnimation`)
+  - React-RCTBlob (from `./node_modules/react-native/Libraries/Blob`)
+  - React-RCTImage (from `./node_modules/react-native/Libraries/Image`)
+  - React-RCTLinking (from `./node_modules/react-native/Libraries/LinkingIOS`)
+  - React-RCTNetwork (from `./node_modules/react-native/Libraries/Network`)
+  - React-RCTSettings (from `./node_modules/react-native/Libraries/Settings`)
+  - React-RCTTest (from `./RCTTest`)
+  - React-RCTText (from `./node_modules/react-native/Libraries/Text`)
+  - React-RCTVibration (from `./node_modules/react-native/Libraries/Vibration`)
+  - React-RCTWebSocket (from `./node_modules/react-native/Libraries/WebSocket`)
   - SalesforceAnalytics (from `./mobile_sdk/SalesforceMobileSDK-iOS`)
   - SalesforceReact (from `../..`)
   - SalesforceSDKCommon (from `./mobile_sdk/SalesforceMobileSDK-iOS`)
@@ -150,7 +162,7 @@ DEPENDENCIES:
   - yoga (from `./node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  https://cdn.cocoapods.org/:
     - boost-for-react-native
     - FMDB
     - SQLCipher
@@ -163,7 +175,41 @@ EXTERNAL SOURCES:
   glog:
     :podspec: "./node_modules/react-native/third-party-podspecs/glog.podspec"
   React:
-    :path: "./node_modules/react-native"
+    :path: "./node_modules/react-native/"
+  React-Core:
+    :path: "./node_modules/react-native/React"
+  React-cxxreact:
+    :path: "./node_modules/react-native/ReactCommon/cxxreact"
+  React-DevSupport:
+    :path: "./node_modules/react-native/React"
+  React-jsi:
+    :path: "./node_modules/react-native/ReactCommon/jsi"
+  React-jsiexecutor:
+    :path: "./node_modules/react-native/ReactCommon/jsiexecutor"
+  React-jsinspector:
+    :path: "./node_modules/react-native/ReactCommon/jsinspector"
+  React-RCTActionSheet:
+    :path: "./node_modules/react-native/Libraries/ActionSheetIOS"
+  React-RCTAnimation:
+    :path: "./node_modules/react-native/Libraries/NativeAnimation"
+  React-RCTBlob:
+    :path: "./node_modules/react-native/Libraries/Blob"
+  React-RCTImage:
+    :path: "./node_modules/react-native/Libraries/Image"
+  React-RCTLinking:
+    :path: "./node_modules/react-native/Libraries/LinkingIOS"
+  React-RCTNetwork:
+    :path: "./node_modules/react-native/Libraries/Network"
+  React-RCTSettings:
+    :path: "./node_modules/react-native/Libraries/Settings"
+  React-RCTTest:
+    :path: "./RCTTest"
+  React-RCTText:
+    :path: "./node_modules/react-native/Libraries/Text"
+  React-RCTVibration:
+    :path: "./node_modules/react-native/Libraries/Vibration"
+  React-RCTWebSocket:
+    :path: "./node_modules/react-native/Libraries/WebSocket"
   SalesforceAnalytics:
     :path: "./mobile_sdk/SalesforceMobileSDK-iOS"
   SalesforceReact:
@@ -181,20 +227,37 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
-  DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
+  DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
-  Folly: de497beb10f102453a1afa9edbf8cf8a251890de
-  glog: aefd1eb5dda2ab95ba0938556f34b98e2da3a60d
-  React: a86b92f00edbe1873a63e4a212c29b7a7ad5224f
-  SalesforceAnalytics: 7d6be542607f363b769c3d992256b79fc3c2839d
-  SalesforceReact: 10a2ee46c68a371e0148ca61ccab3701988789ef
-  SalesforceSDKCommon: 9c36db67ede8e7ca251c4ec2cb4fad28513f2b3f
-  SalesforceSDKCore: cae164a91602d7a6f4c3389cd9e547c2d623ac60
-  SmartStore: 730a4bb46a70dc3200c5bd021e7984d1fdccfab5
-  SmartSync: 94971d2363a3421b64bd078a3eff1cd9fe880c50
-  SQLCipher: 4636a257060f6f1b4e143a143028b61a2b462d0d
-  yoga: 03ff42a6f223fb88deeaed60249020d80c3091ee
+  Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
+  glog: 1f3da668190260b06b429bb211bfbee5cd790c28
+  React: 53c53c4d99097af47cf60594b8706b4e3321e722
+  React-Core: ba421f6b4f4cbe2fb17c0b6fc675f87622e78a64
+  React-cxxreact: 8384287780c4999351ad9b6e7a149d9ed10a2395
+  React-DevSupport: 197fb409737cff2c4f9986e77c220d7452cb9f9f
+  React-jsi: 4d8c9efb6312a9725b18d6fc818ffc103f60fec2
+  React-jsiexecutor: 90ad2f9db09513fc763bc757fdc3c4ff8bde2a30
+  React-jsinspector: e08662d1bf5b129a3d556eb9ea343a3f40353ae4
+  React-RCTActionSheet: b0f1ea83f4bf75fb966eae9bfc47b78c8d3efd90
+  React-RCTAnimation: 359ba1b5690b1e87cc173558a78e82d35919333e
+  React-RCTBlob: 5e2b55f76e9a1c7ae52b826923502ddc3238df24
+  React-RCTImage: f5f1c50922164e89bdda67bcd0153952a5cfe719
+  React-RCTLinking: d0ecbd791e9ddddc41fa1f66b0255de90e8ee1e9
+  React-RCTNetwork: e26946300b0ab7bb6c4a6348090e93fa21f33a9d
+  React-RCTSettings: d0d37cb521b7470c998595a44f05847777cc3f42
+  React-RCTTest: 7f8b548a05900d5726c56e60082c1a79b53c1ab7
+  React-RCTText: b074d89033583d4f2eb5faf7ea2db3a13c7553a2
+  React-RCTVibration: 2105b2e0e2b66a6408fc69a46c8a7fb5b2fdade0
+  React-RCTWebSocket: cd932a16b7214898b6b7f788c8bddb3637246ac4
+  SalesforceAnalytics: 9edbf6c0a95a069aa208b46f31871997cde3db77
+  SalesforceReact: 4027c95da1c20b882d194a3639d90b5d91f175f9
+  SalesforceSDKCommon: a55a4aa041724189b7335d10b04f479304b58983
+  SalesforceSDKCore: 4176384a981dccc4be2e9019ccb58829d68dde84
+  SmartStore: 1f7505bb6c8495c2bcc78f833c4cf77c0f5e7f45
+  SmartSync: 8581471ae37e17b63a113b56b2316568dcd467d7
+  SQLCipher: 0187a2180ac288ea686b670b7141da62cd013b16
+  yoga: 312528f5bbbba37b4dcea5ef00e8b4033fdd9411
 
-PODFILE CHECKSUM: 7ae8d13886541cc0ff88350a66874958a979b3bc
+PODFILE CHECKSUM: 039b4e6ffa1ea62a6ad688aebed7e9b81c56959e
 
-COCOAPODS: 1.6.1
+COCOAPODS: 1.7.5

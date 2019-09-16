@@ -28,7 +28,7 @@ import { NativeModules } from 'react-native';
 const { SalesforceNetReactBridge, SFNetReactBridge } = NativeModules;
 import {exec as forceExec} from './react.force.common';
 
-var  apiVersion = 'v44.0';
+var  apiVersion = 'v46.0';
 
 /**
  * Set apiVersion to be used

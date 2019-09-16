@@ -1,9 +1,21 @@
 #!/usr/bin/env node
 
+const path = require('path')
 var execSync = require('child_process').execSync;
 
 console.log('=== Installing npm dependencies');
 execSync('npm install', {stdio:[0,1,2]});
+
+var rimraf = require('rimraf');
+
+console.log('=== Getting react native git repo (for test runner classes)');
+const rnVersion = require(path.join(__dirname, '..', '..', 'package.json')).peerDependencies['react-native']
+execSync('git clone --branch v' + rnVersion + ' --single-branch --depth 1 https://github.com/facebook/react-native', {stdio:[0,1,2]});
+rimraf.sync('RCTTest');
+execSync('mv react-native/RNTester/RCTTest .');
+execSync("gsed -i 's/package = .*$/package = {}/g' RCTTest/React-RCTTest.podspec");
+execSync(`gsed -i 's/version = .*$/version = "${rnVersion}"/g' RCTTest/React-RCTTest.podspec `);
+rimraf.sync('react-native');
 
 console.log('=== Installing sdk dependencies');
 execSync('node ./updatesdk.js', {stdio: [0,1,2]});
