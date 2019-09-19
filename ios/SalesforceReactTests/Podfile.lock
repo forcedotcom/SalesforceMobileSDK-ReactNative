@@ -83,43 +83,43 @@ PODS:
     - React-Core (= 0.60.5)
   - React-RCTWebSocket (0.60.5):
     - React-Core (= 0.60.5)
-  - SalesforceAnalytics (7.3.0):
-    - SalesforceAnalytics/SalesforceAnalytics (= 7.3.0)
-  - SalesforceAnalytics/SalesforceAnalytics (7.3.0):
+  - SalesforceAnalytics (8.0.0):
+    - SalesforceAnalytics/SalesforceAnalytics (= 8.0.0)
+  - SalesforceAnalytics/SalesforceAnalytics (8.0.0):
     - SalesforceSDKCommon
-  - SalesforceReact (7.3.0):
-    - SalesforceReact/SalesforceReact (= 7.3.0)
-  - SalesforceReact/SalesforceReact (7.3.0):
+  - SalesforceReact (8.0.0):
+    - SalesforceReact/SalesforceReact (= 8.0.0)
+  - SalesforceReact/SalesforceReact (8.0.0):
     - React
     - SmartSync
-  - SalesforceSDKCommon (7.3.0):
-    - SalesforceSDKCommon/SalesforceSDKCommon (= 7.3.0)
-  - SalesforceSDKCommon/SalesforceSDKCommon (7.3.0)
-  - SalesforceSDKCore (7.3.0):
-    - SalesforceSDKCore/SalesforceSDKCore (= 7.3.0)
-  - SalesforceSDKCore/SalesforceSDKCore (7.3.0):
+  - SalesforceSDKCommon (8.0.0):
+    - SalesforceSDKCommon/SalesforceSDKCommon (= 8.0.0)
+  - SalesforceSDKCommon/SalesforceSDKCommon (8.0.0)
+  - SalesforceSDKCore (8.0.0):
+    - SalesforceSDKCore/SalesforceSDKCore (= 8.0.0)
+  - SalesforceSDKCore/SalesforceSDKCore (8.0.0):
     - SalesforceAnalytics
-    - SalesforceSDKCore/SalesforceSDKCore/arc (= 7.3.0)
-    - SalesforceSDKCore/SalesforceSDKCore/base (= 7.3.0)
-    - SalesforceSDKCore/SalesforceSDKCore/no-arc (= 7.3.0)
-  - SalesforceSDKCore/SalesforceSDKCore/arc (7.3.0):
+    - SalesforceSDKCore/SalesforceSDKCore/arc (= 8.0.0)
+    - SalesforceSDKCore/SalesforceSDKCore/base (= 8.0.0)
+    - SalesforceSDKCore/SalesforceSDKCore/no-arc (= 8.0.0)
+  - SalesforceSDKCore/SalesforceSDKCore/arc (8.0.0):
     - SalesforceAnalytics
     - SalesforceSDKCore/SalesforceSDKCore/base
     - SalesforceSDKCore/SalesforceSDKCore/no-arc
-  - SalesforceSDKCore/SalesforceSDKCore/base (7.3.0):
+  - SalesforceSDKCore/SalesforceSDKCore/base (8.0.0):
     - SalesforceAnalytics
-  - SalesforceSDKCore/SalesforceSDKCore/no-arc (7.3.0):
+  - SalesforceSDKCore/SalesforceSDKCore/no-arc (8.0.0):
     - SalesforceAnalytics
     - SalesforceSDKCore/SalesforceSDKCore/base
-  - SmartStore (7.3.0):
-    - SmartStore/SmartStore (= 7.3.0)
-  - SmartStore/SmartStore (7.3.0):
+  - SmartStore (8.0.0):
+    - SmartStore/SmartStore (= 8.0.0)
+  - SmartStore/SmartStore (8.0.0):
     - FMDB/SQLCipher (~> 2.7.5)
     - SalesforceSDKCore
     - SQLCipher/fts (~> 4.2.0)
-  - SmartSync (7.3.0):
-    - SmartSync/SmartSync (= 7.3.0)
-  - SmartSync/SmartSync (7.3.0):
+  - SmartSync (8.0.0):
+    - SmartSync/SmartSync (= 8.0.0)
+  - SmartSync/SmartSync (8.0.0):
     - SalesforceSDKCore
     - SmartStore
   - SQLCipher (4.2.0):
@@ -249,15 +249,15 @@ SPEC CHECKSUMS:
   React-RCTText: b074d89033583d4f2eb5faf7ea2db3a13c7553a2
   React-RCTVibration: 2105b2e0e2b66a6408fc69a46c8a7fb5b2fdade0
   React-RCTWebSocket: cd932a16b7214898b6b7f788c8bddb3637246ac4
-  SalesforceAnalytics: 9edbf6c0a95a069aa208b46f31871997cde3db77
-  SalesforceReact: 4027c95da1c20b882d194a3639d90b5d91f175f9
-  SalesforceSDKCommon: a55a4aa041724189b7335d10b04f479304b58983
-  SalesforceSDKCore: 4176384a981dccc4be2e9019ccb58829d68dde84
-  SmartStore: 1f7505bb6c8495c2bcc78f833c4cf77c0f5e7f45
-  SmartSync: 8581471ae37e17b63a113b56b2316568dcd467d7
+  SalesforceAnalytics: 692771c49b40cd328339507c30dee12acab1698d
+  SalesforceReact: 4457fd0e2934f00a9c1e71ae8e43dee1d6a31269
+  SalesforceSDKCommon: 4ee0f492e02748f9c78aea954cc25b05ffce8d4d
+  SalesforceSDKCore: 1674ae08b0e5b628311b05f2e182621dea4ec702
+  SmartStore: 14fa062ef8f3ea419a79150434c417ecc4249c52
+  SmartSync: 23e64228dc126fff04372d020824deaf0b09af7b
   SQLCipher: 0187a2180ac288ea686b670b7141da62cd013b16
   yoga: 312528f5bbbba37b4dcea5ef00e8b4033fdd9411
 
-PODFILE CHECKSUM: 039b4e6ffa1ea62a6ad688aebed7e9b81c56959e
+PODFILE CHECKSUM: 5e5d7bb897698f259135666f2c782831bc8cefa3
 
 COCOAPODS: 1.7.5
