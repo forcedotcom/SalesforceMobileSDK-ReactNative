@@ -28,7 +28,7 @@ module.exports = {
     net:require('./src/react.force.net'),
     oauth:require('./src/react.force.oauth'),
     smartstore:require('./src/react.force.smartstore'),
-    smartsync:require('./src/react.force.smartsync'),
+    mobilesync:require('./src/react.force.mobilesync'),
     forceClient:require('./src/react.force.net'),
     forceUtil:require('./src/react.force.util'),
     forceTest:require('./src/react.force.test')

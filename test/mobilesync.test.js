@@ -27,7 +27,7 @@
 import { assert } from 'chai';
 import * as net from '../src/react.force.net';
 import * as smartstore from '../src/react.force.smartstore';
-import * as smartsync from '../src/react.force.smartsync';
+import * as mobilesync from '../src/react.force.mobilesync';
 import { registerTest, testDone } from '../src/react.force.test';
 import { promiser, timeoutPromiser } from '../src/react.force.util';
 
@@ -43,13 +43,12 @@ upsertSoupEntries = promiser(smartstore.upsertSoupEntries);
 retrieveSoupEntries = promiser(smartstore.retrieveSoupEntries);
 runSmartQuery = promiser(smartstore.runSmartQuery);
 
-getSyncStatus = promiser(smartsync.getSyncStatus);
-deleteSync = promiser(smartsync.deleteSync);
-syncDown = promiser(smartsync.syncDown);
-syncUp = promiser(smartsync.syncUp);
-reSync = promiser(smartsync.reSync);
-cleanResyncGhosts = promiser(smartsync.cleanResyncGhosts);
-
+getSyncStatus = promiser(mobilesync.getSyncStatus);
+deleteSync = promiser(mobilesync.deleteSync);
+syncDown = promiser(mobilesync.syncDown);
+syncUp = promiser(mobilesync.syncUp);
+reSync = promiser(mobilesync.reSync);
+cleanResyncGhosts = promiser(mobilesync.cleanResyncGhosts);
 
 const storeConfig = {isGlobalStore:false};
 const soupName = 'contacts';
