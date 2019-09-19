@@ -31,7 +31,7 @@
 
 @end
 
-@implementation MobileMobileSyncTests
+@implementation ReactMobileSyncTests
 
 + (void)setUp
 {
