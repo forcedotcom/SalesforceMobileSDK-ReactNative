@@ -20,9 +20,9 @@ Pod::Spec.new do |s|
   s.subspec 'SalesforceReact' do |salesforcereact|
 
       salesforcereact.dependency 'React'
-      salesforcereact.dependency 'SmartSync'
+      salesforcereact.dependency 'MobileSync'
       salesforcereact.source_files = 'ios/SalesforceReact/**/*.{h,m}'
-      salesforcereact.public_header_files = 'ios/SalesforceReact/SFNetReactBridge.h', 'ios/SalesforceReact/SFOauthReactBridge.h', 'ios/SalesforceReact/SFSDKReactLogger.h', 'ios/SalesforceReact/SFSmartStoreReactBridge.h', 'ios/SalesforceReact/SFSmartSyncReactBridge.h', 'libs/SalesforceReact/SalesforceReact/SalesforceReact.h', 'ios/SalesforceReact/SalesforceReactSDKManager.h'
+      salesforcereact.public_header_files = 'ios/SalesforceReact/SFNetReactBridge.h', 'ios/SalesforceReact/SFOauthReactBridge.h', 'ios/SalesforceReact/SFSDKReactLogger.h', 'ios/SalesforceReact/SFSmartStoreReactBridge.h', 'ios/SalesforceReact/SFMobileSyncReactBridge.h', 'libs/SalesforceReact/SalesforceReact/SalesforceReact.h', 'ios/SalesforceReact/SalesforceReactSDKManager.h'
       salesforcereact.prefix_header_contents = '#import "SFSDKReactLogger.h"'
       salesforcereact.requires_arc = true
 

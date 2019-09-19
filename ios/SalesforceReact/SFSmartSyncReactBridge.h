@@ -27,7 +27,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SFSmartSyncReactBridge : NSObject <RCTBridgeModule>
+@interface SFMobileSyncReactBridge : NSObject <RCTBridgeModule>
 
 @end
 

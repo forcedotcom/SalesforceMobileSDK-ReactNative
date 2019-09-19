@@ -24,14 +24,14 @@
 
 #import <UIKit/UIKit.h>
 #import <SmartStore/SmartStore.h>
-#import <SmartSync/SmartSync.h>
+#import <MobileSync/MobileSync.h>
 #import "ReactTestCase.h"
 
-@interface ReactSmartSyncTests : ReactTestCase
+@interface ReactMobileSyncTests : ReactTestCase
 
 @end
 
-@implementation ReactSmartSyncTests
+@implementation MobileMobileSyncTests
 
 + (void)setUp
 {
@@ -40,12 +40,12 @@
 }
 
 - (void)setUp {
-    self.jsSuitePath = @"node_modules/react-native-force/test/smartsync.test";
+    self.jsSuitePath = @"node_modules/react-native-force/test/mobilesync.test";
     [super setUp];
 }
 
 - (void)tearDown {
-    [SFSmartSyncSyncManager removeSharedInstances];
+    [SFMobileSyncSyncManager removeSharedInstances];
     [SFSmartStore removeAllStores];
     [super tearDown];
 }

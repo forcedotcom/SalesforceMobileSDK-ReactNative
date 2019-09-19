@@ -12,7 +12,7 @@
 		4FFF1EFB2166DFF900C050EF /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF1EFA2166DFF900C050EF /* main.m */; };
 		4FFF1F432166E14A00C050EF /* ReactTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF1F3C2166E14900C050EF /* ReactTestCase.m */; };
 		4FFF1F442166E14A00C050EF /* ReactHarnessTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF1F3D2166E14900C050EF /* ReactHarnessTests.m */; };
-		4FFF1F452166E14A00C050EF /* ReactSmartSyncTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF1F3E2166E14900C050EF /* ReactSmartSyncTests.m */; };
+		4FFF1F452166E14A00C050EF /* ReactMobileSyncTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF1F3E2166E14900C050EF /* ReactMobileSyncTests.m */; };
 		4FFF1F462166E14A00C050EF /* ReactSmartStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF1F3F2166E14900C050EF /* ReactSmartStoreTests.m */; };
 		4FFF1F472166E14A00C050EF /* ReactNetTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF1F402166E14900C050EF /* ReactNetTests.m */; };
 		4FFF1F482166E14A00C050EF /* ReactOauthTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF1F422166E14A00C050EF /* ReactOauthTests.m */; };
@@ -43,7 +43,7 @@
 		4FFF1F322166E11D00C050EF /* SalesforceReactTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SalesforceReactTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4FFF1F3C2166E14900C050EF /* ReactTestCase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ReactTestCase.m; sourceTree = "<group>"; };
 		4FFF1F3D2166E14900C050EF /* ReactHarnessTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ReactHarnessTests.m; sourceTree = "<group>"; };
-		4FFF1F3E2166E14900C050EF /* ReactSmartSyncTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ReactSmartSyncTests.m; sourceTree = "<group>"; };
+		4FFF1F3E2166E14900C050EF /* ReactMobileSyncTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ReactMobileSyncTests.m; sourceTree = "<group>"; };
 		4FFF1F3F2166E14900C050EF /* ReactSmartStoreTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ReactSmartStoreTests.m; sourceTree = "<group>"; };
 		4FFF1F402166E14900C050EF /* ReactNetTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ReactNetTests.m; sourceTree = "<group>"; };
 		4FFF1F412166E14900C050EF /* ReactTestCase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ReactTestCase.h; sourceTree = "<group>"; };
@@ -114,7 +114,7 @@
 				4FFF1F402166E14900C050EF /* ReactNetTests.m */,
 				4FFF1F422166E14A00C050EF /* ReactOauthTests.m */,
 				4FFF1F3F2166E14900C050EF /* ReactSmartStoreTests.m */,
-				4FFF1F3E2166E14900C050EF /* ReactSmartSyncTests.m */,
+				4FFF1F3E2166E14900C050EF /* ReactMobileSyncTests.m */,
 				4FFF1F412166E14900C050EF /* ReactTestCase.h */,
 				4FFF1F3C2166E14900C050EF /* ReactTestCase.m */,
 			);
@@ -337,7 +337,7 @@
 			files = (
 				4FFF1F442166E14A00C050EF /* ReactHarnessTests.m in Sources */,
 				4FFF1F462166E14A00C050EF /* ReactSmartStoreTests.m in Sources */,
-				4FFF1F452166E14A00C050EF /* ReactSmartSyncTests.m in Sources */,
+				4FFF1F452166E14A00C050EF /* ReactMobileSyncTests.m in Sources */,
 				4FFF1F432166E14A00C050EF /* ReactTestCase.m in Sources */,
 				4FFF1F482166E14A00C050EF /* ReactOauthTests.m in Sources */,
 				4FFF1F472166E14A00C050EF /* ReactNetTests.m in Sources */,
