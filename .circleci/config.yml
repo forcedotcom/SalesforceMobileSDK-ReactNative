@@ -27,6 +27,11 @@ jobs:
       env: 
         type: executor
         default: "mac"
+    executor: << parameters.env >> 
+    environment:
+      DEVICE: << parameters.device >>
+      IOS_VERSION: << parameters.ios >>
+      NIGHTLY_TEST: << parameters.nightly-test >>
     steps:
       - checkout
       - restore_cache: 
