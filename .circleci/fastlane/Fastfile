@@ -1,5 +1,5 @@
-ENV['DEVICE'] = 'iPhone Xʀ' unless ENV.has_key?('DEVICE')
-ENV['IOS_VERSION'] = '12.4' unless ENV.has_key?('IOS_VERSION')
+ENV['DEVICE'] = 'iPhone 11' unless ENV.has_key?('DEVICE')
+ENV['IOS_VERSION'] = '13.0' unless ENV.has_key?('IOS_VERSION')
 
 lane :build do
     analyze_scheme("SalesforceReactTestApp")
