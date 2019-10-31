@@ -36,7 +36,7 @@
 #endif
 
 #import <XCTest/XCTest.h>
-#import <React/RCTTestRunner.h>
+#import <RCTTest/RCTTestRunner.h>
 
 #define RCT_TEST(name)                        \
 - (void)test##name                            \
