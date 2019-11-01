@@ -17,8 +17,8 @@
 		4FFF1F472166E14A00C050EF /* ReactNetTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF1F402166E14900C050EF /* ReactNetTests.m */; };
 		4FFF1F482166E14A00C050EF /* ReactOauthTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF1F422166E14A00C050EF /* ReactOauthTests.m */; };
 		4FFF1F4B2166E50C00C050EF /* test_credentials.json in Resources */ = {isa = PBXBuildFile; fileRef = 4FFF1F4A2166E50C00C050EF /* test_credentials.json */; };
-		D852AB661CA69772C8D460A4 /* libPods-SalesforceReactTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D64C9370C435CBDE90FA6908 /* libPods-SalesforceReactTests.a */; };
-		E7340808FBBD27D997A41597 /* libPods-SalesforceReactTestApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FF8122C58EEE45B56AEF3928 /* libPods-SalesforceReactTestApp.a */; };
+		AFF8607B7CB340D176FB7E04 /* Pods_SalesforceReactTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8552B3C397A44688A07636B /* Pods_SalesforceReactTests.framework */; };
+		E109CF3A486C9672412A5CCA /* Pods_SalesforceReactTestApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED3472E37E0AF8221AFF4508 /* Pods_SalesforceReactTestApp.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,8 +51,8 @@
 		4FFF1F4A2166E50C00C050EF /* test_credentials.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = test_credentials.json; sourceTree = SOURCE_ROOT; };
 		8833450A1F8DDA34E9264712 /* Pods-SalesforceReactTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SalesforceReactTests.debug.xcconfig"; path = "Target Support Files/Pods-SalesforceReactTests/Pods-SalesforceReactTests.debug.xcconfig"; sourceTree = "<group>"; };
 		9434D973458317F53AEB081C /* Pods-SalesforceReactTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SalesforceReactTests.release.xcconfig"; path = "Target Support Files/Pods-SalesforceReactTests/Pods-SalesforceReactTests.release.xcconfig"; sourceTree = "<group>"; };
-		D64C9370C435CBDE90FA6908 /* libPods-SalesforceReactTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SalesforceReactTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		FF8122C58EEE45B56AEF3928 /* libPods-SalesforceReactTestApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SalesforceReactTestApp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D8552B3C397A44688A07636B /* Pods_SalesforceReactTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SalesforceReactTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		ED3472E37E0AF8221AFF4508 /* Pods_SalesforceReactTestApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SalesforceReactTestApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,7 +60,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E7340808FBBD27D997A41597 /* libPods-SalesforceReactTestApp.a in Frameworks */,
+				E109CF3A486C9672412A5CCA /* Pods_SalesforceReactTestApp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -68,7 +68,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D852AB661CA69772C8D460A4 /* libPods-SalesforceReactTests.a in Frameworks */,
+				AFF8607B7CB340D176FB7E04 /* Pods_SalesforceReactTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -144,8 +144,8 @@
 		F5BE60D311B128CF34C86462 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				FF8122C58EEE45B56AEF3928 /* libPods-SalesforceReactTestApp.a */,
-				D64C9370C435CBDE90FA6908 /* libPods-SalesforceReactTests.a */,
+				ED3472E37E0AF8221AFF4508 /* Pods_SalesforceReactTestApp.framework */,
+				D8552B3C397A44688A07636B /* Pods_SalesforceReactTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -179,7 +179,7 @@
 				4FFF1F2F2166E11D00C050EF /* Frameworks */,
 				4FFF1F302166E11D00C050EF /* Resources */,
 				A34CE17122BD40C30033A467 /* ShellScript */,
-				428CDF00B9B358EEC2675C4B /* [CP] Copy Pods Resources */,
+				BCFB3D87EA044E099C7B1EDA /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -202,6 +202,7 @@
 				TargetAttributes = {
 					4FFF1EE72166DFF900C050EF = {
 						CreatedOnToolsVersion = 10.0;
+						LastSwiftMigration = 1110;
 					};
 					4FFF1F312166E11D00C050EF = {
 						CreatedOnToolsVersion = 10.0;
@@ -285,23 +286,6 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		428CDF00B9B358EEC2675C4B /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SalesforceReactTests/Pods-SalesforceReactTests-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SalesforceReactTests/Pods-SalesforceReactTests-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SalesforceReactTests/Pods-SalesforceReactTests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		A34CE17122BD40C30033A467 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -318,6 +302,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "cp -a ${TARGET_BUILD_DIR}/SalesforceReactTests.xctest ${TARGET_BUILD_DIR}/../../\n";
+		};
+		BCFB3D87EA044E099C7B1EDA /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SalesforceReactTests/Pods-SalesforceReactTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SalesforceReactTests/Pods-SalesforceReactTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SalesforceReactTests/Pods-SalesforceReactTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -411,6 +412,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -463,6 +465,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -472,6 +475,7 @@
 			baseConfigurationReference = 1C32A93F7274A1A7CF2DA17F /* Pods-SalesforceReactTestApp.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = SalesforceReactTestApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -480,6 +484,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.salesforce.mobilesdk.SalesforceReactApp.SalesforceReactTestApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -489,6 +495,7 @@
 			baseConfigurationReference = 487CCB960B85A051F0053EEA /* Pods-SalesforceReactTestApp.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = SalesforceReactTestApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -497,6 +504,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.salesforce.mobilesdk.SalesforceReactApp.SalesforceReactTestApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
