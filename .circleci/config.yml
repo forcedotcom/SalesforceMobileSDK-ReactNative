@@ -117,4 +117,4 @@ workflows:
           name: "ReactNative iOS 12 Nightly"
           nightly-test: true
           ios: "12.2"
-          device: "iPhone XR"
+          device: "iPhone 8"
