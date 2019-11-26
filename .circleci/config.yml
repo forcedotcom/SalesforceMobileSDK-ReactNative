@@ -7,6 +7,7 @@ executors:
     environment:
       BASH_ENV: ~/.bashrc
       FASTLANE_SKIP_UPDATE_CHECK: "true"
+      CHRUBY_VER: 2.6.5
 
 
 version: 2.1
@@ -48,11 +49,13 @@ jobs:
       - run:
           name: Compile
           command:  |
+            chruby ${CHRUBY_VER}
             cd .circleci
             bundle exec fastlane build
       - run:
           name: Run Tests
           command:  |
+            chruby ${CHRUBY_VER}
             cd .circleci
             bundle exec fastlane test
       - store_test_results:
