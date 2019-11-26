@@ -38,7 +38,7 @@ jobs:
           command: |
             cd .circleci
             brew install gnu-sed
-            gem install bundler
+            sudo gem install bundler
             bundle update 
             cd ../ios/SalesforceReactTests
             ./prepareios.js 
