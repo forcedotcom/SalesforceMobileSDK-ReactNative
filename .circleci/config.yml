@@ -1,6 +1,6 @@
 executors:
   mac:
-    working_directory: ~/SalesforceMobileSDK-iOS
+    working_directory: ~/SalesforceMobileSDK-ReactNative
     macos:
       xcode: 11.2.1
     shell: /bin/bash --login -eo pipefail
@@ -42,28 +42,26 @@ jobs:
             ./prepareios.js 
       - run:
           name: Creating test_credentials.json
-          command: | 
+          command: |
             cd ios/SalesforceReactTests
             node ./create_test_credentials_from_env.js
       - run:
           name: Compile
           command:  |
-            chruby ${CHRUBY_VER}
             cd .circleci
-            fastlane build
+            bundle exec fastlane build
       - run:
           name: Run Tests
           command:  |
-            chruby ${CHRUBY_VER}
             cd .circleci
-            fastlane test
+            bundle exec fastlane test
       - store_test_results:
           path: /Users/distiller/SalesforceMobileSDK-ReactNative/.circleci/test_output
       - store_artifacts:
           path: /Users/distiller/SalesforceMobileSDK-ReactNative/.circleci/test_output
           destination: Test-Results
       - store_artifacts:
-          path: /Users/distiller/SalesforceMobileSDK-ReactNative/.circleci/clangReport
+          path: /Users/distiller/SalesforceMobileSDK-ReactNative/ios/SalesforceReactTests/clangReport/
           destination: Static-Analysis
       - run:
           name: Upload code coverage
@@ -107,4 +105,4 @@ workflows:
           name: "ReactNative iOS 12 Nightly"
           nightly-test: true
           ios: "12.2"
-          device: "iPhone XR"
+          device: "iPhone 8"
