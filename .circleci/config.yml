@@ -1,14 +1,13 @@
 executors:
   mac:
-    working_directory: ~/SalesforceMobileSDK-iOS
+    working_directory: ~/SalesforceMobileSDK-ReactNative
     macos:
-      xcode: 11.0.0
+      xcode: 11.2.1
     shell: /bin/bash --login -eo pipefail
     environment:
       BASH_ENV: ~/.bashrc
       FASTLANE_SKIP_UPDATE_CHECK: "true"
-      CHRUBY_VER: 2.6.3
-
+      CHRUBY_VER: 2.6.5
 
 
 version: 2.1
@@ -20,7 +19,7 @@ jobs:
         default: "iPhone 11"
       ios:
         type: string
-        default: "13.0"
+        default: "13.2"
       nightly-test:
         type: boolean
         default: false
@@ -34,46 +33,37 @@ jobs:
       NIGHTLY_TEST: << parameters.nightly-test >>
     steps:
       - checkout
-      - restore_cache: 
-          keys:
-            - v5-gems-{{ checksum ".circleci/Gemfile.lock" }}
-            - v5-gems-
       - run:
           name: Installing Dependencies
           command: |
-            cd .circleci
             brew install gnu-sed
-            bundle update 
-            cd ../ios/SalesforceReactTests
+            cd ios/SalesforceReactTests
             ./prepareios.js 
-      - save_cache:
-          key: v5-gems-{{ checksum ".circleci/Gemfile.lock" }}
-          paths:
-            - /Users/distiller/.gem/ruby/2.6.3
       - run:
           name: Creating test_credentials.json
-          command: | 
+          command: |
             cd ios/SalesforceReactTests
             node ./create_test_credentials_from_env.js
       - run:
           name: Compile
           command:  |
-            chruby ${CHRUBY_VER}
             cd .circleci
             fastlane build
       - run:
           name: Run Tests
           command:  |
-            chruby ${CHRUBY_VER}
             cd .circleci
-            fastlane test
+            chruby ${CHRUBY_VER}
+            sudo gem install bundler
+            sudo bundle install
+            sudo bundle exec fastlane test
       - store_test_results:
           path: /Users/distiller/SalesforceMobileSDK-ReactNative/.circleci/test_output
       - store_artifacts:
           path: /Users/distiller/SalesforceMobileSDK-ReactNative/.circleci/test_output
           destination: Test-Results
       - store_artifacts:
-          path: /Users/distiller/SalesforceMobileSDK-ReactNative/.circleci/clangReport
+          path: /Users/distiller/SalesforceMobileSDK-ReactNative/ios/SalesforceReactTests/clangReport/
           destination: Static-Analysis
       - run:
           name: Upload code coverage
@@ -117,4 +107,4 @@ workflows:
           name: "ReactNative iOS 12 Nightly"
           nightly-test: true
           ios: "12.2"
-          device: "iPhone XR"
+          device: "iPhone 8"
