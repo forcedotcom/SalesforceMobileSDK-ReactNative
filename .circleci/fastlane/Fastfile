@@ -1,5 +1,5 @@
-ENV['DEVICE'] = 'iPhone 11' unless ENV.has_key?('DEVICE')
-ENV['IOS_VERSION'] = '13.0' unless ENV.has_key?('IOS_VERSION')
+$device = ENV.has_key?('DEVICE') ? ENV['DEVICE'] : 'iPhone 11'
+$ios = ENV.has_key?('IOS_VERSION') ? ENV['IOS_VERSION'] : '13.2'
 
 lane :build do
     analyze_scheme("SalesforceReactTestApp")
@@ -10,15 +10,21 @@ lane :test do
 end
 
 def test_scheme(scheme)
-  scan(
-      workspace: '../ios/SalesforceReactTests/SalesforceReactTestApp.xcworkspace',
-      scheme: scheme,
-      device: ENV['DEVICE'] + ' (' + ENV['IOS_VERSION'] + ')',
-      output_directory: 'test_output',
-      output_types: 'html,junit',
-      code_coverage: true,
-      skip_build: true
-  )
+    $device.gsub!(' ', '-')
+    $ios.gsub!('.', '-')
+    system('xcrun simctl delete test_device') or true
+    sim_id = `xcrun simctl create test_device com.apple.CoreSimulator.SimDeviceType.#{$device} com.apple.CoreSimulator.SimRuntime.iOS-#{$ios}`.delete("\n")
+    destination = "test_device (" + `instruments -s devices | grep test_device | awk -F"[()]" '{print $2}'`.delete("\n") + ")"
+    
+    scan(
+        workspace: '../ios/SalesforceReactTests/SalesforceReactTestApp.xcworkspace',
+        scheme: scheme,
+        device: destination,
+        output_directory: 'test_output',
+        output_types: 'html,junit',
+        code_coverage: true,
+        skip_build: true
+    )
 end
 
 def analyze_scheme(scheme)
