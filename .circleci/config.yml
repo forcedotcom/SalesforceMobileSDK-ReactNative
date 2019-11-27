@@ -55,7 +55,7 @@ jobs:
           name: Run Tests
           command:  |
             chruby ${CHRUBY_VER}
-            gem install bundler
+            sudo gem install bundler
             bundle install
             cd .circleci
             sudo bundle exec fastlane test
