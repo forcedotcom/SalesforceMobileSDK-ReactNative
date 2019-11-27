@@ -38,6 +38,7 @@ jobs:
           command: |
             cd .circleci
             brew install gnu-sed
+            sudo gem install bundler
             bundle update 
             cd ../ios/SalesforceReactTests
             ./prepareios.js 
@@ -51,13 +52,13 @@ jobs:
           command:  |
             chruby ${CHRUBY_VER}
             cd .circleci
-            fastlane build
+            sudo bundle exec fastlane build
       - run:
           name: Run Tests
           command:  |
             chruby ${CHRUBY_VER}
             cd .circleci
-            fastlane test
+            sudo bundle exec fastlane test
       - store_test_results:
           path: /Users/distiller/SalesforceMobileSDK-ReactNative/.circleci/test_output
       - store_artifacts:
