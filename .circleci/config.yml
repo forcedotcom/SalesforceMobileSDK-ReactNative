@@ -38,7 +38,6 @@ jobs:
           command: |
             cd .circleci
             brew install gnu-sed
-            bundle update 
             cd ../ios/SalesforceReactTests
             ./prepareios.js 
       - run:
@@ -55,8 +54,6 @@ jobs:
           name: Run Tests
           command:  |
             chruby ${CHRUBY_VER}
-            sudo gem install bundler
-            bundle install
             cd .circleci
             sudo bundle exec fastlane test
       - store_test_results:
