@@ -36,9 +36,8 @@ jobs:
       - run:
           name: Installing Dependencies
           command: |
-            cd .circleci
             brew install gnu-sed
-            cd ../ios/SalesforceReactTests
+            cd ios/SalesforceReactTests
             ./prepareios.js 
       - run:
           name: Creating test_credentials.json
