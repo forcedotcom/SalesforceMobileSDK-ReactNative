@@ -22,14 +22,14 @@
  WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "SFSmartSyncReactBridge.h"
+#import "SFMobileSyncReactBridge.h"
 #import "SFSDKReactLogger.h"
 #import <React/RCTUtils.h>
 #import <SalesforceSDKCore/NSDictionary+SFAdditions.h>
 #import <SalesforceSDKCore/SFUserAccountManager.h>
 #import <SmartStore/SFSmartStore.h>
-#import <SmartSync/SFSmartSyncSyncManager.h>
-#import <SmartSync/SFSyncState.h>
+#import <MobileSync/SFMobileSyncSyncManager.h>
+#import <MobileSync/SFSyncState.h>
 
 // Private constants
 NSString * const kSyncSoupNameArg = @"soupName";
@@ -40,9 +40,9 @@ NSString * const kSyncNameArg = @"syncName";
 NSString * const kSyncEventType = @"sync";
 NSString * const kSyncDetail = @"detail";
 NSString * const kSyncIsGlobalStoreArg = @"isGlobalStore";
-NSString * const kSyncStoreName           = @"storeName";
+NSString * const kSyncStoreName = @"storeName";
 
-@implementation SFSmartSyncReactBridge
+@implementation SFMobileSyncReactBridge
 
 RCT_EXPORT_MODULE();
 
@@ -176,10 +176,10 @@ RCT_EXPORT_METHOD(syncUp:(NSDictionary *)args callback:(RCTResponseSenderBlock)c
 
 #pragma mark - Helper methods
 
-- (SFSmartSyncSyncManager *)getSyncManagerInst:(NSDictionary *) argsDict
+- (SFMobileSyncSyncManager *)getSyncManagerInst:(NSDictionary *) argsDict
 {
     SFSmartStore *smartStore = [self getStoreInst:argsDict];
-    return [SFSmartSyncSyncManager sharedInstanceForStore:smartStore];
+    return [SFMobileSyncSyncManager sharedInstanceForStore:smartStore];
 }
 
 - (BOOL)isGlobal:(NSDictionary *)args

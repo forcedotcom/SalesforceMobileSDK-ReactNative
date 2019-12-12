@@ -25,7 +25,7 @@
  */
 
 import { NativeModules } from 'react-native';
-const { SmartSyncReactBridge, SFSmartSyncReactBridge } = NativeModules;
+const { MobileSyncReactBridge, SFMobileSyncReactBridge } = NativeModules;
 import {exec as forceExec} from './react.force.common';
 
 // If param is a storeconfig return the same storeconfig
@@ -47,7 +47,7 @@ const checkFirstArg = arg => {
 
 
 const exec = (successCB, errorCB, methodName, args) => {
-    forceExec("SFSmartSyncReactBridge", "SmartSyncReactBridge", SFSmartSyncReactBridge, SmartSyncReactBridge, successCB, errorCB, methodName, args);
+    forceExec("SFMobileSyncReactBridge", "MobileSyncReactBridge", SFMobileSyncReactBridge, MobileSyncReactBridge, successCB, errorCB, methodName, args);
 };
 
 export const syncDown = (storeConfig, target, soupName, options, syncName, successCB, errorCB) => {

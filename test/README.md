@@ -24,6 +24,3 @@ On the iOS side:
 On the Android side:
 - if you added a `testXYZ()` to an existing JavaScript suite, add `testXYZ` to the list returned by `@Parameterized.Parameters(name = "{0}") public static List<String> data()` in the corresponding Java test file.
 - if you write a new suite of tests, create a new subclass of `ReactTestCase` (see existing subclasses for examples).
-
-
-

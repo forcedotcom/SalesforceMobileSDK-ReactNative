@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2018-present, salesforce.com, inc. All rights reserved.
+ Copyright (c) 2015-present, salesforce.com, inc. All rights reserved.
  
  Redistribution and use of this software in source and binary forms, with or without modification,
  are permitted provided that the following conditions are met:
@@ -22,44 +22,13 @@
  WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import <UIKit/UIKit.h>
-#import <SmartStore/SmartStore.h>
-#import <SmartSync/SmartSync.h>
-#import "ReactTestCase.h"
 
-@interface ReactSmartSyncTests : ReactTestCase
+#import <React/RCTBridgeModule.h>
 
-@end
+NS_ASSUME_NONNULL_BEGIN
 
-@implementation ReactSmartSyncTests
-
-+ (void)setUp
-{
-    [SFSmartStore removeAllStores];
-    [super setUp];
-}
-
-- (void)setUp {
-    self.jsSuitePath = @"node_modules/react-native-force/test/smartsync.test";
-    [super setUp];
-}
-
-- (void)tearDown {
-    [SFSmartSyncSyncManager removeSharedInstances];
-    [SFSmartStore removeAllStores];
-    [super tearDown];
-}
-
-#pragma mark - JS tests
-
-RCT_TEST(SyncUp)
-RCT_TEST(SyncDown)
-RCT_TEST(ReSync)
-RCT_TEST(CleanResyncGhosts)
-RCT_TEST(GetSyncStatusDeleteSync)
+@interface SFMobileSyncReactBridge : NSObject <RCTBridgeModule>
 
 @end
 
-
-
-
+NS_ASSUME_NONNULL_END

@@ -28,4 +28,4 @@ import '../test/harness.test';
 import '../test/oauth.test';
 import '../test/net.test';
 import '../test/smartstore.test';
-import '../test/smartsync.test';
+import '../test/mobilesync.test';

@@ -58,7 +58,7 @@ static NSException *authException = nil;
     // NB: Bundle is generated during build
     NSURL* scriptUrl = [[NSBundle bundleForClass:[self class]] URLForResource:@"index.ios" withExtension:@"bundle"];
     
-    self.runner = RCTInitRunnerForApp(self.jsSuitePath, nil, scriptUrl);
+    self.runner = [[RCTTestRunner alloc] initWithApp:self.jsSuitePath referenceDirectory:@"" moduleProvider:nil scriptURL:scriptUrl];
     [super setUp];
 }
 

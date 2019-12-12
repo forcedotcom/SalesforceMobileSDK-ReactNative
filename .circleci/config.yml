@@ -1,61 +1,69 @@
-aliases:
-  - &pods-cache-key
-    v1-cocoapods-{{ checksum "ios/SalesforceReactTests/Podfile.lock" }}
+executors:
+  mac:
+    working_directory: ~/SalesforceMobileSDK-ReactNative
+    macos:
+      xcode: 11.2.1
+    shell: /bin/bash --login -eo pipefail
+    environment:
+      BASH_ENV: ~/.bashrc
+      FASTLANE_SKIP_UPDATE_CHECK: "true"
+      CHRUBY_VER: 2.6.5
 
-defaults: &defaults
-  working_directory: ~/SalesforceMobileSDK-ReactNative
-  macos:
-    xcode: "10.3.0"
-  shell: /bin/bash --login -eo pipefail
-  environment:
-    BASH_ENV: ~/.bashrc
-    FASTLANE_SKIP_UPDATE_CHECK: true
-    CHRUBY_VER: 2.5.5
 
-version: 2
+version: 2.1
 jobs:
   test-ios:
-    <<: *defaults
+    parameters:
+      device:
+        type: string
+        default: "iPhone 11"
+      ios:
+        type: string
+        default: "13.2"
+      nightly-test:
+        type: boolean
+        default: false
+      env: 
+        type: executor
+        default: "mac"
+    executor: << parameters.env >> 
+    environment:
+      DEVICE: << parameters.device >>
+      IOS_VERSION: << parameters.ios >>
+      NIGHTLY_TEST: << parameters.nightly-test >>
     steps:
       - checkout
-      - restore_cache:
-          key: *pods-cache-key
       - run:
           name: Installing Dependencies
           command: |
-            cd .circleci
             brew install gnu-sed
-            bundle update 
-            cd ../ios/SalesforceReactTests
+            cd ios/SalesforceReactTests
             ./prepareios.js 
-      - save_cache:
-          key: *pods-cache-key
-          paths:
-            - ios/SalesforceReactTests/Pods
       - run:
           name: Creating test_credentials.json
-          command: | 
+          command: |
             cd ios/SalesforceReactTests
             node ./create_test_credentials_from_env.js
       - run:
           name: Compile
           command:  |
-            chruby ${CHRUBY_VER}
             cd .circleci
             fastlane build
       - run:
           name: Run Tests
           command:  |
-            chruby ${CHRUBY_VER}
             cd .circleci
-            fastlane test
+            chruby ${CHRUBY_VER}
+            sudo gem install bundler
+            sudo bundle install
+            sudo bundle exec fastlane test
       - store_test_results:
           path: /Users/distiller/SalesforceMobileSDK-ReactNative/.circleci/test_output
       - store_artifacts:
           path: /Users/distiller/SalesforceMobileSDK-ReactNative/.circleci/test_output
           destination: Test-Results
       - store_artifacts:
-          path: /Users/distiller/SalesforceMobileSDK-ReactNative/.circleci/clangReport
+          path: /Users/distiller/SalesforceMobileSDK-ReactNative/ios/SalesforceReactTests/clangReport/
           destination: Static-Analysis
       - run:
           name: Upload code coverage
@@ -79,11 +87,13 @@ workflows:
               only:
                 - dev
     jobs:
-      - test-ios
+      - test-ios:
+          name: "ReactNative iOS 13 Nightly"
+          nightly-test: true
 
   # Cron are on a timezone 8 hours ahead of PST
   # Build everything at ~12:00pm Sunday/Wednesday Nights
-  weekly-run-tests-ios11:
+  weekly-run-tests-ios12:
     triggers:
       - schedule:
           cron: "00 8 * * 1,4"
@@ -91,6 +101,10 @@ workflows:
             branches:
               only:
                 - dev
+
     jobs:
       - test-ios:
-            context: nightly-test-ios11
+          name: "ReactNative iOS 12 Nightly"
+          nightly-test: true
+          ios: "12.2"
+          device: "iPhone 8"
