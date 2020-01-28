@@ -35,6 +35,8 @@ NSString * const kOrgIdCredentialsDictKey = @"orgId";
 NSString * const kLoginUrlCredentialsDictKey = @"loginUrl";
 NSString * const kInstanceUrlCredentialsDictKey = @"instanceUrl";
 NSString * const kUserAgentCredentialsDictKey = @"userAgent";
+NSString * const kCommunityIdCredentialsDictKey= @"communityId";
+NSString * const kCommunityUrlCredentialsDictKey= @"communityUrl";
 
 @implementation SFOauthReactBridge
 
@@ -77,12 +79,15 @@ RCT_EXPORT_METHOD(authenticate:(NSDictionary *)args callback:(RCTResponseSenderB
     if (nil != creds) {
         NSString *instanceUrl = creds.instanceUrl.absoluteString;
         NSString *loginUrl = [NSString stringWithFormat:@"%@://%@", creds.protocol, creds.domain];
+        NSString *communityUrl = creds.communityUrl ? creds.communityUrl.absoluteString : nil;
         NSString *uaString = [SalesforceSDKManager sharedManager].userAgentString(@"");
         NSDictionary* credentialsDict = @{kAccessTokenCredentialsDictKey: creds.accessToken,
                                           kRefreshTokenCredentialsDictKey: creds.refreshToken,
                                           kClientIdCredentialsDictKey: creds.clientId,
                                           kUserIdCredentialsDictKey: creds.userId,
                                           kOrgIdCredentialsDictKey: creds.organizationId,
+                                          kCommunityIdCredentialsDictKey: creds.communityId,
+                                          kCommunityUrlCredentialsDictKey: communityUrl,
                                           kLoginUrlCredentialsDictKey: loginUrl,
                                           kInstanceUrlCredentialsDictKey: instanceUrl,
                                           kUserAgentCredentialsDictKey: uaString};
