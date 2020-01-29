@@ -86,8 +86,8 @@ RCT_EXPORT_METHOD(authenticate:(NSDictionary *)args callback:(RCTResponseSenderB
                                           kClientIdCredentialsDictKey: creds.clientId,
                                           kUserIdCredentialsDictKey: creds.userId,
                                           kOrgIdCredentialsDictKey: creds.organizationId,
-                                          kCommunityIdCredentialsDictKey: creds.communityId,
-                                          kCommunityUrlCredentialsDictKey: communityUrl,
+                                          kCommunityIdCredentialsDictKey: creds.communityId ?: [NSNull null],
+                                          kCommunityUrlCredentialsDictKey: communityUrl ?: [NSNull null],
                                           kLoginUrlCredentialsDictKey: loginUrl,
                                           kInstanceUrlCredentialsDictKey: instanceUrl,
                                           kUserAgentCredentialsDictKey: uaString};
