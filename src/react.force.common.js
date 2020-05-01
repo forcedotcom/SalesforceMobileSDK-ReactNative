@@ -24,22 +24,49 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+
+/**
+ * logging support
+ */
+var logLevel = "info";
+
+export const getLogLevel = () => {
+    return logLevel;
+};
+
+export const sdkConsole = { };
+
+export const setLogLevel = (level) => {
+    logLevel = level;
+    var methods = ["debug", "info", "warn", "error"];
+    var levelAsInt = methods.indexOf(level.toLowerCase());
+    var noop = () => {};
+
+    sdkConsole.debug = levelAsInt <= 0 ? console.debug.bind(console) : noop;
+    sdkConsole.info = levelAsInt <= 1 ? console.info.bind(console) : noop;
+    sdkConsole.warn = levelAsInt <= 2 ? console.log.bind(console) : noop; // we don't want the yellow box
+    sdkConsole.error = levelAsInt <= 3 ? console.error.bind(console) : noop; // we don't want the red box
+    sdkConsole.log = console.log.bind(console);
+};
+
+setLogLevel("info");
+
 /**
  * exec
  */
 export const exec = (moduleIOSName, moduleAndroidName, moduleIOS, moduleAndroid, successCB, errorCB, methodName, args) => {
     if (moduleIOS) {
         const func = `${moduleIOSName}.${methodName}`;
-        console.log(`${func} called: ${JSON.stringify(args)}`);
+        sdkConsole.debug(`${func} called: ${JSON.stringify(args)}`);
         moduleIOS[methodName](
             args,
             (error, result) => {
                 if (error) {
-                    console.log(`${func} failed: ${JSON.stringify(error)}`);
+                    sdkConsole.error(`${func} failed: ${JSON.stringify(error)}`);
                     if (errorCB) errorCB(error);
                 }
                 else {
-                    console.log(`${func} succeeded`);
+                    sdkConsole.debug(`${func} succeeded`);
                     if (successCB) successCB(result);
                 }
             });
@@ -47,17 +74,17 @@ export const exec = (moduleIOSName, moduleAndroidName, moduleIOS, moduleAndroid,
     // android
     else if (moduleAndroid) {
         const func = `${moduleAndroidName}.${methodName}`;
-        console.log(`${func} called: ${JSON.stringify(args)}`);
+        sdkConsole.debug(`${func} called: ${JSON.stringify(args)}`);
         moduleAndroid[methodName](
             args,
             result => {
-                console.log(`${func} succeeded`);
+                sdkConsole.debug(`${func} succeeded`);
                 if (successCB) {
                     successCB(safeJSONparse(result));
                 };
             },
             error => {
-                console.log(`${func} failed`);
+                sdkConsole.error(`${func} failed: ${JSON.stringify(error)}`);
                 if (errorCB) errorCB(safeJSONparse(error));
             }
         );
