@@ -25,7 +25,7 @@
  */
 
 import React from 'react';
-import {sdkConsole} from './react.force.common';
+import {sdkConsole} from './react.force.log';
 const rejectionTracking = require('promise/setimmediate/rejection-tracking');
 const timer = require('react-native-timer');
 

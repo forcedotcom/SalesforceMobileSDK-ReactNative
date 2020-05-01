@@ -24,32 +24,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-
-/**
- * logging support
- */
-var logLevel = "info";
-
-export const getLogLevel = () => {
-    return logLevel;
-};
-
-export const sdkConsole = { };
-
-export const setLogLevel = (level) => {
-    logLevel = level;
-    var methods = ["debug", "info", "warn", "error"];
-    var levelAsInt = methods.indexOf(level.toLowerCase());
-    var noop = () => {};
-
-    sdkConsole.debug = levelAsInt <= 0 ? console.debug.bind(console) : noop;
-    sdkConsole.info = levelAsInt <= 1 ? console.info.bind(console) : noop;
-    sdkConsole.warn = levelAsInt <= 2 ? console.log.bind(console) : noop; // we don't want the yellow box
-    sdkConsole.error = levelAsInt <= 3 ? console.error.bind(console) : noop; // we don't want the red box
-    sdkConsole.log = console.log.bind(console);
-};
-
-setLogLevel("info");
+import {sdkConsole} from './react.force.log';
 
 /**
  * exec
