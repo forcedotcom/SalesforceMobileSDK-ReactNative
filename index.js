@@ -31,5 +31,6 @@ module.exports = {
     mobilesync:require('./src/react.force.mobilesync'),
     forceClient:require('./src/react.force.net'),
     forceUtil:require('./src/react.force.util'),
+    forceLog:require('./src/react.force.log'),
     forceTest:require('./src/react.force.test')
 };
