@@ -45,7 +45,7 @@ export const setLogLevel = (level) => {
     sdkConsole.debug = levelAsInt <= 0 ? console.debug.bind(console) : noop;
     sdkConsole.info = levelAsInt <= 1 ? console.info.bind(console) : noop;
     sdkConsole.warn = levelAsInt <= 2 ? console.log.bind(console) : noop; // we don't want the yellow box
-    sdkConsole.error = levelAsInt <= 3 ? console.error.bind(console) : noop; // we don't want the red box
+    sdkConsole.error = levelAsInt <= 3 ? console.log.bind(console) : noop; // we don't want the red box
     sdkConsole.log = console.log.bind(console);
 };
 
