@@ -25,6 +25,7 @@
  */
 
 import React from 'react';
+import {sdkConsole} from './react.force.log';
 const rejectionTracking = require('promise/setimmediate/rejection-tracking');
 const timer = require('react-native-timer');
 
@@ -33,7 +34,7 @@ const enableErrorOnUnhandledPromiseRejection = () => {
         allRejections: true,
         onUnhandled: (id, error) => {
             const strError =  JSON.stringify(error);
-            console.error("------> Unhandled promise rejection with error: " + strError);
+            sdkConsole.error("Unhandled promise rejection with error: " + strError);
         },
         onHandled: () => {},
     });    
@@ -50,8 +51,8 @@ export const promiser = (func) => {
                     resolve.apply(null, arguments);
                 }
                 catch (err) {
-                    console.error("------> Error when calling successCB for " + func.name);
-                    console.error(err.stack);
+                    sdkConsole.error("Error when calling successCB for " + func.name);
+                    sdkConsole.error(err.stack);
                 }
             });
             args.push(function() {
@@ -59,11 +60,11 @@ export const promiser = (func) => {
                     reject.apply(null, arguments);
                 }
                 catch (err) {
-                    console.error("------> Error when calling errorCB for " + func.name);
-                    console.error(err.stack);
+                    sdkConsole.error("Error when calling errorCB for " + func.name);
+                    sdkConsole.error(err.stack);
                 }
             });
-            console.debug("-----> Calling " + func.name);
+            sdkConsole.debug("Calling " + func.name);
             func.apply(null, args);
         });
     };
@@ -82,13 +83,13 @@ export const promiserNoRejection = (func) => {
 					resolve.apply(null, arguments)
 				}
 				catch (err) {
-                    console.error("------> Error when calling callback for " + func.name);
-					console.error(err.stack);
+                    sdkConsole.error("Error when calling callback for " + func.name);
+					sdkConsole.error(err.stack);
 				}
 			}
 			args.push(callback) 
 			args.push(callback)
-			console.debug("-----> Calling " + func.name)
+			sdkConsole.debug("Calling " + func.name)
 			func.apply(null, args)
 		});
 	};
