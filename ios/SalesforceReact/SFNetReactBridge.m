@@ -43,7 +43,9 @@ static NSString * const kEncodedBody     = @"encodedBody";
 static NSString * const kContentType     = @"contentType";
 static NSString * const kHttpContentType = @"content-type";
 static NSString * const kDoesNotRequireAuthentication = @"doesNotRequireAuthentication";
-
+static NSString * const KFileDownloadParams = @"fileDownloadParams";
+static NSString * const kFileDownloadParamsFileName = @"fileName";
+static NSString * const kFileDownloadParamsPath = @"path";
 
 @implementation SFNetReactBridge
 
@@ -63,6 +65,10 @@ RCT_EXPORT_METHOD(sendRequest:(NSDictionary *)argsDict callback:(RCTResponseSend
     //Set to true if boolean is absent.
     BOOL doesNotRequireAuthentication = [argsDict nonNullObjectForKey:kDoesNotRequireAuthentication] != nil && [[argsDict nonNullObjectForKey:kDoesNotRequireAuthentication] boolValue];
     BOOL returnBinary = [argsDict nonNullObjectForKey:kReturnBinary] != nil && [[argsDict nonNullObjectForKey:kReturnBinary] boolValue];
+    BOOL saveResponseToDisk  = false;
+    if (returnBinary && [argsDict nonNullObjectForKey:KFileDownloadParams]!= nil) {
+        saveResponseToDisk = true;
+    }
     SFRestRequest* request = nil;
     
     // Sets HTTP body explicitly for a POST, PATCH or PUT request.
@@ -109,10 +115,34 @@ RCT_EXPORT_METHOD(sendRequest:(NSDictionary *)argsDict callback:(RCTResponseSend
                                       
                                       // Binary response
                                       if (returnBinary) {
-                                          result = @{
-                                                     kEncodedBody:[((NSData*) response) base64EncodedStringWithOptions:0],
-                                                     kContentType:((NSHTTPURLResponse*) rawResponse).allHeaderFields[kHttpContentType]
-                                                     };
+                                          if (saveResponseToDisk) {
+                                              NSError *err;
+                                              NSURL *fileUrl = nil;
+                                              NSDictionary *fileDownloadParam = [argsDict nonNullObjectForKey:KFileDownloadParams];
+                                              NSString *fileName = [fileDownloadParam nonNullObjectForKey:kFileDownloadParamsFileName];
+                                              NSString *path = [fileDownloadParam nonNullObjectForKey:kFileDownloadParamsPath];
+                                              if (path != nil) {
+                                                  fileUrl = [[NSURL fileURLWithPath:path] URLByAppendingPathComponent:fileName];
+                                              } else {
+                                                  fileUrl = [[[NSFileManager defaultManager] temporaryDirectory] URLByAppendingPathComponent:fileName];
+                                              }
+                                              BOOL success =  [(NSData *) response writeToURL:fileUrl options: NSDataWritingAtomic error:&err];
+                                              if (success) {
+                                                  result = @{
+                                                  kFileDownloadParamsPath:[fileUrl absoluteString],
+                                                  kContentType:((NSHTTPURLResponse*) rawResponse).allHeaderFields[kHttpContentType]
+                                                  };
+                                              } else {
+                                                  callback(@[RCTMakeError(@"Download failed", err, nil)]);
+                                                  return;
+                                              }
+                                              
+                                          } else {
+                                              result = @{
+                                              kEncodedBody:[((NSData*) response) base64EncodedStringWithOptions:0],
+                                              kContentType:((NSHTTPURLResponse*) rawResponse).allHeaderFields[kHttpContentType]
+                                              };
+                                          }
                                       }
                                       // Some response
                                       else if (response) {
