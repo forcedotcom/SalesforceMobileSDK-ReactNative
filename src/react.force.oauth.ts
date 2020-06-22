@@ -24,12 +24,26 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { NativeModules } from 'react-native';
+import { NativeModules } from "react-native";
 const { SalesforceOauthReactBridge, SFOauthReactBridge } = NativeModules;
-import {exec as forceExec} from './react.force.common';
+import { exec as forceExec } from "./react.force.common";
 
-const exec = (successCB, errorCB, methodName, args) => {
-    forceExec("SFOauthReactBridge", "SalesforceOauthReactBridge", SFOauthReactBridge, SalesforceOauthReactBridge, successCB, errorCB, methodName, args);
+const exec = (
+  successCB: ((result?: any) => void) | null,
+  errorCB: ((err: Error) => void) | null,
+  methodName: string,
+  args: Record<string, unknown>
+): void => {
+  forceExec(
+    "SFOauthReactBridge",
+    "SalesforceOauthReactBridge",
+    SFOauthReactBridge,
+    SalesforceOauthReactBridge,
+    successCB,
+    errorCB,
+    methodName,
+    args
+  );
 };
 
 /**
@@ -54,8 +68,11 @@ let logoutInitiated = false;
  *   community id
  *   community url
  */
-export const authenticate = (success, fail) => {
-    exec(success, fail, "authenticate", {});
+export const authenticate = (
+  successCB: (result: any) => void,
+  errorCB: (err: Error) => void
+): void => {
+  exec(successCB, errorCB, "authenticate", {});
 };
 
 /**
@@ -74,8 +91,11 @@ export const authenticate = (success, fail) => {
  *   community id
  *   community url
  */
-export const getAuthCredentials = (success, fail) => {
-    exec(success, fail, "getAuthCredentials", {});
+export const getAuthCredentials = (
+  successCB: (result: any) => void,
+  errorCB: (err: Error) => void
+): void => {
+  exec(successCB, errorCB, "getAuthCredentials", {});
 };
 
 /**
@@ -88,12 +108,15 @@ export const getAuthCredentials = (success, fail) => {
  * the given page (effectively resetting the logout flag), and calling this method again
  * while it's currently processing will result in app state issues.
  */
-export const logout = () => {
-    // only set callback for android, since iOS will not invoke callback.
-    const logoutCb = SalesforceOauthReactBridge ? () => { logoutInitiated = false; } : null;
-    if (!logoutInitiated) {
-        logoutInitiated = true;
-        exec(logoutCb, null, "logoutCurrentUser", {});
-    }
+export const logout = (): void => {
+  // only set callback for android, since iOS will not invoke callback.
+  const logoutCb = SalesforceOauthReactBridge
+    ? () => {
+        logoutInitiated = false;
+      }
+    : null;
+  if (!logoutInitiated) {
+    logoutInitiated = true;
+    exec(logoutCb, null, "logoutCurrentUser", {});
+  }
 };
-

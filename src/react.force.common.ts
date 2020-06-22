@@ -24,53 +24,61 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import {sdkConsole} from './react.force.log';
+import { sdkConsole } from "./react.force.log";
+import { ModuleIOSName, ModuleAndroidName } from "./typings";
 
 /**
  * exec
  */
-export const exec = (moduleIOSName, moduleAndroidName, moduleIOS, moduleAndroid, successCB, errorCB, methodName, args) => {
-    if (moduleIOS) {
-        const func = `${moduleIOSName}.${methodName}`;
-        sdkConsole.debug(`${func} called: ${JSON.stringify(args)}`);
-        moduleIOS[methodName](
-            args,
-            (error, result) => {
-                if (error) {
-                    sdkConsole.error(`${func} failed: ${JSON.stringify(error)}`);
-                    if (errorCB) errorCB(error);
-                }
-                else {
-                    sdkConsole.debug(`${func} succeeded`);
-                    if (successCB) successCB(result);
-                }
-            });
-    }
-    // android
-    else if (moduleAndroid) {
-        const func = `${moduleAndroidName}.${methodName}`;
-        sdkConsole.debug(`${func} called: ${JSON.stringify(args)}`);
-        moduleAndroid[methodName](
-            args,
-            result => {
-                sdkConsole.debug(`${func} succeeded`);
-                if (successCB) {
-                    successCB(safeJSONparse(result));
-                };
-            },
-            error => {
-                sdkConsole.error(`${func} failed: ${JSON.stringify(error)}`);
-                if (errorCB) errorCB(safeJSONparse(error));
-            }
-        );
-    }
+export const exec = (
+  moduleIOSName: ModuleIOSName,
+  moduleAndroidName: ModuleAndroidName,
+  moduleIOS: { [key: string]: any },
+  moduleAndroid: { [key: string]: any },
+  successCB: ((result?: any) => void) | null,
+  errorCB: ((err: Error) => void) | null,
+  methodName: string,
+  args: Record<string, unknown>
+): void => {
+  if (moduleIOS) {
+    const func = `${moduleIOSName}.${methodName}`;
+    sdkConsole.debug(`${func} called: ${JSON.stringify(args)}`);
+    moduleIOS[methodName](args, (error: Error, result) => {
+      if (error) {
+        sdkConsole.error(`${func} failed: ${JSON.stringify(error)}`);
+        if (errorCB) errorCB(error);
+      } else {
+        sdkConsole.debug(`${func} succeeded`);
+        if (successCB) successCB(result);
+      }
+    });
+  }
+  // android
+  else if (moduleAndroid) {
+    const func = `${moduleAndroidName}.${methodName}`;
+    sdkConsole.debug(`${func} called: ${JSON.stringify(args)}`);
+    moduleAndroid[methodName](
+      args,
+      (result) => {
+        sdkConsole.debug(`${func} succeeded`);
+        if (successCB) {
+          successCB(safeJSONparse(result));
+        }
+      },
+      (error: Error) => {
+        sdkConsole.error(`${func} failed: ${JSON.stringify(error)}`);
+        if (errorCB) errorCB(safeJSONparse(error));
+      }
+    );
+  }
 };
 
-export const safeJSONparse = (str) => {
-    try {
-        return JSON.parse(str);
-    }
-    catch (e) {
-        return str;
-    }
+export const safeJSONparse = (
+  str: string
+): Record<string, unknown> | string => {
+  try {
+    return JSON.parse(str);
+  } catch (e) {
+    return str;
+  }
 };

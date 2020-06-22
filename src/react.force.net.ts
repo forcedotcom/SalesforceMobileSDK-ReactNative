@@ -24,39 +24,68 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { NativeModules } from 'react-native';
+import { NativeModules } from "react-native";
 const { SalesforceNetReactBridge, SFNetReactBridge } = NativeModules;
-import {exec as forceExec} from './react.force.common';
+import { exec as forceExec } from "./react.force.common";
+import { HttpMethod } from "./typings";
+import { sdkConsole } from "./react.force.log";
 
-var  apiVersion = 'v46.0';
+let apiVersion = "v46.0";
 
 /**
  * Set apiVersion to be used
  */
-export const setApiVersion = version => {
-    apiVersion = version;
+export const setApiVersion = (version: string): void => {
+  apiVersion = version;
 };
 
 /**
  * Return apiVersion used
  */
-export const getApiVersion = () => apiVersion;
-
+export const getApiVersion = (): string => apiVersion;
 
 /**
  * Send arbitray force.com request
  */
-export const sendRequest = (endPoint, path, successCB, errorCB, method, payload, headerParams, fileParams, returnBinary, doesNotRequireAuthentication) => {
-    method = method || "GET";
-    payload = payload || {};
-    headerParams = headerParams || {};
-    fileParams = fileParams || {}; // File params expected to be of the form: {<fileParamNameInPost>: {fileMimeType:<someMimeType>, fileUrl:<fileUrl>, fileName:<fileNameForPost>}}
-    returnBinary = !!returnBinary;
-    doesNotRequireAuthentication = !!doesNotRequireAuthentication;
-    const args = {endPoint, path, method, queryParams:payload, headerParams, fileParams, returnBinary, doesNotRequireAuthentication};
-    forceExec("SFNetReactBridge", "SalesforceNetReactBridge", SFNetReactBridge, SalesforceNetReactBridge, successCB, errorCB, "sendRequest", args);
+export const sendRequest = (
+  endPoint: string,
+  path: string,
+  successCB: (result: any) => void,
+  errorCB: (err: Error) => void,
+  method?: HttpMethod,
+  payload?: Record<string, unknown> | null,
+  headerParams?: Record<string, unknown> | null,
+  fileParams?,
+  returnBinary?: boolean,
+  doesNotRequireAuthentication?: boolean
+): void => {
+  method = method || "GET";
+  payload = payload || {};
+  headerParams = headerParams || {};
+  fileParams = fileParams || {}; // File params expected to be of the form: {<fileParamNameInPost>: {fileMimeType:<someMimeType>, fileUrl:<fileUrl>, fileName:<fileNameForPost>}}
+  returnBinary = !!returnBinary;
+  doesNotRequireAuthentication = !!doesNotRequireAuthentication;
+  const args = {
+    endPoint,
+    path,
+    method,
+    queryParams: payload,
+    headerParams,
+    fileParams,
+    returnBinary,
+    doesNotRequireAuthentication,
+  };
+  forceExec(
+    "SFNetReactBridge",
+    "SalesforceNetReactBridge",
+    SFNetReactBridge,
+    SalesforceNetReactBridge,
+    successCB,
+    errorCB,
+    "sendRequest",
+    args
+  );
 };
-
 
 /*
  * Lists summary information about each Salesforce.com version currently
@@ -65,7 +94,10 @@ export const sendRequest = (endPoint, path, successCB, errorCB, method, payload,
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const versions = (callback, error) => sendRequest('/services/data', '/', callback, error);
+export const versions = (
+  successCB: (result: any) => void,
+  errorCB: (err: Error) => void
+): void => sendRequest("/services/data", "/", successCB, errorCB);
 
 /*
  * Lists available resources for the client's API version, including
@@ -73,7 +105,10 @@ export const versions = (callback, error) => sendRequest('/services/data', '/', 
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const resources = (callback, error) => sendRequest('/services/data', `/${apiVersion}/`, callback, error);
+export const resources = (
+  successCB: (result: any) => void,
+  errorCB: (err: Error) => void
+): void => sendRequest("/services/data", `/${apiVersion}/`, successCB, errorCB);
 
 /*
  * Lists the available objects and their metadata for your organization's
@@ -81,7 +116,11 @@ export const resources = (callback, error) => sendRequest('/services/data', `/${
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const describeGlobal = (callback, error) => sendRequest('/services/data', `/${apiVersion}/sobjects/`, callback, error);
+export const describeGlobal = (
+  successCB: (result: any) => void,
+  errorCB: (err: Error) => void
+): void =>
+  sendRequest("/services/data", `/${apiVersion}/sobjects/`, successCB, errorCB);
 
 /*
  * Describes the individual metadata for the specified object.
@@ -89,7 +128,17 @@ export const describeGlobal = (callback, error) => sendRequest('/services/data',
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const metadata = (objtype, callback, error) => sendRequest('/services/data', `/${apiVersion}/sobjects/${objtype}/`, callback, error);
+export const metadata = (
+  objtype: string,
+  successCB: (result: any) => void,
+  errorCB: (err: Error) => void
+): void =>
+  sendRequest(
+    "/services/data",
+    `/${apiVersion}/sobjects/${objtype}/`,
+    successCB,
+    errorCB
+  );
 
 /*
  * Completely describes the individual metadata at all levels for the
@@ -98,7 +147,17 @@ export const metadata = (objtype, callback, error) => sendRequest('/services/dat
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const describe = (objtype, callback, error) => sendRequest('/services/data', `/${apiVersion}/sobjects/${objtype}/describe/`, callback, error);
+export const describe = (
+  objtype: string,
+  successCB: (result: any) => void,
+  errorCB: (err: Error) => void
+): void =>
+  sendRequest(
+    "/services/data",
+    `/${apiVersion}/sobjects/${objtype}/describe/`,
+    successCB,
+    errorCB
+  );
 
 /*
  * Fetches the layout configuration for a particular sobject type and record type id.
@@ -107,9 +166,19 @@ export const describe = (objtype, callback, error) => sendRequest('/services/dat
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const describeLayout = (objtype, recordTypeId, callback, error) => {
-    recordTypeId = recordTypeId ? recordTypeId : '';
-    return sendRequest('/services/data', `/${apiVersion}/sobjects/${objtype}/describe/layouts/${recordTypeId}`, callback, error);
+export const describeLayout = (
+  objtype: string,
+  recordTypeId: string,
+  successCB: (result: any) => void,
+  errorCB: (err: Error) => void
+): void => {
+  recordTypeId = recordTypeId ? recordTypeId : "";
+  return sendRequest(
+    "/services/data",
+    `/${apiVersion}/sobjects/${objtype}/describe/layouts/${recordTypeId}`,
+    successCB,
+    errorCB
+  );
 };
 
 /*
@@ -121,7 +190,20 @@ export const describeLayout = (objtype, recordTypeId, callback, error) => {
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const create = (objtype, fields, callback, error) => sendRequest('/services/data', `/${apiVersion}/sobjects/${objtype}/`, callback, error, "POST", fields);
+export const create = (
+  objtype: string,
+  fields: Record<string, unknown>,
+  successCB: (result: any) => void,
+  errorCB: (err: Error) => void
+): void =>
+  sendRequest(
+    "/services/data",
+    `/${apiVersion}/sobjects/${objtype}/`,
+    successCB,
+    errorCB,
+    "POST",
+    fields
+  );
 
 /*
  * Retrieves field values for a record of the given type.
@@ -132,14 +214,27 @@ export const create = (objtype, fields, callback, error) => sendRequest('/servic
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const retrieve = function(objtype, id, fieldlist, callback, error) {
-    if (arguments.length == 4) {
-        error = callback;
-        callback = fieldlist;
-        fieldlist = null;
-    }
-    const fields = fieldlist ? {fields:fieldlist} : null;
-    return sendRequest('/services/data', `/${apiVersion}/sobjects/${objtype}/${id}`, callback, error, 'GET', fields);
+export const retrieve = (
+  objtype: string,
+  id: string,
+  fieldlist: Record<string, unknown>,
+  successCB: (result: any) => void,
+  errorCB: (err: Error) => void
+): void => {
+  if (arguments.length == 4) {
+    error = callback;
+    callback = fieldlist;
+    fieldlist = null;
+  }
+  const fields = fieldlist ? { fields: fieldlist } : null;
+  return sendRequest(
+    "/services/data",
+    `/${apiVersion}/sobjects/${objtype}/${id}`,
+    successCB,
+    errorCB,
+    "GET",
+    fields
+  );
 };
 
 /*
@@ -154,7 +249,24 @@ export const retrieve = function(objtype, id, fieldlist, callback, error) {
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const upsert = (objtype, externalIdField, externalId, fields, callback, error) => sendRequest('/services/data', `/${apiVersion}/sobjects/${objtype}/${externalIdField}/${externalId?externalId:''}`, callback, error, externalId ? "PATCH" : "POST", fields);
+export const upsert = (
+  objtype: string,
+  externalIdField: string,
+  externalId: string,
+  fields: Record<string, unknown>,
+  successCB: (result: any) => void,
+  errorCB: (err: Error) => void
+): void =>
+  sendRequest(
+    "/services/data",
+    `/${apiVersion}/sobjects/${objtype}/${externalIdField}/${
+      externalId ? externalId : ""
+    }`,
+    successCB,
+    errorCB,
+    externalId ? "PATCH" : "POST",
+    fields
+  );
 
 /*
  * Updates field values on a record of the given type.
@@ -166,7 +278,21 @@ export const upsert = (objtype, externalIdField, externalId, fields, callback, e
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const update = (objtype, id, fields, callback, error) => sendRequest('/services/data', `/${apiVersion}/sobjects/${objtype}/${id}`, callback, error, "PATCH", fields);
+export const update = (
+  objtype: string,
+  id: string,
+  fields: Record<string, unknown>,
+  successCB: (result: any) => void,
+  errorCB: (err: Error) => void
+): void =>
+  sendRequest(
+    "/services/data",
+    `/${apiVersion}/sobjects/${objtype}/${id}`,
+    successCB,
+    errorCB,
+    "PATCH",
+    fields
+  );
 
 /*
  * Deletes a record of the given type. Unfortunately, 'delete' is a
@@ -176,7 +302,19 @@ export const update = (objtype, id, fields, callback, error) => sendRequest('/se
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const del = (objtype, id, callback, error) => sendRequest('/services/data', `/${apiVersion}/sobjects/${objtype}/${id}`, callback, error, "DELETE");
+export const del = (
+  objtype: string,
+  id: string,
+  successCB: (result: any) => void,
+  errorCB: (err: Error) => void
+): void =>
+  sendRequest(
+    "/services/data",
+    `/${apiVersion}/sobjects/${objtype}/${id}`,
+    successCB,
+    errorCB,
+    "DELETE"
+  );
 
 /*
  * Executes the specified SOQL query.
@@ -185,7 +323,19 @@ export const del = (objtype, id, callback, error) => sendRequest('/services/data
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const query = (soql, callback, error) => sendRequest('/services/data', `/${apiVersion}/query`, callback, error, 'GET', {q: soql});
+export const query = (
+  soql: string,
+  successCB: (result: any) => void,
+  errorCB: (err: Error) => void
+): void =>
+  sendRequest(
+    "/services/data",
+    `/${apiVersion}/query`,
+    successCB,
+    errorCB,
+    "GET",
+    { q: soql }
+  );
 
 /*
  * Queries the next set of records based on pagination.
@@ -196,9 +346,17 @@ export const query = (soql, callback, error) => sendRequest('/services/data', `/
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const queryMore = (url, callback, error) => {
-    const pathFromUrl = url.match(/https:\/\/[^/]*(.*)/)[1];
-    return sendRequest('',  pathFromUrl, callback, error );
+export const queryMore = (
+  url: string,
+  successCB: (result: any) => void,
+  errorCB: (err: Error) => void
+): void => {
+  const pathFromUrl = url.match(/https:\/\/[^/]*(.*)/);
+  if (pathFromUrl && pathFromUrl.length === 2) {
+    return sendRequest("", pathFromUrl[1], successCB, errorCB);
+  } else {
+    sdkConsole.error(`queryMore failed: url must be a valid`);
+  }
 };
 
 /*
@@ -208,7 +366,19 @@ export const queryMore = (url, callback, error) => {
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const search = (sosl, callback, error) => sendRequest('/services/data', `/${apiVersion}/search`, callback, error, 'GET', {q: sosl});
+export const search = (
+  sosl: string,
+  successCB: (result: any) => void,
+  errorCB: (err: Error) => void
+): void =>
+  sendRequest(
+    "/services/data",
+    `/${apiVersion}/search`,
+    successCB,
+    errorCB,
+    "GET",
+    { q: sosl }
+  );
 
 /**
  * Convenience function to retrieve an attachment
@@ -216,4 +386,19 @@ export const search = (sosl, callback, error) => sendRequest('/services/data', `
  * @param callback function to which response will be passed (attachment is returned as {encodedBody:"base64-encoded-response", contentType:"content-type"})
  * @param [error=null] function called in case of error
  */
-export const getAttachment = (id, callback, error) => sendRequest('/services/data', `/${apiVersion}/sobjects/Attachment/${id}/Body`, callback, error, 'GET', null, null, null, true /* return binary */);
+export const getAttachment = (
+  id: string,
+  successCB: (result: any) => void,
+  errorCB: (err: Error) => void
+): void =>
+  sendRequest(
+    "/services/data",
+    `/${apiVersion}/sobjects/Attachment/${id}/Body`,
+    successCB,
+    errorCB,
+    "GET",
+    null,
+    null,
+    null,
+    true /* return binary */
+  );
