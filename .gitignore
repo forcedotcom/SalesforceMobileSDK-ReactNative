@@ -1,7 +1,8 @@
+.circleci/fastlane/README.md
+.circleci/fastlane/report.*
+.circleci/test_output/
+ios/SalesforceReactTests/clangReport/
 node_modules/
 package-lock.json
 sfdx/yarn.lock
-.circleci/fastlane/report.*
-.circleci/fastlane/README.md
-.circleci/test_output/
-ios/SalesforceReactTests/clangReport/
+yarn-error.log
