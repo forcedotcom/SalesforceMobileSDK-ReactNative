@@ -100,11 +100,11 @@ RCT_EXPORT_METHOD(sendRequest:(NSDictionary *)argsDict callback:(RCTResponseSend
     }
     SFRestAPI *restApiInstance = doesNotRequireAuthentication ? [SFRestAPI sharedGlobalInstance] : [SFRestAPI sharedInstance];
 
-    [restApiInstance sendRESTRequest:request
-                                      failBlock:^(NSError *e, NSURLResponse *rawResponse) {
+    [restApiInstance sendRequest:request
+                                      failureBlock:^(id response, NSError *e, NSURLResponse *rawResponse) {
                                           callback(@[RCTMakeError(@"sendRequest failed", e, nil)]);
                                       }
-                                  completeBlock:^(id response, NSURLResponse *rawResponse) {
+                                  successBlock:^(id response, NSURLResponse *rawResponse) {
                                       id result;
                                       
                                       // Binary response
