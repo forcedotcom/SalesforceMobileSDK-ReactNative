@@ -30,7 +30,7 @@ const rejectionTracking = require("promise/setimmediate/rejection-tracking");
 const enableErrorOnUnhandledPromiseRejection = (): void => {
   rejectionTracking.enable({
     allRejections: true,
-    onUnhandled: (_, error: Error) => {
+    onUnhandled: (_: unknown, error: Error) => {
       const strError = JSON.stringify(error);
       sdkConsole.error("Unhandled promise rejection with error: " + strError);
     },

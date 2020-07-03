@@ -38,8 +38,12 @@ export const getLogLevel = (): string => {
 export const sdkConsole: SDKConsole = {
   debug: console.debug.bind(console),
   info: console.info.bind(console),
-  warn: () => {},
-  error: () => {},
+  warn: () => {
+    /** */
+  },
+  error: () => {
+    /** */
+  },
   log: console.log.bind(console),
 };
 
@@ -47,7 +51,9 @@ export const setLogLevel = (level: LogLevel): void => {
   logLevel = level;
   const methods = ["debug", "info", "warn", "error"];
   const levelAsInt = methods.indexOf(level.toLowerCase());
-  const noop = () => {};
+  const noop = () => {
+    /** */
+  };
 
   sdkConsole.debug = levelAsInt <= 0 ? console.debug.bind(console) : noop;
   sdkConsole.info = levelAsInt <= 1 ? console.info.bind(console) : noop;

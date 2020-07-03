@@ -94,8 +94,8 @@ export const sendRequest = (
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const versions = (
-  successCB: (result: any) => void,
+export const versions = <T>(
+  successCB: (result: T) => void,
   errorCB: (err: Error) => void
 ): void => sendRequest("/services/data", "/", successCB, errorCB);
 
@@ -105,8 +105,8 @@ export const versions = (
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const resources = (
-  successCB: (result: any) => void,
+export const resources = <T>(
+  successCB: (result: T) => void,
   errorCB: (err: Error) => void
 ): void => sendRequest("/services/data", `/${apiVersion}/`, successCB, errorCB);
 
@@ -116,8 +116,8 @@ export const resources = (
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const describeGlobal = (
-  successCB: (result: any) => void,
+export const describeGlobal = <T>(
+  successCB: (result: T) => void,
   errorCB: (err: Error) => void
 ): void =>
   sendRequest("/services/data", `/${apiVersion}/sobjects/`, successCB, errorCB);
@@ -128,9 +128,9 @@ export const describeGlobal = (
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const metadata = (
+export const metadata = <T>(
   objtype: string,
-  successCB: (result: any) => void,
+  successCB: (result: T) => void,
   errorCB: (err: Error) => void
 ): void =>
   sendRequest(
@@ -147,9 +147,9 @@ export const metadata = (
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const describe = (
+export const describe = <T>(
   objtype: string,
-  successCB: (result: any) => void,
+  successCB: (result: T) => void,
   errorCB: (err: Error) => void
 ): void =>
   sendRequest(
@@ -190,10 +190,10 @@ export const describeLayout = (
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const create = (
+export const create = <T>(
   objtype: string,
   fields: Record<string, unknown>,
-  successCB: (result: any) => void,
+  successCB: (result: T) => void,
   errorCB: (err: Error) => void
 ): void =>
   sendRequest(
@@ -214,18 +214,23 @@ export const create = (
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const retrieve = (
-  objtype: string,
-  id: string,
-  fieldlist: Record<string, unknown>,
-  successCB: (result: any) => void,
-  errorCB: (err: Error) => void
-): void => {
-  if (arguments.length == 4) {
-    error = callback;
-    callback = fieldlist;
+export const retrieve = <T>(...args: unknown[]): void => {
+  const objtype = args[0];
+  const id = args[1];
+  let errorCB: (err: Error) => void;
+  let successCB: (result: T) => void;
+  let fieldlist;
+
+  if (args.length == 4) {
+    errorCB = args[3] as (err: Error) => void;
+    successCB = args[2] as (result: T) => void;
     fieldlist = null;
+  } else {
+    errorCB = args[4] as (err: Error) => void;
+    successCB = args[3] as (result: T) => void;
+    fieldlist = args[2];
   }
+
   const fields = fieldlist ? { fields: fieldlist } : null;
   return sendRequest(
     "/services/data",
@@ -249,12 +254,12 @@ export const retrieve = (
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const upsert = (
+export const upsert = <T>(
   objtype: string,
   externalIdField: string,
   externalId: string,
   fields: Record<string, unknown>,
-  successCB: (result: any) => void,
+  successCB: (result: T) => void,
   errorCB: (err: Error) => void
 ): void =>
   sendRequest(
@@ -278,11 +283,11 @@ export const upsert = (
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const update = (
+export const update = <T>(
   objtype: string,
   id: string,
   fields: Record<string, unknown>,
-  successCB: (result: any) => void,
+  successCB: (result: T) => void,
   errorCB: (err: Error) => void
 ): void =>
   sendRequest(
@@ -302,10 +307,10 @@ export const update = (
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const del = (
+export const del = <T>(
   objtype: string,
   id: string,
-  successCB: (result: any) => void,
+  successCB: (result: T) => void,
   errorCB: (err: Error) => void
 ): void =>
   sendRequest(
@@ -323,9 +328,9 @@ export const del = (
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const query = (
+export const query = <T>(
   soql: string,
-  successCB: (result: any) => void,
+  successCB: (result: T) => void,
   errorCB: (err: Error) => void
 ): void =>
   sendRequest(
@@ -346,9 +351,9 @@ export const query = (
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const queryMore = (
+export const queryMore = <T>(
   url: string,
-  successCB: (result: any) => void,
+  successCB: (result: T) => void,
   errorCB: (err: Error) => void
 ): void => {
   const pathFromUrl = url.match(/https:\/\/[^/]*(.*)/);
@@ -366,9 +371,9 @@ export const queryMore = (
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const search = (
+export const search = <T>(
   sosl: string,
-  successCB: (result: any) => void,
+  successCB: (result: T) => void,
   errorCB: (err: Error) => void
 ): void =>
   sendRequest(

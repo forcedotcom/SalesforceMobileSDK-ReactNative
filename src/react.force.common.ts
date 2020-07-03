@@ -28,14 +28,50 @@ import { sdkConsole } from "./react.force.log";
 import { ModuleIOSName, ModuleAndroidName } from "./typings";
 
 /**
- * exec
+ * Represents a Mobile SDK iOS Module
+ *
+ * @interface ModuleIOS
+ * @template T
  */
-export const exec = (
+interface ModuleIOS<T> {
+  [key: string]: (
+    args: unknown,
+    callback: (err: Error, result: T) => void
+  ) => void;
+}
+
+/**
+ * Represents a Mobile SDK Android Module
+ *
+ * @interface ModuleAndroid
+ */
+interface ModuleAndroid {
+  [key: string]: (
+    args: unknown,
+    successCB: (result: string) => void,
+    errorCB: (err: string) => void
+  ) => void;
+}
+
+/**
+ * Executes an action using the React Native Mobile SDK Bridge
+ *
+ * @template T
+ * @param {ModuleIOSName} moduleIOSName
+ * @param {ModuleAndroidName} moduleAndroidName
+ * @param {ModuleIOS<T>} moduleIOS
+ * @param {ModuleAndroid<T>} moduleAndroid
+ * @param {(((result?: T | string) => void) | null)} successCB
+ * @param {(((err: Error | string) => void) | null)} errorCB
+ * @param {string} methodName
+ * @param {Record<string, unknown>} args
+ */
+export const exec = <T>(
   moduleIOSName: ModuleIOSName,
   moduleAndroidName: ModuleAndroidName,
-  moduleIOS: { [key: string]: any },
-  moduleAndroid: { [key: string]: any },
-  successCB: ((result?: any) => void) | null,
+  moduleIOS: ModuleIOS<T>,
+  moduleAndroid: ModuleAndroid,
+  successCB: ((result: T) => void) | null,
   errorCB: ((err: Error) => void) | null,
   methodName: string,
   args: Record<string, unknown>
@@ -43,6 +79,7 @@ export const exec = (
   if (moduleIOS) {
     const func = `${moduleIOSName}.${methodName}`;
     sdkConsole.debug(`${func} called: ${JSON.stringify(args)}`);
+
     moduleIOS[methodName](args, (error: Error, result) => {
       if (error) {
         sdkConsole.error(`${func} failed: ${JSON.stringify(error)}`);
@@ -65,7 +102,7 @@ export const exec = (
           successCB(safeJSONparse(result));
         }
       },
-      (error: Error) => {
+      (error) => {
         sdkConsole.error(`${func} failed: ${JSON.stringify(error)}`);
         if (errorCB) errorCB(safeJSONparse(error));
       }
@@ -73,12 +110,18 @@ export const exec = (
   }
 };
 
-export const safeJSONparse = (
-  str: string
-): Record<string, unknown> | string => {
+/**
+ * Returns a parsed JSON Android result
+ *
+ * @template T
+ * @param {string} str
+ * @returns {T}
+ */
+export const safeJSONparse = <T>(str: string): T => {
   try {
     return JSON.parse(str);
   } catch (e) {
+    // @ts-ignore
     return str;
   }
 };

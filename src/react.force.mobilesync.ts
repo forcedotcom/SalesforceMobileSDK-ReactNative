@@ -27,6 +27,7 @@ import { NativeModules } from "react-native";
 import { exec as forceExec } from "./react.force.common";
 import { StoreConfig } from "./react.force.smartstore";
 import { SyncDownOptions, SyncDownTarget } from "./typings";
+import { SyncEvent, SyncStatus } from "./typings/mobilesync";
 
 const { MobileSyncReactBridge, SFMobileSyncReactBridge } = NativeModules;
 
@@ -50,10 +51,16 @@ const checkFirstArg = (arg: StoreConfig) => {
   return { isGlobalStore: isGlobalStore };
 };
 
-const exec = (
-  successCB: ((result?: any) => void) | null,
+const exec = <T>(
+  successCB: ((result: T) => void) | null,
   errorCB: ((err: Error) => void) | null,
-  methodName: string,
+  methodName:
+    | "syncDown"
+    | "reSync"
+    | "cleanResyncGhosts"
+    | "syncUp"
+    | "getSyncStatus"
+    | "deleteSync",
   args: Record<string, unknown>
 ) => {
   forceExec(
@@ -73,18 +80,26 @@ export const syncDown = (
   target: SyncDownTarget,
   soupName: string,
   options: SyncDownOptions,
-  syncName: string | undefined,
-  successCB: (result: any) => void,
-  errorCB: (err: Error) => void
+  ...args: unknown[]
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
+
+  let errorCB: (err: Error) => void;
+  let successCB: (result: SyncEvent) => void;
+  let syncName: string | undefined;
+
   // syncName optional (new in 6.0)
-  if (typeof syncName === "function") {
-    errorCB = successCB;
-    successCB = syncName;
+  if (typeof args[0] === "function") {
+    errorCB = args[1] as (err: Error) => void;
+    successCB = args[0] as (result: SyncEvent) => void;
     syncName = undefined;
+  } else {
+    errorCB = args[2] as (err: Error) => void;
+    successCB = args[1] as (result: SyncEvent) => void;
+    syncName = args[0] as string;
   }
-  exec(successCB, errorCB, "syncDown", {
+
+  exec<SyncEvent>(successCB, errorCB, "syncDown", {
     target: target,
     soupName: soupName,
     options: options,
@@ -97,7 +112,7 @@ export const syncDown = (
 export const reSync = (
   storeConfig: StoreConfig,
   syncIdOrName: string,
-  successCB: (result: any) => void,
+  successCB: (result: SyncEvent) => void,
   errorCB: (err: Error) => void
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
@@ -128,17 +143,25 @@ export const syncUp = (
   target: SyncDownTarget,
   soupName: string,
   options: SyncDownOptions,
-  syncName: string | undefined,
-  successCB: (result: any) => void,
-  errorCB: (err: Error) => void
+  ...args: unknown[]
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
+
+  let errorCB: (err: Error) => void;
+  let successCB: (result: SyncEvent) => void;
+  let syncName: string | undefined;
+
   // syncName optional (new in 6.0)
-  if (typeof syncName === "function") {
-    errorCB = successCB;
-    successCB = syncName;
+  if (typeof args[0] === "function") {
+    errorCB = args[1] as (err: Error) => void;
+    successCB = args[0] as (result: SyncEvent) => void;
     syncName = undefined;
+  } else {
+    errorCB = args[2] as (err: Error) => void;
+    successCB = args[1] as (result: SyncEvent) => void;
+    syncName = args[0] as string;
   }
+
   exec(successCB, errorCB, "syncUp", {
     target: target,
     soupName: soupName,
@@ -152,7 +175,7 @@ export const syncUp = (
 export const getSyncStatus = (
   storeConfig: StoreConfig,
   syncIdOrName: string,
-  successCB: (result: any) => void,
+  successCB: (result: SyncStatus) => void,
   errorCB: (err: Error) => void
 ): void => {
   storeConfig = checkFirstArg(storeConfig);

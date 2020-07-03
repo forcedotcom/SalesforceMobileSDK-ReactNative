@@ -133,7 +133,7 @@ export class QuerySpec {
 /**
  * StoreCursor class
  */
-export class StoreCursor {
+export class StoreCursor<T> {
   // a unique identifier for this cursor, used by plugin
   public cursorId: string | undefined;
 
@@ -150,7 +150,7 @@ export class StoreCursor {
   public currentPageIndex = 0;
 
   // the list of current page entries, ordered as requested in the querySpec
-  public currentPageOrderedEntries: number | undefined;
+  public currentPageOrderedEntries: Array<T> = [];
 
   constructor() {}
 }
@@ -314,9 +314,9 @@ const checkFirstArg = (arg: StoreConfig | boolean) => {
 };
 
 // ====== Soup manipulation ======
-export const getDatabaseSize = (
+export const getDatabaseSize = <T>(
   storeConfig: StoreConfig | boolean,
-  successCB: (result: any) => void,
+  successCB: (result: T) => void,
   errorCB: (err: Error) => void
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
@@ -326,11 +326,11 @@ export const getDatabaseSize = (
   });
 };
 
-export const registerSoup = (
+export const registerSoup = <T>(
   storeConfig: StoreConfig | boolean,
   soupName: string,
   indexSpecs: SoupIndexSpec[],
-  successCB: (result: any) => void,
+  successCB: (result: T) => void,
   errorCB: (err: Error) => void
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
@@ -343,11 +343,11 @@ export const registerSoup = (
   });
 };
 
-export const registerSoupWithSpec = (
+export const registerSoupWithSpec = <T>(
   storeConfig: StoreConfig | boolean,
   soupSpec: QuerySpec,
   indexSpecs: SoupIndexSpec[],
-  successCB: (result: any) => void,
+  successCB: (result: T) => void,
   errorCB: (err: Error) => void
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
@@ -360,10 +360,10 @@ export const registerSoupWithSpec = (
   });
 };
 
-export const removeSoup = (
+export const removeSoup = <T>(
   storeConfig: StoreConfig | boolean,
   soupName: string,
-  successCB: (result: any) => void,
+  successCB: (result: T) => void,
   errorCB: (err: Error) => void
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
@@ -375,10 +375,10 @@ export const removeSoup = (
   });
 };
 
-export const getSoupIndexSpecs = (
+export const getSoupIndexSpecs = <T>(
   storeConfig: StoreConfig | boolean,
   soupName: string,
-  successCB: (result: any) => void,
+  successCB: (result: T) => void,
   errorCB: (err: Error) => void
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
@@ -390,10 +390,10 @@ export const getSoupIndexSpecs = (
   });
 };
 
-export const getSoupSpec = (
+export const getSoupSpec = <T>(
   storeConfig: StoreConfig | boolean,
   soupName: string,
-  successCB: (result: any) => void,
+  successCB: (result: T) => void,
   errorCB: (err: Error) => void
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
@@ -405,12 +405,12 @@ export const getSoupSpec = (
   });
 };
 
-export const alterSoup = (
+export const alterSoup = <T>(
   storeConfig: StoreConfig | boolean,
   soupName: string,
   indexSpecs: SoupIndexSpec[],
   reIndexData: boolean,
-  successCB: (result: any) => void,
+  successCB: (result: T) => void,
   errorCB: (err: Error) => void
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
@@ -424,13 +424,13 @@ export const alterSoup = (
   });
 };
 
-export const alterSoupWithSpec = (
+export const alterSoupWithSpec = <T>(
   storeConfig: StoreConfig | boolean,
   soupName: string,
   soupSpec: SoupSpec,
   indexSpecs: SoupIndexSpec[],
   reIndexData: boolean,
-  successCB: (result: any) => void,
+  successCB: (result: T) => void,
   errorCB: (err: Error) => void
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
@@ -445,11 +445,11 @@ export const alterSoupWithSpec = (
   });
 };
 
-export const reIndexSoup = (
+export const reIndexSoup = <T>(
   storeConfig: StoreConfig | boolean,
   soupName: string,
   paths: string,
-  successCB: (result: any) => void,
+  successCB: (result: T) => void,
   errorCB: (err: Error) => void
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
@@ -462,10 +462,10 @@ export const reIndexSoup = (
   });
 };
 
-export const clearSoup = (
+export const clearSoup = <T>(
   storeConfig: StoreConfig | boolean,
   soupName: string,
-  successCB: (result: any) => void,
+  successCB: (result: T) => void,
   errorCB: (err: Error) => void
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
@@ -477,10 +477,10 @@ export const clearSoup = (
   });
 };
 
-export const soupExists = (
+export const soupExists = <T>(
   storeConfig: StoreConfig | boolean,
   soupName: string,
-  successCB: (result: any) => void,
+  successCB: (result: T) => void,
   errorCB: (err: Error) => void
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
@@ -492,11 +492,11 @@ export const soupExists = (
   });
 };
 
-export const querySoup = (
+export const querySoup = <T>(
   storeConfig: StoreConfig | boolean,
   soupName: string,
   querySpec: QuerySpec,
-  successCB: (result: any) => void,
+  successCB: (result: StoreCursor<T>) => void,
   errorCB: (err: Error) => void
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
@@ -520,18 +520,10 @@ export const querySoup = (
   });
 };
 
-export const querySoupAsync = async (
-  storeConfig: StoreConfig | boolean,
-  soupName: string,
-  querySpec: QuerySpec
-): void => {
-  querySoupAsync(storeConfig, soupName, querySpec);
-};
-
-export const runSmartQuery = (
+export const runSmartQuery = <T>(
   storeConfig: StoreConfig | boolean,
   querySpec: QuerySpec,
-  successCB: (result: any) => void,
+  successCB: (result: StoreCursor<T>) => void,
   errorCB: (err: Error) => void
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
@@ -551,11 +543,11 @@ export const runSmartQuery = (
   });
 };
 
-export const retrieveSoupEntries = (
+export const retrieveSoupEntries = <T>(
   storeConfig: StoreConfig | boolean,
   soupName: string,
   entryIds: string[],
-  successCB: (result: any) => void,
+  successCB: (result: StoreCursor<T>) => void,
   errorCB: (err: Error) => void
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
@@ -568,11 +560,11 @@ export const retrieveSoupEntries = (
   });
 };
 
-export const upsertSoupEntries = (
+export const upsertSoupEntries = <T>(
   storeConfig: StoreConfig | boolean,
   soupName: string,
   entries: { [key: string]: any }[],
-  successCB: (result: any) => void,
+  successCB: (result: T) => void,
   errorCB: (err: Error) => void
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
@@ -587,12 +579,12 @@ export const upsertSoupEntries = (
   );
 };
 
-export let upsertSoupEntriesWithExternalId = (
+export let upsertSoupEntriesWithExternalId = <T>(
   storeConfig: StoreConfig | boolean,
   soupName: string,
   entries: { [key: string]: any }[],
   externalIdPath: string,
-  successCB: (result: any) => void,
+  successCB: (result: T) => void,
   errorCB: (err: Error) => void
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
@@ -606,11 +598,11 @@ export let upsertSoupEntriesWithExternalId = (
   });
 };
 
-export const removeFromSoup = (
+export const removeFromSoup = <T>(
   storeConfig: StoreConfig | boolean,
   soupName: string,
   entryIdsOrQuerySpec: string[],
-  successCB: (result: any) => void,
+  successCB: (result: T) => void,
   errorCB: (err: Error) => void
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
@@ -630,11 +622,11 @@ export const removeFromSoup = (
 };
 
 // ====== Cursor manipulation ======
-export const moveCursorToPageIndex = (
+export const moveCursorToPageIndex = <T>(
   storeConfig: StoreConfig | boolean,
-  cursor: StoreCursor,
+  cursor: StoreCursor<T>,
   newPageIndex: number,
-  successCB: (result: any) => void,
+  successCB: (result: T) => void,
   errorCB: (err: Error) => void
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
@@ -657,11 +649,11 @@ export const moveCursorToPageIndex = (
   });
 };
 
-export const moveCursorToNextPage = (
+export const moveCursorToNextPage = <T>(
   storeConfig: StoreConfig | boolean,
-  cursor: StoreCursor,
-  successCB: (result: any) => void,
-  errorCB: (cursor: StoreCursor, err: Error) => void
+  cursor: StoreCursor<T>,
+  successCB: (result: T) => void,
+  errorCB: (cursor: StoreCursor<T>, err: Error) => void
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
 
@@ -682,11 +674,11 @@ export const moveCursorToNextPage = (
   }
 };
 
-export const moveCursorToPreviousPage = (
+export const moveCursorToPreviousPage = <T>(
   storeConfig: StoreConfig | boolean,
-  cursor: StoreCursor,
-  successCB: (result: any) => void,
-  errorCB: (cursor: StoreCursor, err: Error) => void
+  cursor: StoreCursor<T>,
+  successCB: (result: T) => void,
+  errorCB: (cursor: StoreCursor<T>, err: Error) => void
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
 
@@ -707,10 +699,10 @@ export const moveCursorToPreviousPage = (
   }
 };
 
-export const closeCursor = (
+export const closeCursor = <T>(
   storeConfig: StoreConfig | boolean,
-  cursor: StoreCursor,
-  successCB: (result: any) => void,
+  cursor: StoreCursor<T>,
+  successCB: (result: T) => void,
   errorCB: (err: Error) => void
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
@@ -723,23 +715,23 @@ export const closeCursor = (
 };
 
 // ====== Store Operations ======
-export const getAllStores = (
-  successCB: (result: any) => void,
+export const getAllStores = <T>(
+  successCB: (result: T) => void,
   errorCB: (err: Error) => void
 ): void => {
   exec(successCB, errorCB, "getAllStores", {});
 };
 
-export const getAllGlobalStores = (
-  successCB: (result: any) => void,
+export const getAllGlobalStores = <T>(
+  successCB: (result: T) => void,
   errorCB: (err: Error) => void
 ): void => {
   exec(successCB, errorCB, "getAllGlobalStores", {});
 };
 
-export const removeStore = (
+export const removeStore = <T>(
   storeConfig: StoreConfig | boolean,
-  successCB: (result: any) => void,
+  successCB: (result: T) => void,
   errorCB: (err: Error) => void
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
@@ -750,15 +742,15 @@ export const removeStore = (
   });
 };
 
-export const removeAllGlobalStores = (
-  successCB: (result: any) => void,
+export const removeAllGlobalStores = <T>(
+  successCB: (result: T) => void,
   errorCB: (err: Error) => void
 ): void => {
   exec(successCB, errorCB, "removeAllGlobalStores", {});
 };
 
-export const removeAllStores = (
-  successCB: (result: any) => void,
+export const removeAllStores = <T>(
+  successCB: (result: T) => void,
   errorCB: (err: Error) => void
 ): void => {
   exec(successCB, errorCB, "removeAllStores", {});
