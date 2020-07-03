@@ -24,200 +24,221 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { assert } from 'chai';
-import * as net from '../src/react.force.net';
-import { registerTest, testDone } from '../src/react.force.test';
-import { promiser } from '../src/react.force.util';
+import { assert } from "chai";
+import * as net from "../react.force.net";
+import { registerTest, testDone } from "../react.force.test";
+import { promiser } from "../react.force.util";
 
 // Promised based bridge functions for more readable tests
-netVersions = promiser(net.versions);
-netResources = promiser(net.resources);
-netDescribeGlobal = promiser(net.describeGlobal);
-netMetadata = promiser(net.metadata);
-netDescribe = promiser(net.describe);
-netDescribeLayout = promiser(net.describeLayout);
-netCreate = promiser(net.create);
-netRetrieve = promiser(net.retrieve);
-netUpsert = promiser(net.upsert);
-netUpdate = promiser(net.update);
-netDel = promiser(net.del);
-netQuery = promiser(net.query);
-netSearch = promiser(net.search);
+const netVersions = promiser(net.versions);
+const netResources = promiser(net.resources);
+const netDescribeGlobal = promiser(net.describeGlobal);
+const netMetadata = promiser(net.metadata);
+const netDescribe = promiser(net.describe);
+const netDescribeLayout = promiser(net.describeLayout);
+const netCreate = promiser(net.create);
+const netRetrieve = promiser(net.retrieve);
+const netUpsert = promiser(net.upsert);
+const netUpdate = promiser(net.update);
+const netDel = promiser(net.del);
+const netQuery = promiser(net.query);
+const netSearch = promiser(net.search);
 
-const apiVersion = 'v46.0';
+const apiVersion = "v46.0";
 
 const sendUnAuthenticatedNetRequest = (url, callback, error) => {
-    return net.sendRequest(null, url, callback, error,"GET", null, null, null, false, true);
+  return net.sendRequest(
+    null,
+    url,
+    callback,
+    error,
+    "GET",
+    null,
+    null,
+    null,
+    false,
+    true
+  );
 };
 
-netSendRequest = promiser(sendUnAuthenticatedNetRequest);
+const netSendRequest = promiser(sendUnAuthenticatedNetRequest);
 
-testGetApiVersion = () => {
-    assert.equal(net.getApiVersion(), apiVersion);
+const testGetApiVersion = () => {
+  assert.equal(net.getApiVersion(), apiVersion);
+  testDone();
+};
+
+const testVersions = () => {
+  netVersions().then((response) => {
+    assert.deepInclude(
+      response,
+      { label: "Summer '19", url: "/services/data/v46.0", version: "46.0" },
+      "Wrong version response"
+    );
     testDone();
+  });
 };
 
-testVersions = () => {
-    netVersions()
-        .then((response) => {
-            assert.deepInclude(response, {'label':'Summer \'19','url':'/services/data/v46.0','version':'46.0'}, 'Wrong version response');
-            testDone();
-        });
+const testResources = () => {
+  netResources().then((response) => {
+    assert.equal(
+      response.connect,
+      "/services/data/" + apiVersion + "/connect",
+      "Wrong url for connect resource"
+    );
+    testDone();
+  });
 };
 
-testResources = () => {
-    netResources()
-        .then((response) => {
-            assert.equal(response.connect, '/services/data/' + apiVersion + '/connect', 'Wrong url for connect resource');
-            testDone();
-        });
+const testDescribeGlobal = () => {
+  netDescribeGlobal().then((response) => {
+    assert.isArray(response.sobjects, "Expected sobjects array");
+    testDone();
+  });
 };
 
-testDescribeGlobal = () => {
-    netDescribeGlobal()
-        .then((response) => {
-            assert.isArray(response.sobjects, 'Expected sobjects array');
-            testDone();
-        });
+const testMetaData = () => {
+  netMetadata("account").then((response) => {
+    assert.isObject(response.objectDescribe, "Expected objectDescribe object");
+    assert.isArray(response.recentItems, "Expected recentItems array");
+    testDone();
+  });
 };
 
-testMetaData = () => {
-    netMetadata('account')
-        .then((response) => {
-            assert.isObject(response.objectDescribe, 'Expected objectDescribe object');
-            assert.isArray(response.recentItems, 'Expected recentItems array');
-            testDone();
-        });
+const testDescribe = () => {
+  netDescribe("account").then((response) => {
+    assert.isFalse(response.custom, "Expected custom to be false");
+    assert.isArray(response.fields, "Expected fields array");
+    testDone();
+  });
 };
 
-testDescribe = () => {
-    netDescribe('account')
-        .then((response) => {
-            assert.isFalse(response.custom, 'Expected custom to be false');
-            assert.isArray(response.fields, 'Expected fields array');
-            testDone();
-        });
+const testDescribeLayout = () => {
+  netDescribe("account")
+    .then((response) => {
+      const recordId = response.recordTypeInfos[0].recordTypeId;
+      return netDescribeLayout("account", recordId);
+    })
+    .then((response) => {
+      assert.isArray(response.relatedLists, "Expected relatedLists array");
+      testDone();
+    });
 };
 
-testDescribeLayout = () => {
-    netDescribe('account')
-        .then((response) => {
-            const recordId = response.recordTypeInfos[0].recordTypeId;
-            return netDescribeLayout('account', recordId);
-        })
-        .then((response) => {
-            assert.isArray(response.relatedLists, 'Expected relatedLists array');
-            testDone();
-        });
+const testCreateRetrieve = () => {
+  const uniq = Math.floor(Math.random() * 1000000);
+  const firstName = "First_" + uniq;
+  const lastName = "Last_" + uniq;
+  let contactId: string;
+
+  netCreate("contact", { FirstName: firstName, LastName: lastName })
+    .then((response) => {
+      assert.isTrue(response.success, "Create failed");
+      contactId = response.id;
+      return netRetrieve("contact", contactId, "firstName,lastName");
+    })
+    .then((response) => {
+      assert.equal(response.Id, contactId, "Wrong id");
+      assert.equal(response.FirstName, firstName, "Wrong first name");
+      assert.equal(response.LastName, lastName, "Wrong last name");
+
+      // Cleanup
+      return netDel("contact", contactId);
+    })
+    .then(() => {
+      testDone();
+    });
 };
 
-testCreateRetrieve = () => {
-    const uniq = Math.floor(Math.random() * 1000000);
-    const firstName = 'First_' + uniq;
-    const lastName = 'Last_' + uniq;
-    var contactId;
+const testUpsertUpdateRetrieve = () => {
+  const uniq = Math.floor(Math.random() * 1000000);
+  const firstName = "First_" + uniq;
+  const lastName = "Last_" + uniq;
+  const lastNameUpdated = lastName + "_updated";
+  let contactId: string;
 
-    netCreate('contact', {FirstName: firstName, LastName: lastName})
-        .then((response) => {
-            assert.isTrue(response.success, 'Create failed');
-            contactId = response.id;
-            return netRetrieve('contact', contactId, 'firstName,lastName');
-        })
-        .then((response) => {
-            assert.equal(response.Id, contactId, 'Wrong id');
-            assert.equal(response.FirstName, firstName, 'Wrong first name');
-            assert.equal(response.LastName, lastName, 'Wrong last name');
+  netUpsert("contact", "Id", "", { FirstName: firstName, LastName: lastName })
+    .then((response) => {
+      assert.isTrue(response.success, "Upsert failed");
+      contactId = response.id;
+      return netUpdate("Contact", contactId, { LastName: lastNameUpdated });
+    })
+    .then(() => {
+      return netRetrieve("contact", contactId, "firstName,lastName");
+    })
+    .then((response) => {
+      assert.equal(response.Id, contactId, "Wrong id");
+      assert.equal(response.FirstName, firstName, "Wrong first name");
+      assert.equal(response.LastName, lastNameUpdated, "Wrong last name");
 
-            // Cleanup
-            return netDel('contact', contactId);
-        })
-        .then(() => {
-            testDone();
-        });
+      // Cleanup
+      return netDel("contact", contactId);
+    })
+    .then(() => {
+      testDone();
+    });
 };
 
-testUpsertUpdateRetrieve = () => {
-    const uniq = Math.floor(Math.random() * 1000000);
-    const firstName = 'First_' + uniq;
-    const lastName = 'Last_' + uniq;
-    const lastNameUpdated = lastName + '_updated';
-    var contactId;
+const testCreateDelRetrieve = () => {
+  const uniq = Math.floor(Math.random() * 1000000);
+  const firstName = "First_" + uniq;
+  const lastName = "Last_" + uniq;
+  let contactId;
 
-    netUpsert('contact', 'Id', '', {FirstName: firstName, LastName: lastName})
-        .then((response) => {
-            assert.isTrue(response.success, 'Upsert failed');
-            contactId = response.id;
-            return netUpdate('Contact', contactId, {LastName: lastNameUpdated});
-        })
-        .then(() => {
-            return netRetrieve('contact', contactId, 'firstName,lastName');
-        })
-        .then((response) => {
-            assert.equal(response.Id, contactId, 'Wrong id');
-            assert.equal(response.FirstName, firstName, 'Wrong first name');
-            assert.equal(response.LastName, lastNameUpdated, 'Wrong last name');
-
-            // Cleanup
-            return netDel('contact', contactId);
-        })
-        .then(() => {
-            testDone();
-        });
+  netCreate("contact", { FirstName: firstName, LastName: lastName })
+    .then((response) => {
+      assert.isTrue(response.success, "Create failed");
+      contactId = response.id;
+      return netDel("contact", contactId);
+    })
+    .then(() => {
+      return netRetrieve("contact", contactId, "firstName,lastName");
+    })
+    .then((response) => {
+      throw "Retrieve following delete should have 404ed";
+    })
+    .catch((error) => {
+      assert.include(
+        JSON.stringify(error),
+        "The requested resource does not exist",
+        "Retrieve following delete should have 404ed"
+      );
+      testDone();
+    });
 };
 
-testCreateDelRetrieve = () => {
-    const uniq = Math.floor(Math.random() * 1000000);
-    const firstName = 'First_' + uniq;
-    const lastName = 'Last_' + uniq;
-    var contactId;
-
-    netCreate('contact', {FirstName: firstName, LastName: lastName})
-        .then((response) => {
-            assert.isTrue(response.success, 'Create failed');
-            contactId = response.id;
-            return netDel('contact', contactId);
-        })
-        .then(() => {
-            return netRetrieve('contact', contactId, 'firstName,lastName');
-        })
-        .then((response) => {
-            throw 'Retrieve following delete should have 404ed';
-        })
-        .catch((error) => {
-            assert.include(JSON.stringify(error), 'The requested resource does not exist', 'Retrieve following delete should have 404ed');
-            testDone();
-        });
+const testQuery = () => {
+  netQuery("SELECT FirstName, LastName FROM Contact LIMIT 5").then(
+    (response) => {
+      assert.isArray(response.records, "Expected records");
+      assert.isTrue(response.done, "Expected done to be true");
+      assert.isNumber(response.totalSize, "Expected totalSize");
+      testDone();
+    }
+  );
 };
 
-testQuery = () => {
-    netQuery('SELECT FirstName, LastName FROM Contact LIMIT 5')
-        .then((response) => {
-            assert.isArray(response.records, 'Expected records');
-            assert.isTrue(response.done, 'Expected done to be true');
-            assert.isNumber(response.totalSize, 'Expected totalSize');
-            testDone();
-        });
+const testSearch = () => {
+  netSearch("FIND {Joe} IN NAME FIELDS RETURNING Contact").then((response) => {
+    assert.isArray(response.searchRecords, "Expected searchRecords");
+    testDone();
+  });
 };
 
-testSearch = () => {
-    netSearch('FIND {Joe} IN NAME FIELDS RETURNING Contact')
-        .then((response) => {
-            assert.isArray(response.searchRecords, 'Expected searchRecords');
-            testDone();
-        });
-};
-
-testPublicApiCall = () => {
-    netSendRequest( 'https://api.ipify.org?format=json')
-        .then((response) => {
-          assert.isObject(response, 'Expected A successful response');
-          testDone();
-       })
-       .catch((error) => {
-           assert.include(JSON.stringify(error), 'The requested resource failed', '');
-           testDone();
-       });
-
+const testPublicApiCall = () => {
+  netSendRequest("https://api.ipify.org?format=json")
+    .then((response) => {
+      assert.isObject(response, "Expected A successful response");
+      testDone();
+    })
+    .catch((error) => {
+      assert.include(
+        JSON.stringify(error),
+        "The requested resource failed",
+        ""
+      );
+      testDone();
+    });
 };
 
 registerTest(testGetApiVersion);

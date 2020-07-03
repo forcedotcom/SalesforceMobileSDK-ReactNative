@@ -24,288 +24,419 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { assert } from 'chai';
-import * as net from '../src/react.force.net';
-import * as smartstore from '../src/react.force.smartstore';
-import * as mobilesync from '../src/react.force.mobilesync';
-import { registerTest, testDone } from '../src/react.force.test';
-import { promiser, timeoutPromiser } from '../src/react.force.util';
+import { assert } from "chai";
+import * as net from "../react.force.net";
+import * as smartstore from "../react.force.smartstore";
+import * as mobilesync from "../react.force.mobilesync";
+import { registerTest, testDone } from "../react.force.test";
+import { promiser, timeoutPromiser } from "../react.force.util";
 
 // Promised based bridge functions for more readable tests
-netCreate = promiser(net.create);
-netRetrieve = promiser(net.retrieve);
-netUpdate = promiser(net.update);
-netDel = promiser(net.del);
-netQuery = promiser(net.query);
+const netCreate = promiser(net.create);
+const netRetrieve = promiser(net.retrieve);
+const netUpdate = promiser(net.update);
+const netDel = promiser(net.del);
+const netQuery = promiser(net.query);
 
-registerSoup = promiser(smartstore.registerSoup);
-upsertSoupEntries = promiser(smartstore.upsertSoupEntries);
-retrieveSoupEntries = promiser(smartstore.retrieveSoupEntries);
-runSmartQuery = promiser(smartstore.runSmartQuery);
+const registerSoup = promiser(smartstore.registerSoup);
+const upsertSoupEntries = promiser(smartstore.upsertSoupEntries);
+const retrieveSoupEntries = promiser(smartstore.retrieveSoupEntries);
+const runSmartQuery = promiser(smartstore.runSmartQuery);
 
-getSyncStatus = promiser(mobilesync.getSyncStatus);
-deleteSync = promiser(mobilesync.deleteSync);
-syncDown = promiser(mobilesync.syncDown);
-syncUp = promiser(mobilesync.syncUp);
-reSync = promiser(mobilesync.reSync);
-cleanResyncGhosts = promiser(mobilesync.cleanResyncGhosts);
+const getSyncStatus = promiser(mobilesync.getSyncStatus);
+const deleteSync = promiser(mobilesync.deleteSync);
+const syncDown = promiser(mobilesync.syncDown);
+const syncUp = promiser(mobilesync.syncUp);
+const reSync = promiser(mobilesync.reSync);
+const cleanResyncGhosts = promiser(mobilesync.cleanResyncGhosts);
 
-const storeConfig = {isGlobalStore:false};
-const soupName = 'contacts';
-const indexSpecs = [{ 'path': 'Id', 'type': 'string'}, { 'path': 'FirstName', 'type': 'string'}, { 'path': 'LastName', 'type': 'string'}, { 'path': '__local__', 'type': 'string'}];
+const storeConfig = { isGlobalStore: false };
+const soupName = "contacts";
+const indexSpecs = [
+  { path: "Id", type: "string" },
+  { path: "FirstName", type: "string" },
+  { path: "LastName", type: "string" },
+  { path: "__local__", type: "string" },
+];
 
-testSyncUp = () => {
-    const uniq = Math.floor(Math.random() * 1000000);
-    const firstName = 'First' + uniq;    
-    var contactSmartStoreId;
-    var contactId;
+const testSyncUp = () => {
+  const uniq = Math.floor(Math.random() * 1000000);
+  const firstName = "First" + uniq;
+  var contactSmartStoreId;
+  var contactId;
 
+  // Create a record locally in db
+  // Do a sync up - read from db to get server id
+  // Check on server
+  // Delete from server (cleanup)
 
-    // Create a record locally in db
-    // Do a sync up - read from db to get server id
-    // Check on server
-    // Delete from server (cleanup)
+  registerSoup(storeConfig, soupName, indexSpecs)
+    .then((result) => {
+      return upsertSoupEntries(storeConfig, soupName, [
+        {
+          Id: "local_1",
+          FirstName: firstName,
+          LastName: "Last" + uniq,
+          __local__: true,
+          __locally_created__: true,
+          attributes: { type: "contact" },
+        },
+      ]);
+    })
+    .then((result) => {
+      contactSmartStoreId = result[0]._soupEntryId;
+      return syncUp(
+        storeConfig,
+        { createFieldlist: ["FirstName", "LastName"] },
+        soupName,
+        {
+          fieldlist: ["Id", "FirstName", "LastName"],
+          mergeMode: "LEAVE_IF_CHANGED",
+        }
+      );
+    })
+    .then((result) => {
+      assert.equal(result.totalSize, 1, "Total size should be 1");
+      assert.equal(result.status, "DONE", "Status should be done");
+      return retrieveSoupEntries(storeConfig, soupName, [contactSmartStoreId]);
+    })
+    .then((result) => {
+      assert.equal(result[0].__local__, false, "Local record should be clean");
+      assert.equal(
+        result[0].__locally_created__,
+        false,
+        "Local record should be clean"
+      );
+      contactId = result[0].Id;
+      return netQuery(
+        "SELECT FirstName FROM Contact WHERE Id IN ('" + contactId + "')"
+      );
+    })
+    .then((result) => {
+      assert.equal(result.records[0].FirstName, firstName);
 
-    registerSoup(storeConfig, soupName, indexSpecs)
-        .then((result) => {
-            return upsertSoupEntries(storeConfig, soupName,
-                                     [{Id: 'local_1', FirstName: firstName, LastName: 'Last' + uniq, __local__: true, __locally_created__: true, attributes: {type: 'contact'}}]);
-        })
-        .then((result) => {
-            contactSmartStoreId = result[0]._soupEntryId;
-            return syncUp(storeConfig,
-                          {'createFieldlist':['FirstName', 'LastName']},
-                          soupName,
-                          {'fieldlist':['Id', 'FirstName', 'LastName'], 'mergeMode':'LEAVE_IF_CHANGED'}
-                         );
-        })
-        .then((result) => {
-            assert.equal(result.totalSize, 1, 'Total size should be 1');
-            assert.equal(result.status, 'DONE', 'Status should be done');
-            return retrieveSoupEntries(storeConfig, soupName, [contactSmartStoreId]);
-        })
-        .then((result) => {
-            assert.equal(result[0].__local__, false, 'Local record should be clean');
-            assert.equal(result[0].__locally_created__, false, 'Local record should be clean');
-            contactId = result[0].Id;
-            return netQuery("SELECT FirstName FROM Contact WHERE Id IN ('" + contactId + "')");
-        })
-        .then((result) => {
-            assert.equal(result.records[0].FirstName, firstName);
-
-            // Cleanup
-            return netDel('contact', contactId);
-        })
-        .then((result) => {
-            testDone();
-        });
+      // Cleanup
+      return netDel("contact", contactId);
+    })
+    .then((result) => {
+      testDone();
+    });
 };
 
-testSyncDown = () => {
-    const uniq = Math.floor(Math.random() * 1000000);
-    const firstName = 'First' + uniq;
-    var contactId;
+const testSyncDown = () => {
+  const uniq = Math.floor(Math.random() * 1000000);
+  const firstName = "First" + uniq;
+  var contactId;
 
-    // Create a record remotely
-    // Do a sync down
-    // Check in db
-    // Delete from server (cleanup)
+  // Create a record remotely
+  // Do a sync down
+  // Check in db
+  // Delete from server (cleanup)
 
-    registerSoup(storeConfig, soupName, indexSpecs)
-        .then((result) => {
-            return netCreate('contact', {FirstName: firstName, LastName: 'Last' + uniq});
-        })
-        .then((result) => {
-            contactId = result.id;
-            return syncDown(storeConfig,
-                            {'type':'soql', 'query':"SELECT Id, FirstName, LastName FROM Contact WHERE Id IN ('" + contactId + "')"},
-                            soupName,
-                            {'mergeMode':'OVERWRITE'}
-                           );
-        })
-        .then((result) => {
-            assert.equal(result.totalSize, 1, 'Total size should be 1');
-            assert.equal(result.status, 'DONE', 'Status should be done');
-            return runSmartQuery(storeConfig, {queryType:'smart', smartSql:'select {' + soupName + ':FirstName} from {' + soupName + '} where {' + soupName + ':Id} = "' + contactId + '"', pageSize:32});
-        })
-        .then((result) => {
-            assert.deepEqual(result.currentPageOrderedEntries, [[firstName]]);
+  registerSoup(storeConfig, soupName, indexSpecs)
+    .then((result) => {
+      return netCreate("contact", {
+        FirstName: firstName,
+        LastName: "Last" + uniq,
+      });
+    })
+    .then((result) => {
+      contactId = result.id;
+      return syncDown(
+        storeConfig,
+        {
+          type: "soql",
+          query:
+            "SELECT Id, FirstName, LastName FROM Contact WHERE Id IN ('" +
+            contactId +
+            "')",
+        },
+        soupName,
+        { mergeMode: "OVERWRITE" }
+      );
+    })
+    .then((result) => {
+      assert.equal(result.totalSize, 1, "Total size should be 1");
+      assert.equal(result.status, "DONE", "Status should be done");
+      return runSmartQuery(storeConfig, {
+        queryType: "smart",
+        smartSql:
+          "select {" +
+          soupName +
+          ":FirstName} from {" +
+          soupName +
+          "} where {" +
+          soupName +
+          ':Id} = "' +
+          contactId +
+          '"',
+        pageSize: 32,
+      });
+    })
+    .then((result) => {
+      assert.deepEqual(result.currentPageOrderedEntries, [[firstName]]);
 
-            // Cleanup
-            return netDel('contact', contactId);
-        })
-        .then((result) => {
-            testDone();
-        });
+      // Cleanup
+      return netDel("contact", contactId);
+    })
+    .then((result) => {
+      testDone();
+    });
 };
 
-testReSync = () => {
-    const uniq = Math.floor(Math.random() * 1000000);
-    const firstName = 'First' + uniq;
-    const otherFirstName = 'Other' + uniq;
-    const otherFirstNameUpdated = otherFirstName + '_updated';
-    var syncId;
-    var contactId;
-    var otherContactId;
-    var querySpec;
+const testReSync = () => {
+  const uniq = Math.floor(Math.random() * 1000000);
+  const firstName = "First" + uniq;
+  const otherFirstName = "Other" + uniq;
+  const otherFirstNameUpdated = otherFirstName + "_updated";
+  var syncId;
+  var contactId;
+  var otherContactId;
+  var querySpec;
 
-    // Create two records remotely - do a sync down - check db
-    // Update one of the two records - do a resync - check db
-    // Delete records from server (cleanup)
+  // Create two records remotely - do a sync down - check db
+  // Update one of the two records - do a resync - check db
+  // Delete records from server (cleanup)
 
-    registerSoup(storeConfig, soupName, indexSpecs)
-        .then((result) => {
-            return netCreate('contact', {FirstName: firstName, LastName: 'Last' + uniq});
-        })
-        .then((result) => {
-            contactId = result.id;
-            return netCreate('contact', {FirstName: otherFirstName, LastName: 'Last' + uniq});
-        })
-        .then((result) => {
-            otherContactId = result.id;
-            return syncDown(storeConfig,
-                            {'type':'soql', 'query':"SELECT Id, FirstName, LastName FROM Contact WHERE Id IN ('" + contactId + "', '" + otherContactId + "')"},
-                            soupName,
-                            {'mergeMode':'OVERWRITE'}
-                           );
-        })
-        .then((result) => {
-            syncId = result._soupEntryId;
-            assert.equal(result.totalSize, 2, 'Total size should be 1');
-            assert.equal(result.status, 'DONE', 'Status should be done');
-            querySpec = {queryType:'smart', smartSql:'select {' + soupName + ':FirstName} from {' + soupName + '} where {' + soupName + ':Id} in ("' + contactId + '","' + otherContactId + '") order by {' + soupName + ':FirstName}', pageSize:32};
-            return runSmartQuery(storeConfig, querySpec);
-        })
-        .then((result) => {
-            assert.deepEqual(result.currentPageOrderedEntries, [[firstName],[otherFirstName]]);
+  registerSoup(storeConfig, soupName, indexSpecs)
+    .then((result) => {
+      return netCreate("contact", {
+        FirstName: firstName,
+        LastName: "Last" + uniq,
+      });
+    })
+    .then((result) => {
+      contactId = result.id;
+      return netCreate("contact", {
+        FirstName: otherFirstName,
+        LastName: "Last" + uniq,
+      });
+    })
+    .then((result) => {
+      otherContactId = result.id;
+      return syncDown(
+        storeConfig,
+        {
+          type: "soql",
+          query:
+            "SELECT Id, FirstName, LastName FROM Contact WHERE Id IN ('" +
+            contactId +
+            "', '" +
+            otherContactId +
+            "')",
+        },
+        soupName,
+        { mergeMode: "OVERWRITE" }
+      );
+    })
+    .then((result) => {
+      syncId = result._soupEntryId;
+      assert.equal(result.totalSize, 2, "Total size should be 1");
+      assert.equal(result.status, "DONE", "Status should be done");
+      querySpec = {
+        queryType: "smart",
+        smartSql:
+          "select {" +
+          soupName +
+          ":FirstName} from {" +
+          soupName +
+          "} where {" +
+          soupName +
+          ':Id} in ("' +
+          contactId +
+          '","' +
+          otherContactId +
+          '") order by {' +
+          soupName +
+          ":FirstName}",
+        pageSize: 32,
+      };
+      return runSmartQuery(storeConfig, querySpec);
+    })
+    .then((result) => {
+      assert.deepEqual(result.currentPageOrderedEntries, [
+        [firstName],
+        [otherFirstName],
+      ]);
 
-            // Wait a bit before doing update
-            return timeoutPromiser(1000);
-        })
-        .then(function() {
-            return netUpdate('contact', otherContactId, {FirstName: otherFirstNameUpdated});
-        })
-        .then((result) => {
-            return reSync(storeConfig, syncId);
-        })
-        .then((result) => {
-            assert.equal(result.totalSize, 1, 'Total size should be 1');
-            assert.equal(result.status, 'DONE', 'Status should be done');
-            return runSmartQuery(storeConfig, querySpec);
-        })
-        .then((result) => {
-            assert.deepEqual(result.currentPageOrderedEntries, [[firstName],[otherFirstNameUpdated]]);
+      // Wait a bit before doing update
+      return timeoutPromiser(1000);
+    })
+    .then(function () {
+      return netUpdate("contact", otherContactId, {
+        FirstName: otherFirstNameUpdated,
+      });
+    })
+    .then((result) => {
+      return reSync(storeConfig, syncId);
+    })
+    .then((result) => {
+      assert.equal(result.totalSize, 1, "Total size should be 1");
+      assert.equal(result.status, "DONE", "Status should be done");
+      return runSmartQuery(storeConfig, querySpec);
+    })
+    .then((result) => {
+      assert.deepEqual(result.currentPageOrderedEntries, [
+        [firstName],
+        [otherFirstNameUpdated],
+      ]);
 
-            // Cleanup
-            return Promise.all([netDel('contact', contactId), netDel('contact', otherContactId)]);
-        })
-        .then((result) => { 
-            testDone();
-        });
+      // Cleanup
+      return Promise.all([
+        netDel("contact", contactId),
+        netDel("contact", otherContactId),
+      ]);
+    })
+    .then((result) => {
+      testDone();
+    });
 };
 
-testCleanResyncGhosts = () => {
-    const uniq = Math.floor(Math.random() * 1000000);
-    const firstName = 'First' + uniq;
-    const otherFirstName = 'Other' + uniq;
-    var syncId;
-    var contactId;
-    var otherContactId;
-    var querySpec;
+const testCleanResyncGhosts = () => {
+  const uniq = Math.floor(Math.random() * 1000000);
+  const firstName = "First" + uniq;
+  const otherFirstName = "Other" + uniq;
+  var syncId;
+  var contactId;
+  var otherContactId;
+  var querySpec;
 
-    // Create two records remotely - do a sync down - check db
-    // Delete one of the two records - do a cleanResyncGhosts - check db
-    // Delete record from server (cleanup)
+  // Create two records remotely - do a sync down - check db
+  // Delete one of the two records - do a cleanResyncGhosts - check db
+  // Delete record from server (cleanup)
 
-    registerSoup(storeConfig, soupName, indexSpecs)
-        .then((result) => {
-            return netCreate('contact', {FirstName: firstName, LastName: 'Last' + uniq});
-        })
-        .then((result) => {
-            contactId = result.id;
-            return netCreate('contact', {FirstName: otherFirstName, LastName: 'Last' + uniq});
-        })
-        .then((result) => {
-            otherContactId = result.id;
-            return syncDown(storeConfig,
-                            {'type':'soql', 'query':"SELECT Id, FirstName, LastName FROM Contact WHERE Id IN ('" + contactId + "', '" + otherContactId + "')"},
-                            soupName,
-                            {'mergeMode':'OVERWRITE'}
-                           );
-        })
-        .then((result) => {
-            syncId = result._soupEntryId;
-            assert.equal(result.totalSize, 2, 'Total size should be 1');
-            assert.equal(result.status, 'DONE', 'Status should be done');
-            querySpec = {queryType:'smart', smartSql:'select {' + soupName + ':FirstName} from {' + soupName + '} where {' + soupName + ':Id} in ("' + contactId + '","' + otherContactId + '")', pageSize:32};
-            return runSmartQuery(storeConfig, querySpec);
-        })
-        .then((result) => {
-            assert.deepEqual(result.currentPageOrderedEntries, [[firstName],[otherFirstName]]);
+  registerSoup(storeConfig, soupName, indexSpecs)
+    .then((result) => {
+      return netCreate("contact", {
+        FirstName: firstName,
+        LastName: "Last" + uniq,
+      });
+    })
+    .then((result) => {
+      contactId = result.id;
+      return netCreate("contact", {
+        FirstName: otherFirstName,
+        LastName: "Last" + uniq,
+      });
+    })
+    .then((result) => {
+      otherContactId = result.id;
+      return syncDown(
+        storeConfig,
+        {
+          type: "soql",
+          query:
+            "SELECT Id, FirstName, LastName FROM Contact WHERE Id IN ('" +
+            contactId +
+            "', '" +
+            otherContactId +
+            "')",
+        },
+        soupName,
+        { mergeMode: "OVERWRITE" }
+      );
+    })
+    .then((result) => {
+      syncId = result._soupEntryId;
+      assert.equal(result.totalSize, 2, "Total size should be 1");
+      assert.equal(result.status, "DONE", "Status should be done");
+      querySpec = {
+        queryType: "smart",
+        smartSql:
+          "select {" +
+          soupName +
+          ":FirstName} from {" +
+          soupName +
+          "} where {" +
+          soupName +
+          ':Id} in ("' +
+          contactId +
+          '","' +
+          otherContactId +
+          '")',
+        pageSize: 32,
+      };
+      return runSmartQuery(storeConfig, querySpec);
+    })
+    .then((result) => {
+      assert.deepEqual(result.currentPageOrderedEntries, [
+        [firstName],
+        [otherFirstName],
+      ]);
 
-            return netDel('contact', otherContactId);
-        })
-        .then((result) => {
-            return cleanResyncGhosts(storeConfig, syncId);
-        })
-        .then(() => {
-            return runSmartQuery(storeConfig, querySpec);
-        })
-        .then((result) => {
-            assert.deepEqual(result.currentPageOrderedEntries, [[firstName]]);
+      return netDel("contact", otherContactId);
+    })
+    .then((result) => {
+      return cleanResyncGhosts(storeConfig, syncId);
+    })
+    .then(() => {
+      return runSmartQuery(storeConfig, querySpec);
+    })
+    .then((result) => {
+      assert.deepEqual(result.currentPageOrderedEntries, [[firstName]]);
 
-            // Cleanup
-            return netDel('contact', contactId);
-        })
-        .then((result) => { 
-            testDone();
-        });
+      // Cleanup
+      return netDel("contact", contactId);
+    })
+    .then((result) => {
+      testDone();
+    });
 };
 
-testGetSyncStatusDeleteSync = () => {
-    const uniq = Math.floor(Math.random() * 1000000);
-    const firstName = 'First' + uniq;
-    var syncId;
-    var contactId;
+const testGetSyncStatusDeleteSync = () => {
+  const uniq = Math.floor(Math.random() * 1000000);
+  const firstName = "First" + uniq;
+  var syncId;
+  var contactId;
 
-    // Create a record remotely
-    // Do a sync down
-    // Check in db
-    // Delete from server (cleanup)
+  // Create a record remotely
+  // Do a sync down
+  // Check in db
+  // Delete from server (cleanup)
 
-    registerSoup(storeConfig, soupName, indexSpecs)
-        .then((result) => {
-            return netCreate('contact', {FirstName: firstName, LastName: 'Last' + uniq});
-        })
-        .then((result) => {
-            contactId = result.id;
-            return syncDown(storeConfig,
-                            {'type':'soql', 'query':"SELECT Id, FirstName, LastName FROM Contact WHERE Id IN ('" + contactId + "')"},
-                            soupName,
-                            {'mergeMode':'OVERWRITE'}
-                           );
-        })
-        .then((result) => {
-            syncId = result._soupEntryId;
-            return getSyncStatus(storeConfig, syncId);
-        })
-        .then((result) => {
-            assert.equal(result.totalSize, 1, 'Total size should be 1');
-            assert.equal(result.status, 'DONE', 'Status should be done');
-            return deleteSync(storeConfig, syncId);
-        })
-        .then(() => {
-            return getSyncStatus(storeConfig, syncId);
-        })
-        .then((result) => {
-            assert.isNull(result, 'Sync should have been deleted');
+  registerSoup(storeConfig, soupName, indexSpecs)
+    .then((result) => {
+      return netCreate("contact", {
+        FirstName: firstName,
+        LastName: "Last" + uniq,
+      });
+    })
+    .then((result) => {
+      contactId = result.id;
+      return syncDown(
+        storeConfig,
+        {
+          type: "soql",
+          query:
+            "SELECT Id, FirstName, LastName FROM Contact WHERE Id IN ('" +
+            contactId +
+            "')",
+        },
+        soupName,
+        { mergeMode: "OVERWRITE" }
+      );
+    })
+    .then((result) => {
+      syncId = result._soupEntryId;
+      return getSyncStatus(storeConfig, syncId);
+    })
+    .then((result) => {
+      assert.equal(result.totalSize, 1, "Total size should be 1");
+      assert.equal(result.status, "DONE", "Status should be done");
+      return deleteSync(storeConfig, syncId);
+    })
+    .then(() => {
+      return getSyncStatus(storeConfig, syncId);
+    })
+    .then((result) => {
+      assert.isNull(result, "Sync should have been deleted");
 
-            // Cleanup
-            return netDel('contact', contactId);
-        })
-        .then((result) => {
-            testDone();
-        });
+      // Cleanup
+      return netDel("contact", contactId);
+    })
+    .then((result) => {
+      testDone();
+    });
 };
 
 registerTest(testSyncUp);

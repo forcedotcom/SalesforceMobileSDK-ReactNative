@@ -24,20 +24,34 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { assert } from 'chai';
-import * as oauth from '../src/react.force.oauth';
-import { registerTest, testDone } from '../src/react.force.test';
+import { assert } from "chai";
+import * as oauth from "../react.force.oauth";
+import { registerTest, testDone } from "../react.force.test";
 
-testGetAuthCredentials = () => {
-    oauth.getAuthCredentials(
-        (creds) => {
-            assert.containsAllKeys(creds, ["accessToken","instanceUrl","loginUrl","orgId","refreshToken","userAgent","userId"], 'Wrong keys in credentials');
-            testDone();
-        },
-        (error) => { throw error; }
-    );
-    
-    return false; // not done
+const testGetAuthCredentials = () => {
+  oauth.getAuthCredentials(
+    (creds) => {
+      assert.containsAllKeys(
+        creds,
+        [
+          "accessToken",
+          "instanceUrl",
+          "loginUrl",
+          "orgId",
+          "refreshToken",
+          "userAgent",
+          "userId",
+        ],
+        "Wrong keys in credentials"
+      );
+      testDone();
+    },
+    (error) => {
+      throw error;
+    }
+  );
+
+  return false; // not done
 };
 
 registerTest(testGetAuthCredentials);
