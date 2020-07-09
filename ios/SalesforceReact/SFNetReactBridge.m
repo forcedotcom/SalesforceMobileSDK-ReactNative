@@ -25,6 +25,7 @@
 #import "SFNetReactBridge.h"
 #import <React/RCTUtils.h>
 #import <SalesforceSDKCore/NSDictionary+SFAdditions.h>
+#import <SalesforceSDKCore/NSURLResponse+SFAdditions.h>
 #import <SalesforceSDKCore/SFRestAPI+Blocks.h>
 
 
@@ -100,9 +101,15 @@ RCT_EXPORT_METHOD(sendRequest:(NSDictionary *)argsDict callback:(RCTResponseSend
     }
     SFRestAPI *restApiInstance = doesNotRequireAuthentication ? [SFRestAPI sharedGlobalInstance] : [SFRestAPI sharedInstance];
 
+    __weak typeof(self) weakSelf = self;
     [restApiInstance sendRequest:request
                                       failureBlock:^(id response, NSError *e, NSURLResponse *rawResponse) {
-                                          callback(@[RCTMakeError(@"sendRequest failed", e, nil)]);
+                                          __strong typeof(self) strongSelf = weakSelf;
+                                          NSMutableDictionary *errorDictionary = [NSMutableDictionary new];
+                                          errorDictionary[@"error"] = e.localizedDescription;
+                                          errorDictionary[@"urlResponse"] = [rawResponse asDictionary];
+                                          errorDictionary[@"response"] = [strongSelf serializableResponse:response rawResponse:rawResponse];
+                                          callback(@[RCTMakeError(@"sendRequest failed", nil, errorDictionary)]);
                                       }
                                   successBlock:^(id response, NSURLResponse *rawResponse) {
                                       id result;
@@ -116,15 +123,8 @@ RCT_EXPORT_METHOD(sendRequest:(NSDictionary *)argsDict callback:(RCTResponseSend
                                       }
                                       // Some response
                                       else if (response) {
-                                          if ([response isKindOfClass:[NSDictionary class]]) {
-                                              result = response;
-                                          } else if ([response isKindOfClass:[NSArray class]]) {
-                                              result = response;
-                                          } else {
-                                              NSData* responseAsData = response;
-                                              NSStringEncoding encodingType = rawResponse.textEncodingName == nil ? NSUTF8StringEncoding :  CFStringConvertEncodingToNSStringEncoding(CFStringConvertIANACharSetNameToEncoding((CFStringRef)rawResponse.textEncodingName));
-                                              result = [[NSString alloc] initWithData:responseAsData encoding:encodingType];
-                                          }
+                                          __strong typeof(self) strongSelf = weakSelf;
+                                          result = [strongSelf serializableResponse:response rawResponse:rawResponse];
                                       }
                                       // No response
                                       else {
@@ -134,6 +134,20 @@ RCT_EXPORT_METHOD(sendRequest:(NSDictionary *)argsDict callback:(RCTResponseSend
                                       callback(@[[NSNull null], result == nil ? [NSNull null] : result]);
                                   }
      ];
+}
+
+- (id)serializableResponse:(id)response rawResponse:(NSURLResponse *)rawResponse {
+    id result;
+    if ([response isKindOfClass:[NSDictionary class]]) {
+        result = response;
+    } else if ([response isKindOfClass:[NSArray class]]) {
+        result = response;
+    } else {
+        NSData *responseAsData = response;
+        NSStringEncoding encodingType = rawResponse.textEncodingName == nil ? NSUTF8StringEncoding :  CFStringConvertEncodingToNSStringEncoding(CFStringConvertIANACharSetNameToEncoding((CFStringRef)rawResponse.textEncodingName));
+        result = [[NSString alloc] initWithData:responseAsData encoding:encodingType];
+    }
+    return result;
 }
 
 @end
