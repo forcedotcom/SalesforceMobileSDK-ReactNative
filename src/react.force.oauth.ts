@@ -27,12 +27,12 @@
 import { NativeModules } from "react-native";
 const { SalesforceOauthReactBridge, SFOauthReactBridge } = NativeModules;
 import { exec as forceExec } from "./react.force.common";
-import { Token } from "./typings/oauth";
+import { UserAccount, OAuthMethod } from "./typings/oauth";
 
 const exec = <T>(
   successCB: ((result: T) => void) | null,
   errorCB: ((err: Error) => void) | null,
-  methodName: "authenticate" | "getAuthCredentials" | "logoutCurrentUser",
+  methodName: OAuthMethod,
   args: Record<string, unknown>
 ): void => {
   forceExec(
@@ -70,7 +70,7 @@ let logoutInitiated = false;
  *   community url
  */
 export const authenticate = (
-  successCB: (token: Token) => void,
+  successCB: (token: UserAccount) => void,
   errorCB: (err: Error) => void
 ): void => {
   exec(successCB, errorCB, "authenticate", {});
@@ -93,7 +93,7 @@ export const authenticate = (
  *   community url
  */
 export const getAuthCredentials = (
-  successCB: (token: Token) => void,
+  successCB: (token: UserAccount) => void,
   errorCB: (err: Error) => void
 ): void => {
   exec(successCB, errorCB, "getAuthCredentials", {});

@@ -24,10 +24,19 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 import { NativeModules } from "react-native";
-import { exec as forceExec } from "./react.force.common";
+import {
+  exec as forceExec,
+  ExecErrorCallback,
+  ExecSuccessCallback,
+} from "./react.force.common";
 import { StoreConfig } from "./react.force.smartstore";
-import { SyncDownOptions, SyncDownTarget } from "./typings";
-import { SyncEvent, SyncStatus } from "./typings/mobilesync";
+import {
+  SyncEvent,
+  SyncStatus,
+  SyncDownTarget,
+  SyncOptions,
+  SyncMethod,
+} from "./typings/mobilesync";
 
 const { MobileSyncReactBridge, SFMobileSyncReactBridge } = NativeModules;
 
@@ -52,15 +61,9 @@ const checkFirstArg = (arg: StoreConfig) => {
 };
 
 const exec = <T>(
-  successCB: ((result: T) => void) | null,
-  errorCB: ((err: Error) => void) | null,
-  methodName:
-    | "syncDown"
-    | "reSync"
-    | "cleanResyncGhosts"
-    | "syncUp"
-    | "getSyncStatus"
-    | "deleteSync",
+  successCB: ExecSuccessCallback<T>,
+  errorCB: ExecErrorCallback,
+  methodName: SyncMethod,
   args: Record<string, unknown>
 ) => {
   forceExec(
@@ -79,23 +82,23 @@ export const syncDown = (
   storeConfig: StoreConfig,
   target: SyncDownTarget,
   soupName: string,
-  options: SyncDownOptions,
+  options: SyncOptions,
   ...args: unknown[]
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
 
-  let errorCB: (err: Error) => void;
-  let successCB: (result: SyncEvent) => void;
+  let errorCB: ExecErrorCallback;
+  let successCB: ExecSuccessCallback<SyncEvent>;
   let syncName: string | undefined;
 
   // syncName optional (new in 6.0)
   if (typeof args[0] === "function") {
-    errorCB = args[1] as (err: Error) => void;
-    successCB = args[0] as (result: SyncEvent) => void;
+    errorCB = args[1] as ExecErrorCallback;
+    successCB = args[0] as ExecSuccessCallback<SyncEvent>;
     syncName = undefined;
   } else {
-    errorCB = args[2] as (err: Error) => void;
-    successCB = args[1] as (result: SyncEvent) => void;
+    errorCB = args[2] as ExecErrorCallback;
+    successCB = args[1] as ExecSuccessCallback<SyncEvent>;
     syncName = args[0] as string;
   }
 
@@ -112,8 +115,8 @@ export const syncDown = (
 export const reSync = (
   storeConfig: StoreConfig,
   syncIdOrName: string,
-  successCB: (result: SyncEvent) => void,
-  errorCB: (err: Error) => void
+  successCB: ExecSuccessCallback<SyncEvent>,
+  errorCB: ExecErrorCallback
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
   exec(successCB, errorCB, "reSync", {
@@ -127,8 +130,8 @@ export const reSync = (
 export const cleanResyncGhosts = (
   storeConfig: StoreConfig,
   syncId: string,
-  successCB: (result: any) => void,
-  errorCB: (err: Error) => void
+  successCB: ExecSuccessCallback<unknown>,
+  errorCB: ExecErrorCallback
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
   exec(successCB, errorCB, "cleanResyncGhosts", {
@@ -142,23 +145,23 @@ export const syncUp = (
   storeConfig: StoreConfig,
   target: SyncDownTarget,
   soupName: string,
-  options: SyncDownOptions,
+  options: SyncOptions,
   ...args: unknown[]
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
 
-  let errorCB: (err: Error) => void;
-  let successCB: (result: SyncEvent) => void;
+  let errorCB: ExecErrorCallback;
+  let successCB: ExecSuccessCallback<SyncEvent>;
   let syncName: string | undefined;
 
   // syncName optional (new in 6.0)
   if (typeof args[0] === "function") {
-    errorCB = args[1] as (err: Error) => void;
-    successCB = args[0] as (result: SyncEvent) => void;
+    errorCB = args[1] as ExecErrorCallback;
+    successCB = args[0] as ExecSuccessCallback<SyncEvent>;
     syncName = undefined;
   } else {
-    errorCB = args[2] as (err: Error) => void;
-    successCB = args[1] as (result: SyncEvent) => void;
+    errorCB = args[2] as ExecErrorCallback;
+    successCB = args[1] as ExecSuccessCallback<SyncEvent>;
     syncName = args[0] as string;
   }
 
@@ -175,8 +178,8 @@ export const syncUp = (
 export const getSyncStatus = (
   storeConfig: StoreConfig,
   syncIdOrName: string,
-  successCB: (result: SyncStatus) => void,
-  errorCB: (err: Error) => void
+  successCB: ExecSuccessCallback<SyncStatus>,
+  errorCB: ExecErrorCallback
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
   exec(successCB, errorCB, "getSyncStatus", {
@@ -190,8 +193,8 @@ export const getSyncStatus = (
 export const deleteSync = (
   storeConfig: StoreConfig,
   syncIdOrName: string,
-  successCB: (result: any) => void,
-  errorCB: (err: Error) => void
+  successCB: ExecSuccessCallback<unknown>,
+  errorCB: ExecErrorCallback
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
   exec(successCB, errorCB, "deleteSync", {

@@ -1,0 +1,16 @@
+export type SmartStoreMethod =
+  | "getDatabaseSize"
+  | "registerSoup"
+  | "removeSoup"
+  | "getSoupIndexSpecs"
+  | "getSoupSpec"
+  | "alterSoup"
+  | "reIndexSoup"
+  | "clearSoup"
+  | "soupExists"
+  | "querySoup"
+  | "runSmartQuery"
+  | "retrieveSoupEntries"
+  | "upsertSoupEntries"
+  | "removeFromSoup"
+  | "moveCursorToPageIndex";

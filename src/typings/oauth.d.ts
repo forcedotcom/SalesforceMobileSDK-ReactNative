@@ -1,4 +1,4 @@
-export type Token = {
+export type UserAccount = {
   accessToken: string;
   clientId: string;
   instanceUrl: string;

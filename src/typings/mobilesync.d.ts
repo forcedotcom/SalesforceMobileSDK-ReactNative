@@ -1,3 +1,11 @@
+export type SyncMethod =
+  | "syncDown"
+  | "reSync"
+  | "cleanResyncGhosts"
+  | "syncUp"
+  | "getSyncStatus"
+  | "deleteSync";
+
 export interface SyncEvent {
   soupName: string;
   options: SyncOptions;
@@ -25,13 +33,13 @@ export type SyncDownTarget = {
 };
 
 export type SyncUpTarget = {
-  createFieldlist?: Array<string>;
-  updateFieldlist?: Array<string>;
+  createFieldlist?: string[];
+  updateFieldlist?: string[];
 };
 
 export type SyncOptions = {
-  mergeMode?: string;
-  fieldlist?: Array<string>;
+  mergeMode?: "OVERWRITE" | "LEAVE_IF_CHANGED";
+  fieldlist?: string[];
 };
 
 export interface SyncStatus {

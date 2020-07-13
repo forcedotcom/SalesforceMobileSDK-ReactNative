@@ -28,16 +28,38 @@ import { sdkConsole } from "./react.force.log";
 import { ModuleIOSName, ModuleAndroidName } from "./typings";
 
 /**
+ * Represents an iOS Module callback
+ */
+export type iOSModuleCallback<T> = (err: Error, result: T) => void;
+
+/**
+ * Represents an Android Module success callback
+ */
+export type AndroidSuccessCallback = (result: string) => void;
+
+/**
+ * Represents an Android Module error callback
+ */
+export type AndroidErrorCallback = (err: string) => void;
+
+/**
+ * Represents an exec() success callback
+ */
+export type ExecSuccessCallback<T> = (result: T) => void;
+
+/**
+ * Represents an exec() error callback
+ */
+export type ExecErrorCallback = (err: Error) => void;
+
+/**
  * Represents a Mobile SDK iOS Module
  *
  * @interface ModuleIOS
  * @template T
  */
 interface ModuleIOS<T> {
-  [key: string]: (
-    args: unknown,
-    callback: (err: Error, result: T) => void
-  ) => void;
+  [key: string]: (args: unknown, callback: iOSModuleCallback<T>) => void;
 }
 
 /**
@@ -48,8 +70,8 @@ interface ModuleIOS<T> {
 interface ModuleAndroid {
   [key: string]: (
     args: unknown,
-    successCB: (result: string) => void,
-    errorCB: (err: string) => void
+    successCB: AndroidSuccessCallback,
+    errorCB: AndroidErrorCallback
   ) => void;
 }
 
@@ -61,18 +83,18 @@ interface ModuleAndroid {
  * @param {ModuleAndroidName} moduleAndroidName
  * @param {ModuleIOS<T>} moduleIOS
  * @param {ModuleAndroid<T>} moduleAndroid
- * @param {(((result?: T | string) => void) | null)} successCB
- * @param {(((err: Error | string) => void) | null)} errorCB
+ * @param {ExecSuccessCallback<T> | null} successCB
+ * @param {ExecErrorCallback | null} errorCB
  * @param {string} methodName
- * @param {Record<string, unknown>} args
+ * @param {Record<string, unknown>} argsaight
  */
 export const exec = <T>(
   moduleIOSName: ModuleIOSName,
   moduleAndroidName: ModuleAndroidName,
   moduleIOS: ModuleIOS<T>,
   moduleAndroid: ModuleAndroid,
-  successCB: ((result: T) => void) | null,
-  errorCB: ((err: Error) => void) | null,
+  successCB: ExecSuccessCallback<T> | null,
+  errorCB: ExecErrorCallback | null,
   methodName: string,
   args: Record<string, unknown>
 ): void => {
