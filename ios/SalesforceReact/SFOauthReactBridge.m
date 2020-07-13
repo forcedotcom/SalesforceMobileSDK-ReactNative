@@ -53,6 +53,17 @@ RCT_EXPORT_METHOD(getAuthCredentials:(NSDictionary *)args callback:(RCTResponseS
 RCT_EXPORT_METHOD(logoutCurrentUser:(NSDictionary *)args callback:(RCTResponseSenderBlock)callback)
 {
     [SFSDKReactLogger d:[self class] format:@"logoutCurrentUser: arguments: %@", args];
+
+    __block id observerRef;
+    id observer = [[NSNotificationCenter defaultCenter]
+                   addObserverForName:kSFNotificationUserDidLogout
+                   object:nil
+                   queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        callback(@[[NSNull null], @"OK"]);
+        [[NSNotificationCenter defaultCenter] removeObserver:observerRef];
+    }];
+    observerRef = observer;
+
     dispatch_async(dispatch_get_main_queue(), ^{
         [[SFUserAccountManager sharedInstance] logout];
     });
