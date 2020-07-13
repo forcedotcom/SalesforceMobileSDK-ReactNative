@@ -1,10 +1,10 @@
 export type SyncMethod =
-  | "syncDown"
-  | "reSync"
   | "cleanResyncGhosts"
-  | "syncUp"
+  | "deleteSync"
   | "getSyncStatus"
-  | "deleteSync";
+  | "reSync"
+  | "syncDown"
+  | "syncUp";
 
 export interface SyncEvent {
   soupName: string;

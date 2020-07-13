@@ -1,3 +1,8 @@
+export type OAuthMethod =
+  | "authenticate"
+  | "getAuthCredentials"
+  | "logoutCurrentUser";
+
 export type UserAccount = {
   accessToken: string;
   clientId: string;
