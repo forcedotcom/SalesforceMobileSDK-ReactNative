@@ -77,6 +77,6 @@ export const getAuthCredentials = (success, fail) => {
  * as well as any OAuth refresh token.  
  */
 export const logout = (success, fail) => {
-    exec(sucess, fail, "logoutCurrentUser", {});
+    exec(success, fail, "logoutCurrentUser", {});
 };
 
