@@ -105,10 +105,11 @@ RCT_EXPORT_METHOD(sendRequest:(NSDictionary *)argsDict callback:(RCTResponseSend
     [restApiInstance sendRequest:request
                                       failureBlock:^(id response, NSError *e, NSURLResponse *rawResponse) {
                                           __strong typeof(self) strongSelf = weakSelf;
+                                          NSMutableDictionary *responseDictionary = [[rawResponse asDictionary] mutableCopy];
+                                          responseDictionary[@"body"] = [strongSelf serializableResponse:response rawResponse:rawResponse];
                                           NSMutableDictionary *errorDictionary = [NSMutableDictionary new];
                                           errorDictionary[@"error"] = e.localizedDescription;
-                                          errorDictionary[@"urlResponse"] = [rawResponse asDictionary];
-                                          errorDictionary[@"response"] = [strongSelf serializableResponse:response rawResponse:rawResponse];
+                                          errorDictionary[@"response"] = responseDictionary;
                                           callback(@[RCTMakeError(@"sendRequest failed", nil, errorDictionary)]);
                                       }
                                   successBlock:^(id response, NSURLResponse *rawResponse) {
