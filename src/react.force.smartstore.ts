@@ -659,14 +659,14 @@ export const moveCursorToNextPage = <T>(
   storeConfig: StoreConfig | boolean,
   cursor: StoreCursor<T>,
   successCB: ExecSuccessCallback<T>,
-  errorCB: (cursor: StoreCursor<T>, err: Error) => void
+  errorCB: ExecErrorCallback
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
 
   const newPageIndex = cursor.currentPageIndex + 1;
   if (newPageIndex >= cursor.totalPages) {
     errorCB(
-      cursor,
+      // cursor,
       new Error("moveCursorToNextPage called while on last page")
     );
   } else {
@@ -684,14 +684,14 @@ export const moveCursorToPreviousPage = <T>(
   storeConfig: StoreConfig | boolean,
   cursor: StoreCursor<T>,
   successCB: ExecSuccessCallback<T>,
-  errorCB: (cursor: StoreCursor<T>, err: Error) => void
+  errorCB: ExecErrorCallback
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
 
   const newPageIndex = cursor.currentPageIndex - 1;
   if (newPageIndex < 0) {
     errorCB(
-      cursor,
+      // cursor,
       new Error("moveCursorToPreviousPage called while on first page")
     );
   } else {
