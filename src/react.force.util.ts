@@ -24,6 +24,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 import { sdkConsole } from "./react.force.log";
+// @ts-ignore
 import timer from "react-native-timer";
 const rejectionTracking = require("promise/setimmediate/rejection-tracking");
 
@@ -46,7 +47,7 @@ export const promiser = (func: Function): (() => Promise<unknown>) => {
     return new Promise(function (resolve, reject) {
       args.push(function () {
         try {
-          resolve.apply(null, arguments);
+          resolve.apply(null, arguments as any);
         } catch (err) {
           sdkConsole.error("Error when calling successCB for " + func.name);
           sdkConsole.error(err.stack);
@@ -54,7 +55,7 @@ export const promiser = (func: Function): (() => Promise<unknown>) => {
       });
       args.push(function () {
         try {
-          reject.apply(null, arguments);
+          reject.apply(null, arguments as any);
         } catch (err) {
           sdkConsole.error("Error when calling errorCB for " + func.name);
           sdkConsole.error(err.stack);
@@ -74,11 +75,11 @@ export const promiserNoRejection = (
   const retfn = function () {
     const args = Array.prototype.slice.call(arguments);
 
-    return new Promise(function (resolve, reject) {
+    return new Promise(function (resolve) {
       // then() will be called whether it succeeded or failed
       const callback = () => {
         try {
-          resolve.apply(null, arguments);
+          resolve.apply(null, arguments as any);
         } catch (err) {
           sdkConsole.error("Error when calling callback for " + func.name);
           sdkConsole.error(err.stack);

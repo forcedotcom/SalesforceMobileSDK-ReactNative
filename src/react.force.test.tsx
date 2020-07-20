@@ -29,7 +29,7 @@ import { AppRegistry, NativeModules, View } from "react-native";
 const { SalesforceTestBridge, TestModule } = NativeModules;
 const createReactClass = require("create-react-class");
 
-const componentForTest = (test) => {
+const componentForTest = (test: any) => {
   return createReactClass({
     componentDidMount() {
       test(); // NB: test must call testDone() when it completes
@@ -41,7 +41,7 @@ const componentForTest = (test) => {
   });
 };
 
-export const registerTest = (test) => {
+export const registerTest = (test: any) => {
   AppRegistry.registerComponent(test.name.substring("test".length), () =>
     componentForTest(test)
   );
