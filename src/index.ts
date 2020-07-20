@@ -32,7 +32,10 @@ import * as smartstore from "./react.force.smartstore";
 import * as forceTest from "./react.force.test";
 import * as forceUtil from "./react.force.util";
 
+const forceClient = net;
+
 export default {
+  forceClient,
   forceLog,
   forceTest,
   forceUtil,
