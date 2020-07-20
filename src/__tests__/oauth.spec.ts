@@ -33,22 +33,14 @@ const testGetAuthCredentials = () => {
     (creds) => {
       assert.containsAllKeys(
         creds,
-        [
-          "accessToken",
-          "instanceUrl",
-          "loginUrl",
-          "orgId",
-          "refreshToken",
-          "userAgent",
-          "userId",
-        ],
-        "Wrong keys in credentials"
+        ["accessToken", "instanceUrl", "loginUrl", "orgId", "refreshToken", "userAgent", "userId"],
+        "Wrong keys in credentials",
       );
       testDone();
     },
     (error) => {
       throw error;
-    }
+    },
   );
 
   return false; // not done

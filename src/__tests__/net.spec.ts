@@ -47,18 +47,7 @@ const netSearch = promiser(net.search);
 const apiVersion = "v46.0";
 
 const sendUnAuthenticatedNetRequest = (url, callback, error) => {
-  return net.sendRequest(
-    null,
-    url,
-    callback,
-    error,
-    "GET",
-    null,
-    null,
-    null,
-    false,
-    true
-  );
+  return net.sendRequest(null, url, callback, error, "GET", null, null, null, false, true);
 };
 
 const netSendRequest = promiser(sendUnAuthenticatedNetRequest);
@@ -73,7 +62,7 @@ const testVersions = () => {
     assert.deepInclude(
       response,
       { label: "Summer '19", url: "/services/data/v46.0", version: "46.0" },
-      "Wrong version response"
+      "Wrong version response",
     );
     testDone();
   });
@@ -81,11 +70,7 @@ const testVersions = () => {
 
 const testResources = () => {
   netResources().then((response) => {
-    assert.equal(
-      response.connect,
-      "/services/data/" + apiVersion + "/connect",
-      "Wrong url for connect resource"
-    );
+    assert.equal(response.connect, "/services/data/" + apiVersion + "/connect", "Wrong url for connect resource");
     testDone();
   });
 };
@@ -201,21 +186,19 @@ const testCreateDelRetrieve = () => {
       assert.include(
         JSON.stringify(error),
         "The requested resource does not exist",
-        "Retrieve following delete should have 404ed"
+        "Retrieve following delete should have 404ed",
       );
       testDone();
     });
 };
 
 const testQuery = () => {
-  netQuery("SELECT FirstName, LastName FROM Contact LIMIT 5").then(
-    (response) => {
-      assert.isArray(response.records, "Expected records");
-      assert.isTrue(response.done, "Expected done to be true");
-      assert.isNumber(response.totalSize, "Expected totalSize");
-      testDone();
-    }
-  );
+  netQuery("SELECT FirstName, LastName FROM Contact LIMIT 5").then((response) => {
+    assert.isArray(response.records, "Expected records");
+    assert.isTrue(response.done, "Expected done to be true");
+    assert.isNumber(response.totalSize, "Expected totalSize");
+    testDone();
+  });
 };
 
 const testSearch = () => {
@@ -232,11 +215,7 @@ const testPublicApiCall = () => {
       testDone();
     })
     .catch((error) => {
-      assert.include(
-        JSON.stringify(error),
-        "The requested resource failed",
-        ""
-      );
+      assert.include(JSON.stringify(error), "The requested resource failed", "");
       testDone();
     });
 };

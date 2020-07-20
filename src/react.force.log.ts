@@ -24,7 +24,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { SDKConsole, LogLevel } from "./typings";
+import { LogLevel, SDKConsole } from "./typings";
 
 /**
  * logging support

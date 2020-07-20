@@ -25,13 +25,8 @@
  */
 
 import { NativeModules } from "react-native";
-import {
-  exec as forceExec,
-  safeJSONparse,
-  ExecSuccessCallback,
-  ExecErrorCallback,
-} from "./react.force.common";
-import { StoreOrder, QuerySpecType } from "./typings";
+import { exec as forceExec, ExecErrorCallback, ExecSuccessCallback, safeJSONparse } from "./react.force.common";
+import { QuerySpecType, StoreOrder } from "./typings";
 import { SmartStoreMethod } from "./typings/smartstore";
 const { SmartStoreReactBridge, SFSmartStoreReactBridge } = NativeModules;
 
@@ -39,7 +34,7 @@ const exec = <T>(
   successCB: ExecSuccessCallback<T>,
   errorCB: ExecErrorCallback,
   methodName: SmartStoreMethod,
-  args: any
+  args: any,
 ) => {
   forceExec(
     "SFSmartStoreReactBridge",
@@ -49,7 +44,7 @@ const exec = <T>(
     successCB,
     errorCB,
     methodName,
-    args
+    args,
   );
 };
 
@@ -168,7 +163,7 @@ export const buildAllQuerySpec = (
   path: string,
   order: StoreOrder,
   pageSize: number,
-  selectPaths?: string[]
+  selectPaths?: string[],
 ): QuerySpec => {
   const inst = new QuerySpec(path);
   inst.queryType = "range";
@@ -192,7 +187,7 @@ export const buildExactQuerySpec = (
   pageSize: number,
   order: StoreOrder,
   orderPath?: string,
-  selectPaths?: string[]
+  selectPaths?: string[],
 ): QuerySpec => {
   const inst = new QuerySpec(path);
   inst.matchKey = matchKey;
@@ -217,7 +212,7 @@ export const buildRangeQuerySpec = (
   order: StoreOrder,
   pageSize: number,
   orderPath?: string,
-  selectPaths?: string[]
+  selectPaths?: string[],
 ): QuerySpec => {
   const inst = new QuerySpec(path);
   inst.queryType = "range";
@@ -243,7 +238,7 @@ export const buildLikeQuerySpec = (
   order: StoreOrder,
   pageSize: number,
   orderPath?: string,
-  selectPaths?: string[]
+  selectPaths?: string[],
 ): QuerySpec => {
   const inst = new QuerySpec(path);
   inst.queryType = "like";
@@ -269,7 +264,7 @@ export const buildMatchQuerySpec = (
   order: StoreOrder,
   pageSize: number,
   orderPath?: string,
-  selectPaths?: string[]
+  selectPaths?: string[],
 ): QuerySpec => {
   const inst = new QuerySpec(path);
   inst.queryType = "match";
@@ -289,10 +284,7 @@ export const buildMatchQuerySpec = (
 };
 
 // Returns a query spec that will page all results returned by smartSql
-export const buildSmartQuerySpec = (
-  smartSql: string,
-  pageSize: number
-): QuerySpec => {
+export const buildSmartQuerySpec = (smartSql: string, pageSize: number): QuerySpec => {
   const inst = new QuerySpec();
   inst.queryType = "smart";
   inst.smartSql = smartSql;
@@ -323,7 +315,7 @@ const checkFirstArg = (arg: StoreConfig | boolean) => {
 export const getDatabaseSize = (
   storeConfig: StoreConfig | boolean,
   successCB: ExecSuccessCallback<number>,
-  errorCB: ExecErrorCallback
+  errorCB: ExecErrorCallback,
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
   exec(successCB, errorCB, "getDatabaseSize", {
@@ -337,7 +329,7 @@ export const registerSoup = (
   soupName: string,
   indexSpecs: SoupIndexSpec[],
   successCB: ExecSuccessCallback<string>,
-  errorCB: ExecErrorCallback
+  errorCB: ExecErrorCallback,
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
 
@@ -354,7 +346,7 @@ export const registerSoupWithSpec = (
   soupSpec: QuerySpec,
   indexSpecs: SoupIndexSpec[],
   successCB: ExecSuccessCallback<string>,
-  errorCB: ExecErrorCallback
+  errorCB: ExecErrorCallback,
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
 
@@ -370,7 +362,7 @@ export const removeSoup = (
   storeConfig: StoreConfig | boolean,
   soupName: string,
   successCB: ExecSuccessCallback<"OK">,
-  errorCB: ExecErrorCallback
+  errorCB: ExecErrorCallback,
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
 
@@ -385,7 +377,7 @@ export const getSoupIndexSpecs = (
   storeConfig: StoreConfig | boolean,
   soupName: string,
   successCB: ExecSuccessCallback<SoupIndexSpec[]>,
-  errorCB: ExecErrorCallback
+  errorCB: ExecErrorCallback,
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
 
@@ -400,7 +392,7 @@ export const getSoupSpec = (
   storeConfig: StoreConfig | boolean,
   soupName: string,
   successCB: ExecSuccessCallback<SoupSpec>,
-  errorCB: ExecErrorCallback
+  errorCB: ExecErrorCallback,
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
 
@@ -417,7 +409,7 @@ export const alterSoup = (
   indexSpecs: SoupIndexSpec[],
   reIndexData: boolean,
   successCB: ExecSuccessCallback<string>,
-  errorCB: ExecErrorCallback
+  errorCB: ExecErrorCallback,
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
 
@@ -437,7 +429,7 @@ export const alterSoupWithSpec = (
   indexSpecs: SoupIndexSpec[],
   reIndexData: boolean,
   successCB: ExecSuccessCallback<string>,
-  errorCB: ExecErrorCallback
+  errorCB: ExecErrorCallback,
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
 
@@ -456,7 +448,7 @@ export const reIndexSoup = (
   soupName: string,
   paths: string,
   successCB: ExecSuccessCallback<string>,
-  errorCB: ExecErrorCallback
+  errorCB: ExecErrorCallback,
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
 
@@ -472,7 +464,7 @@ export const clearSoup = <T>(
   storeConfig: StoreConfig | boolean,
   soupName: string,
   successCB: ExecSuccessCallback<T>,
-  errorCB: ExecErrorCallback
+  errorCB: ExecErrorCallback,
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
 
@@ -487,7 +479,7 @@ export const soupExists = (
   storeConfig: StoreConfig | boolean,
   soupName: string,
   successCB: ExecSuccessCallback<boolean>,
-  errorCB: ExecErrorCallback
+  errorCB: ExecErrorCallback,
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
 
@@ -503,7 +495,7 @@ export const querySoup = <T>(
   soupName: string,
   querySpec: QuerySpec,
   successCB: ExecSuccessCallback<StoreCursor<T>>,
-  errorCB: ExecErrorCallback
+  errorCB: ExecErrorCallback,
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
 
@@ -515,8 +507,7 @@ export const querySoup = <T>(
   } // for backward compatibility with pre-3.3 code
   // query returns serialized json on iOS starting in 7.0
   const successCBdeserializing = successCB
-    ? (result: StoreCursor<T>) =>
-        successCB(typeof result === "string" ? safeJSONparse(result) : result)
+    ? (result: StoreCursor<T>) => successCB(typeof result === "string" ? safeJSONparse(result) : result)
     : successCB;
   exec(successCBdeserializing, errorCB, "querySoup", {
     soupName,
@@ -530,7 +521,7 @@ export const runSmartQuery = <T>(
   storeConfig: StoreConfig | boolean,
   querySpec: QuerySpec,
   successCB: ExecSuccessCallback<StoreCursor<T>>,
-  errorCB: ExecErrorCallback
+  errorCB: ExecErrorCallback,
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
 
@@ -539,8 +530,7 @@ export const runSmartQuery = <T>(
   }
   // query returns serialized json on iOS starting in 7.0
   const successCBdeserializing = successCB
-    ? (result: StoreCursor<T>) =>
-        successCB(typeof result === "string" ? safeJSONparse(result) : result)
+    ? (result: StoreCursor<T>) => successCB(typeof result === "string" ? safeJSONparse(result) : result)
     : successCB;
   exec(successCBdeserializing, errorCB, "runSmartQuery", {
     querySpec,
@@ -554,7 +544,7 @@ export const retrieveSoupEntries = <T>(
   soupName: string,
   entryIds: string[],
   successCB: ExecSuccessCallback<StoreCursor<T>>,
-  errorCB: ExecErrorCallback
+  errorCB: ExecErrorCallback,
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
 
@@ -571,18 +561,11 @@ export const upsertSoupEntries = <T>(
   soupName: string,
   entries: { [key: string]: any }[],
   successCB: ExecSuccessCallback<T>,
-  errorCB: ExecErrorCallback
+  errorCB: ExecErrorCallback,
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
 
-  upsertSoupEntriesWithExternalId(
-    storeConfig,
-    soupName,
-    entries,
-    "_soupEntryId",
-    successCB,
-    errorCB
-  );
+  upsertSoupEntriesWithExternalId(storeConfig, soupName, entries, "_soupEntryId", successCB, errorCB);
 };
 
 export let upsertSoupEntriesWithExternalId = <T>(
@@ -591,7 +574,7 @@ export let upsertSoupEntriesWithExternalId = <T>(
   entries: { [key: string]: any }[],
   externalIdPath: string,
   successCB: ExecSuccessCallback<T>,
-  errorCB: ExecErrorCallback
+  errorCB: ExecErrorCallback,
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
 
@@ -609,7 +592,7 @@ export const removeFromSoup = (
   soupName: string,
   entryIdsOrQuerySpec: string[],
   successCB: ExecSuccessCallback<"OK">,
-  errorCB: ExecErrorCallback
+  errorCB: ExecErrorCallback,
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
 
@@ -618,12 +601,8 @@ export const removeFromSoup = (
     isGlobalStore: storeConfig.isGlobalStore,
     storeName: storeConfig.storeName,
   };
-  execArgs[
-    entryIdsOrQuerySpec instanceof Array ? "entryIds" : "querySpec"
-  ] = entryIdsOrQuerySpec;
-  execArgs[
-    entryIdsOrQuerySpec instanceof Array ? "querySpec" : "entryIds"
-  ] = null;
+  execArgs[entryIdsOrQuerySpec instanceof Array ? "entryIds" : "querySpec"] = entryIdsOrQuerySpec;
+  execArgs[entryIdsOrQuerySpec instanceof Array ? "querySpec" : "entryIds"] = null;
   exec(successCB, errorCB, "removeFromSoup", execArgs);
 };
 
@@ -633,7 +612,7 @@ export const moveCursorToPageIndex = <T>(
   cursor: StoreCursor<T>,
   newPageIndex: number,
   successCB: ExecSuccessCallback<T>,
-  errorCB: ExecErrorCallback
+  errorCB: ExecErrorCallback,
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
 
@@ -641,8 +620,7 @@ export const moveCursorToPageIndex = <T>(
   let successCBdeserializing;
 
   if (successCB) {
-    successCBdeserializing = (result: T) =>
-      successCB(typeof result === "string" ? safeJSONparse(result) : result);
+    successCBdeserializing = (result: T) => successCB(typeof result === "string" ? safeJSONparse(result) : result);
   } else {
     successCBdeserializing = successCB;
   }
@@ -659,7 +637,7 @@ export const moveCursorToNextPage = <T>(
   storeConfig: StoreConfig | boolean,
   cursor: StoreCursor<T>,
   successCB: ExecSuccessCallback<T>,
-  errorCB: ExecErrorCallback
+  errorCB: ExecErrorCallback,
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
 
@@ -667,16 +645,10 @@ export const moveCursorToNextPage = <T>(
   if (newPageIndex >= cursor.totalPages) {
     errorCB(
       // cursor,
-      new Error("moveCursorToNextPage called while on last page")
+      new Error("moveCursorToNextPage called while on last page"),
     );
   } else {
-    moveCursorToPageIndex(
-      storeConfig,
-      cursor,
-      newPageIndex,
-      successCB,
-      errorCB
-    );
+    moveCursorToPageIndex(storeConfig, cursor, newPageIndex, successCB, errorCB);
   }
 };
 
@@ -684,7 +656,7 @@ export const moveCursorToPreviousPage = <T>(
   storeConfig: StoreConfig | boolean,
   cursor: StoreCursor<T>,
   successCB: ExecSuccessCallback<T>,
-  errorCB: ExecErrorCallback
+  errorCB: ExecErrorCallback,
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
 
@@ -692,16 +664,10 @@ export const moveCursorToPreviousPage = <T>(
   if (newPageIndex < 0) {
     errorCB(
       // cursor,
-      new Error("moveCursorToPreviousPage called while on first page")
+      new Error("moveCursorToPreviousPage called while on first page"),
     );
   } else {
-    moveCursorToPageIndex(
-      storeConfig,
-      cursor,
-      newPageIndex,
-      successCB,
-      errorCB
-    );
+    moveCursorToPageIndex(storeConfig, cursor, newPageIndex, successCB, errorCB);
   }
 };
 
@@ -709,7 +675,7 @@ export const closeCursor = <T>(
   storeConfig: StoreConfig | boolean,
   cursor: StoreCursor<T>,
   successCB: ExecSuccessCallback<T>,
-  errorCB: ExecErrorCallback
+  errorCB: ExecErrorCallback,
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
 
@@ -721,24 +687,18 @@ export const closeCursor = <T>(
 };
 
 // ====== Store Operations ======
-export const getAllStores = (
-  successCB: ExecSuccessCallback<StoreConfig[]>,
-  errorCB: ExecErrorCallback
-): void => {
+export const getAllStores = (successCB: ExecSuccessCallback<StoreConfig[]>, errorCB: ExecErrorCallback): void => {
   exec(successCB, errorCB, "getAllStores", {});
 };
 
-export const getAllGlobalStores = (
-  successCB: ExecSuccessCallback<StoreConfig[]>,
-  errorCB: ExecErrorCallback
-): void => {
+export const getAllGlobalStores = (successCB: ExecSuccessCallback<StoreConfig[]>, errorCB: ExecErrorCallback): void => {
   exec(successCB, errorCB, "getAllGlobalStores", {});
 };
 
 export const removeStore = (
   storeConfig: StoreConfig | boolean,
   successCB: ExecSuccessCallback<"OK">,
-  errorCB: ExecErrorCallback
+  errorCB: ExecErrorCallback,
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
 
@@ -748,16 +708,10 @@ export const removeStore = (
   });
 };
 
-export const removeAllGlobalStores = (
-  successCB: ExecSuccessCallback<"OK">,
-  errorCB: ExecErrorCallback
-): void => {
+export const removeAllGlobalStores = (successCB: ExecSuccessCallback<"OK">, errorCB: ExecErrorCallback): void => {
   exec(successCB, errorCB, "removeAllGlobalStores", {});
 };
 
-export const removeAllStores = (
-  successCB: ExecSuccessCallback<"OK">,
-  errorCB: ExecErrorCallback
-): void => {
+export const removeAllStores = (successCB: ExecSuccessCallback<"OK">, errorCB: ExecErrorCallback): void => {
   exec(successCB, errorCB, "removeAllStores", {});
 };

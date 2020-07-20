@@ -68,9 +68,7 @@ export const promiser = (func: Function): (() => Promise<unknown>) => {
   return retfn;
 };
 
-export const promiserNoRejection = (
-  func: Function
-): (() => Promise<unknown>) => {
+export const promiserNoRejection = (func: Function): (() => Promise<unknown>) => {
   enableErrorOnUnhandledPromiseRejection();
   const retfn = function () {
     const args = Array.prototype.slice.call(arguments);
@@ -101,7 +99,7 @@ export const timeoutPromiser = (millis: number): Promise<void> => {
       () => {
         resolve();
       },
-      millis
+      millis,
     );
   });
 };

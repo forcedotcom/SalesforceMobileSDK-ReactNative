@@ -85,15 +85,10 @@ const testSyncUp = () => {
     })
     .then((result) => {
       contactSmartStoreId = result[0]._soupEntryId;
-      return syncUp(
-        storeConfig,
-        { createFieldlist: ["FirstName", "LastName"] },
-        soupName,
-        {
-          fieldlist: ["Id", "FirstName", "LastName"],
-          mergeMode: "LEAVE_IF_CHANGED",
-        }
-      );
+      return syncUp(storeConfig, { createFieldlist: ["FirstName", "LastName"] }, soupName, {
+        fieldlist: ["Id", "FirstName", "LastName"],
+        mergeMode: "LEAVE_IF_CHANGED",
+      });
     })
     .then((result) => {
       assert.equal(result.totalSize, 1, "Total size should be 1");
@@ -102,15 +97,9 @@ const testSyncUp = () => {
     })
     .then((result) => {
       assert.equal(result[0].__local__, false, "Local record should be clean");
-      assert.equal(
-        result[0].__locally_created__,
-        false,
-        "Local record should be clean"
-      );
+      assert.equal(result[0].__locally_created__, false, "Local record should be clean");
       contactId = result[0].Id;
-      return netQuery(
-        "SELECT FirstName FROM Contact WHERE Id IN ('" + contactId + "')"
-      );
+      return netQuery("SELECT FirstName FROM Contact WHERE Id IN ('" + contactId + "')");
     })
     .then((result) => {
       assert.equal(result.records[0].FirstName, firstName);
@@ -146,13 +135,10 @@ const testSyncDown = () => {
         storeConfig,
         {
           type: "soql",
-          query:
-            "SELECT Id, FirstName, LastName FROM Contact WHERE Id IN ('" +
-            contactId +
-            "')",
+          query: "SELECT Id, FirstName, LastName FROM Contact WHERE Id IN ('" + contactId + "')",
         },
         soupName,
-        { mergeMode: "OVERWRITE" }
+        { mergeMode: "OVERWRITE" },
       );
     })
     .then((result) => {
@@ -219,14 +205,10 @@ const testReSync = () => {
         {
           type: "soql",
           query:
-            "SELECT Id, FirstName, LastName FROM Contact WHERE Id IN ('" +
-            contactId +
-            "', '" +
-            otherContactId +
-            "')",
+            "SELECT Id, FirstName, LastName FROM Contact WHERE Id IN ('" + contactId + "', '" + otherContactId + "')",
         },
         soupName,
-        { mergeMode: "OVERWRITE" }
+        { mergeMode: "OVERWRITE" },
       );
     })
     .then((result) => {
@@ -254,10 +236,7 @@ const testReSync = () => {
       return runSmartQuery(storeConfig, querySpec);
     })
     .then((result) => {
-      assert.deepEqual(result.currentPageOrderedEntries, [
-        [firstName],
-        [otherFirstName],
-      ]);
+      assert.deepEqual(result.currentPageOrderedEntries, [[firstName], [otherFirstName]]);
 
       // Wait a bit before doing update
       return timeoutPromiser(1000);
@@ -276,16 +255,10 @@ const testReSync = () => {
       return runSmartQuery(storeConfig, querySpec);
     })
     .then((result) => {
-      assert.deepEqual(result.currentPageOrderedEntries, [
-        [firstName],
-        [otherFirstNameUpdated],
-      ]);
+      assert.deepEqual(result.currentPageOrderedEntries, [[firstName], [otherFirstNameUpdated]]);
 
       // Cleanup
-      return Promise.all([
-        netDel("contact", contactId),
-        netDel("contact", otherContactId),
-      ]);
+      return Promise.all([netDel("contact", contactId), netDel("contact", otherContactId)]);
     })
     .then((result) => {
       testDone();
@@ -326,14 +299,10 @@ const testCleanResyncGhosts = () => {
         {
           type: "soql",
           query:
-            "SELECT Id, FirstName, LastName FROM Contact WHERE Id IN ('" +
-            contactId +
-            "', '" +
-            otherContactId +
-            "')",
+            "SELECT Id, FirstName, LastName FROM Contact WHERE Id IN ('" + contactId + "', '" + otherContactId + "')",
         },
         soupName,
-        { mergeMode: "OVERWRITE" }
+        { mergeMode: "OVERWRITE" },
       );
     })
     .then((result) => {
@@ -359,10 +328,7 @@ const testCleanResyncGhosts = () => {
       return runSmartQuery(storeConfig, querySpec);
     })
     .then((result) => {
-      assert.deepEqual(result.currentPageOrderedEntries, [
-        [firstName],
-        [otherFirstName],
-      ]);
+      assert.deepEqual(result.currentPageOrderedEntries, [[firstName], [otherFirstName]]);
 
       return netDel("contact", otherContactId);
     })
@@ -407,13 +373,10 @@ const testGetSyncStatusDeleteSync = () => {
         storeConfig,
         {
           type: "soql",
-          query:
-            "SELECT Id, FirstName, LastName FROM Contact WHERE Id IN ('" +
-            contactId +
-            "')",
+          query: "SELECT Id, FirstName, LastName FROM Contact WHERE Id IN ('" + contactId + "')",
         },
         soupName,
-        { mergeMode: "OVERWRITE" }
+        { mergeMode: "OVERWRITE" },
       );
     })
     .then((result) => {

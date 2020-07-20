@@ -42,9 +42,7 @@ const componentForTest = (test: any) => {
 };
 
 export const registerTest = (test: any) => {
-  AppRegistry.registerComponent(test.name.substring("test".length), () =>
-    componentForTest(test)
-  );
+  AppRegistry.registerComponent(test.name.substring("test".length), () => componentForTest(test));
 };
 
 export const testDone = () => {

@@ -25,7 +25,7 @@
  */
 
 import { sdkConsole } from "./react.force.log";
-import { ModuleIOSName, ModuleAndroidName } from "./typings";
+import { ModuleAndroidName, ModuleIOSName } from "./typings";
 
 /**
  * Represents an iOS Module callback
@@ -68,11 +68,7 @@ interface ModuleIOS<T> {
  * @interface ModuleAndroid
  */
 interface ModuleAndroid {
-  [key: string]: (
-    args: unknown,
-    successCB: AndroidSuccessCallback,
-    errorCB: AndroidErrorCallback
-  ) => void;
+  [key: string]: (args: unknown, successCB: AndroidSuccessCallback, errorCB: AndroidErrorCallback) => void;
 }
 
 /**
@@ -96,7 +92,7 @@ export const exec = <T>(
   successCB: ExecSuccessCallback<T> | null,
   errorCB: ExecErrorCallback | null,
   methodName: string,
-  args: Record<string, unknown>
+  args: Record<string, unknown>,
 ): void => {
   if (moduleIOS) {
     const func = `${moduleIOSName}.${methodName}`;
@@ -127,7 +123,7 @@ export const exec = <T>(
       (error) => {
         sdkConsole.error(`${func} failed: ${JSON.stringify(error)}`);
         if (errorCB) errorCB(safeJSONparse(error));
-      }
+      },
     );
   }
 };

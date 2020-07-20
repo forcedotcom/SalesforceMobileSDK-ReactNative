@@ -98,11 +98,7 @@ const testGetSoupSpec = () => {
       return getSoupSpec(storeConfig, soupName);
     })
     .then((result) => {
-      assert.deepEqual(
-        result,
-        { name: soupName, features: [] },
-        "Wrong soup spec"
-      );
+      assert.deepEqual(result, { name: soupName, features: [] }, "Wrong soup spec");
       testDone();
     });
 };
@@ -132,11 +128,7 @@ const testUpsertRetrieve = () => {
   registerSoup(storeConfig, soupName, indexSpecs)
     .then((result) => {
       assert.equal(result, soupName, "Expected soupName");
-      return upsertSoupEntries(storeConfig, soupName, [
-        { Name: "Aaa" },
-        { Name: "Bbb" },
-        { Name: "Ccc" },
-      ]);
+      return upsertSoupEntries(storeConfig, soupName, [{ Name: "Aaa" }, { Name: "Bbb" }, { Name: "Ccc" }]);
     })
     .then((result) => {
       assert.equal(result.length, 3, "Wrong number of entries");
@@ -144,10 +136,7 @@ const testUpsertRetrieve = () => {
       assert.equal(result[1].Name, "Bbb");
       assert.equal(result[2].Name, "Ccc");
 
-      return retrieveSoupEntries(storeConfig, soupName, [
-        result[0]._soupEntryId,
-        result[2]._soupEntryId,
-      ]);
+      return retrieveSoupEntries(storeConfig, soupName, [result[0]._soupEntryId, result[2]._soupEntryId]);
     })
     .then((result) => {
       assert.equal(result.length, 2, "Wrong number of entries");
@@ -164,11 +153,7 @@ const testQuerySoup = () => {
   registerSoup(storeConfig, soupName, indexSpecs)
     .then((result) => {
       assert.equal(result, soupName, "Expected soupName");
-      return upsertSoupEntries(storeConfig, soupName, [
-        { Name: "Aaa" },
-        { Name: "Bbb" },
-        { Name: "Ccc" },
-      ]);
+      return upsertSoupEntries(storeConfig, soupName, [{ Name: "Aaa" }, { Name: "Bbb" }, { Name: "Ccc" }]);
     })
     .then((result) => {
       return querySoup(storeConfig, soupName, {
@@ -197,11 +182,7 @@ const testMoveCursor = () => {
   registerSoup(storeConfig, soupName, indexSpecs)
     .then((result) => {
       assert.equal(result, soupName, "Expected soupName");
-      return upsertSoupEntries(storeConfig, soupName, [
-        { Name: "Aaa" },
-        { Name: "Bbb" },
-        { Name: "Ccc" },
-      ]);
+      return upsertSoupEntries(storeConfig, soupName, [{ Name: "Aaa" }, { Name: "Bbb" }, { Name: "Ccc" }]);
     })
     .then((result) => {
       return querySoup(storeConfig, soupName, {
@@ -252,23 +233,12 @@ const testSmartQuerySoup = () => {
   registerSoup(storeConfig, soupName, indexSpecs)
     .then((result) => {
       assert.equal(result, soupName, "Expected soupName");
-      return upsertSoupEntries(storeConfig, soupName, [
-        { Name: "Aaa" },
-        { Name: "Bbb" },
-        { Name: "Ccc" },
-      ]);
+      return upsertSoupEntries(storeConfig, soupName, [{ Name: "Aaa" }, { Name: "Bbb" }, { Name: "Ccc" }]);
     })
     .then((result) => {
       return runSmartQuery(storeConfig, {
         queryType: "smart",
-        smartSql:
-          "select {" +
-          soupName +
-          ":Name} from {" +
-          soupName +
-          "} where {" +
-          soupName +
-          ':Name} = "Ccc"',
+        smartSql: "select {" + soupName + ":Name} from {" + soupName + "} where {" + soupName + ':Name} = "Ccc"',
         pageSize: 32,
       });
     })
@@ -289,11 +259,7 @@ const testRemoveFromSoup = () => {
   registerSoup(storeConfig, soupName, indexSpecs)
     .then((result) => {
       assert.equal(result, soupName, "Expected soupName");
-      return upsertSoupEntries(storeConfig, soupName, [
-        { Name: "Aaa" },
-        { Name: "Bbb" },
-        { Name: "Ccc" },
-      ]);
+      return upsertSoupEntries(storeConfig, soupName, [{ Name: "Aaa" }, { Name: "Bbb" }, { Name: "Ccc" }]);
     })
     .then((result) => {
       return removeFromSoup(storeConfig, soupName, {
@@ -307,14 +273,7 @@ const testRemoveFromSoup = () => {
     .then(() => {
       return runSmartQuery(storeConfig, {
         queryType: "smart",
-        smartSql:
-          "select {" +
-          soupName +
-          ":Name} from {" +
-          soupName +
-          "} order by {" +
-          soupName +
-          ":Name}",
+        smartSql: "select {" + soupName + ":Name} from {" + soupName + "} order by {" + soupName + ":Name}",
         pageSize: 32,
       });
     })
@@ -331,11 +290,7 @@ const testClearSoup = () => {
   registerSoup(storeConfig, soupName, indexSpecs)
     .then((result) => {
       assert.equal(result, soupName, "Expected soupName");
-      return upsertSoupEntries(storeConfig, soupName, [
-        { Name: "Aaa" },
-        { Name: "Bbb" },
-        { Name: "Ccc" },
-      ]);
+      return upsertSoupEntries(storeConfig, soupName, [{ Name: "Aaa" }, { Name: "Bbb" }, { Name: "Ccc" }]);
     })
     .then((result) => {
       return clearSoup(storeConfig, soupName);
@@ -343,14 +298,7 @@ const testClearSoup = () => {
     .then(() => {
       return runSmartQuery(storeConfig, {
         queryType: "smart",
-        smartSql:
-          "select {" +
-          soupName +
-          ":Name} from {" +
-          soupName +
-          "} order by {" +
-          soupName +
-          ":Name}",
+        smartSql: "select {" + soupName + ":Name} from {" + soupName + "} order by {" + soupName + ":Name}",
         pageSize: 32,
       });
     })
@@ -386,11 +334,7 @@ const testGetRemoveStores = () => {
       return getAllStores();
     })
     .then((result) => {
-      assert.sameDeepMembers(result, [
-        firstStoreConfig,
-        secondStoreConfig,
-        thirdStoreConfig,
-      ]);
+      assert.sameDeepMembers(result, [firstStoreConfig, secondStoreConfig, thirdStoreConfig]);
       return removeStore(secondStoreConfig);
     })
     .then((result) => {
@@ -435,11 +379,7 @@ const testGetRemoveGlobalStores = () => {
       return getAllGlobalStores();
     })
     .then((result) => {
-      assert.sameDeepMembers(result, [
-        firstStoreConfig,
-        secondStoreConfig,
-        thirdStoreConfig,
-      ]);
+      assert.sameDeepMembers(result, [firstStoreConfig, secondStoreConfig, thirdStoreConfig]);
       return removeStore(secondStoreConfig);
     })
     .then((result) => {

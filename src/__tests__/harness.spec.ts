@@ -25,7 +25,8 @@
  */
 
 import { assert } from "chai";
-import { oauth, forceTest } from "../../";
+import * as oauth from "../react.force.oauth";
+import * as forceTest from "../react.force.test";
 const { registerTest, testDone } = forceTest;
 
 const testPassing = () => {
@@ -40,7 +41,7 @@ const testAsyncPassing = () => {
     },
     (error) => {
       throw error;
-    }
+    },
   );
 };
 
