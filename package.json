@@ -1,5 +1,5 @@
 {
-  "name": "react-native-force",
+  "name": "react-native-force-ts",
   "version": "8.2.0",
   "description": "Salesforce Mobile SDK JavaScript libraries for React Native",
   "keywords": [
@@ -68,7 +68,6 @@
     "@typescript-eslint/parser": "^3.3.0",
     "eslint": "^7.3.0",
     "jest": "^26.1.0",
-    "react-native": "^0.63.1",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.3"
   }
