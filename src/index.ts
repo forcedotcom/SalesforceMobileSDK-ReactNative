@@ -24,13 +24,20 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-module.exports = {
-    net:require('./src/react.force.net'),
-    oauth:require('./src/react.force.oauth'),
-    smartstore:require('./src/react.force.smartstore'),
-    mobilesync:require('./src/react.force.mobilesync'),
-    forceClient:require('./src/react.force.net'),
-    forceUtil:require('./src/react.force.util'),
-    forceLog:require('./src/react.force.log'),
-    forceTest:require('./src/react.force.test')
+import * as forceLog from "./react.force.log";
+import * as mobilesync from "./react.force.mobilesync";
+import * as net from "./react.force.net";
+import * as oauth from "./react.force.oauth";
+import * as smartstore from "./react.force.smartstore";
+import * as forceTest from "./react.force.test";
+import * as forceUtil from "./react.force.util";
+
+export default {
+  forceLog,
+  forceTest,
+  forceUtil,
+  mobilesync,
+  net,
+  oauth,
+  smartstore,
 };
