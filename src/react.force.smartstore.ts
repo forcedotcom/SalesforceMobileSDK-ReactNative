@@ -189,8 +189,8 @@ export const buildAllQuerySpec = (
 export const buildExactQuerySpec = (
   path: string,
   matchKey: string,
-  order: StoreOrder,
   pageSize: number,
+  order: StoreOrder,
   orderPath?: string,
   selectPaths?: string[]
 ): QuerySpec => {
