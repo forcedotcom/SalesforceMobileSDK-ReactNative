@@ -31,8 +31,5 @@
     "target": "es6"
   },
   "include": ["./src/**/*"],
-  "exclude": ["jest.config.js", "src/__tests__/**/*"],
-  "typeAcquisition": {
-    "include": ["jest"]
-  }
+  "exclude": ["src/__tests__/**/*"]
 }
