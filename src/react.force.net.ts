@@ -59,7 +59,7 @@ export const sendRequest = <T>(
   method?: HttpMethod,
   payload?: Record<string, unknown> | null,
   headerParams?: Record<string, unknown> | null,
-  fileParams?,
+  fileParams?: unknown,
   returnBinary?: boolean,
   doesNotRequireAuthentication?: boolean
 ): void => {
