@@ -1,6 +1,7 @@
 .circleci/fastlane/README.md
 .circleci/fastlane/report.*
 .circleci/test_output/
+dist
 ios/SalesforceReactTests/clangReport/
 node_modules/
 package-lock.json
