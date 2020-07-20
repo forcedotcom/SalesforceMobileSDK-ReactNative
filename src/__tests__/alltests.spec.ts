@@ -24,8 +24,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import '../test/harness.test';
-import '../test/oauth.test';
-import '../test/net.test';
-import '../test/smartstore.test';
-import '../test/mobilesync.test';
+import "./harness.spec";
+import "./oauth.spec";
+import "./net.spec";
+import "./smartstore.spec";
+import "./mobilesync.spec";

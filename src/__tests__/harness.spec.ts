@@ -35,7 +35,7 @@ const testPassing = () => {
 
 const testAsyncPassing = () => {
   oauth.getAuthCredentials(
-    (creds) => {
+    () => {
       testDone();
     },
     (error) => {
