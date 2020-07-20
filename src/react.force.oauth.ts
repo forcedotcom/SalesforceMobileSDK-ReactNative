@@ -25,15 +25,15 @@
  */
 
 import { NativeModules } from "react-native";
+import { exec as forceExec, ExecSuccessCallback, ExecErrorCallback } from "./react.force.common";
+import { OAuthMethod, UserAccount } from "./typings/oauth";
 const { SalesforceOauthReactBridge, SFOauthReactBridge } = NativeModules;
-import { exec as forceExec } from "./react.force.common";
-import { UserAccount, OAuthMethod } from "./typings/oauth";
 
 const exec = <T>(
-  successCB: ((result: T) => void) | null,
-  errorCB: ((err: Error) => void) | null,
+  successCB: ExecSuccessCallback<T>,
+  errorCB: ExecErrorCallback,
   methodName: OAuthMethod,
-  args: Record<string, unknown>
+  args: Record<string, unknown>,
 ): void => {
   forceExec(
     "SFOauthReactBridge",
@@ -43,7 +43,7 @@ const exec = <T>(
     successCB,
     errorCB,
     methodName,
-    args
+    args,
   );
 };
 
@@ -69,10 +69,7 @@ let logoutInitiated = false;
  *   community id
  *   community url
  */
-export const authenticate = (
-  successCB: (token: UserAccount) => void,
-  errorCB: (err: Error) => void
-): void => {
+export const authenticate = (successCB: ExecSuccessCallback<UserAccount>, errorCB: ExecErrorCallback): void => {
   exec(successCB, errorCB, "authenticate", {});
 };
 
@@ -92,10 +89,7 @@ export const authenticate = (
  *   community id
  *   community url
  */
-export const getAuthCredentials = (
-  successCB: (token: UserAccount) => void,
-  errorCB: (err: Error) => void
-): void => {
+export const getAuthCredentials = (successCB: ExecSuccessCallback<UserAccount>, errorCB: ExecErrorCallback): void => {
   exec(successCB, errorCB, "getAuthCredentials", {});
 };
 
@@ -118,6 +112,7 @@ export const logout = (): void => {
     : null;
   if (!logoutInitiated) {
     logoutInitiated = true;
+    // @ts-ignore
     exec(logoutCb, null, "logoutCurrentUser", {});
   }
 };
