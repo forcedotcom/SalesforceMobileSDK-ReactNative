@@ -34,7 +34,7 @@ import * as forceUtil from "./react.force.util";
 
 const forceClient = net;
 
-export {
+export default {
   forceClient,
   forceLog,
   forceTest,
