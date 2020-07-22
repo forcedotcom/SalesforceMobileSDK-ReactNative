@@ -46,6 +46,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "rimraf dist/ && mkdir dist && tsc",
+    "postinstall": "yarn build",
     "prepublish": "npm run build"
   },
   "peerDependencies": {
