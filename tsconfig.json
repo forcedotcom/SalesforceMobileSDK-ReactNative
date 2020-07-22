@@ -28,8 +28,9 @@
     "strict": true,
     "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,
-    "target": "es6"
+    "target": "es6",
+    "typeRoots": ["node_modules/@types"]
   },
   "include": ["./src/**/*"],
-  "exclude": ["src/__tests__/**/*"]
+  "exclude": ["node_modules", "src/__tests__/**/*"]
 }
