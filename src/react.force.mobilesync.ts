@@ -65,28 +65,50 @@ const exec = <T>(
   );
 };
 
-export const syncDown = (
+type SyncDownOverload = {
+  (
+    storeConfig: StoreConfig,
+    target: SyncDownTarget,
+    soupName: string,
+    options: SyncOptions,
+    syncName: string,
+    successCB: ExecSuccessCallback<SyncEvent>,
+    errorCB: ExecErrorCallback,
+  ): void;
+  (
+    storeConfig: StoreConfig,
+    target: SyncDownTarget,
+    soupName: string,
+    options: SyncOptions,
+    successCB: ExecSuccessCallback<SyncEvent>,
+    errorCB: ExecErrorCallback,
+  ): void;
+};
+
+export const syncDown: SyncDownOverload = (
   storeConfig: StoreConfig,
   target: SyncDownTarget,
   soupName: string,
   options: SyncOptions,
-  ...args: unknown[]
+  x: string | ExecSuccessCallback<SyncEvent>,
+  y: ExecSuccessCallback<SyncEvent> | ExecErrorCallback,
+  z?: ExecErrorCallback,
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
 
-  let errorCB: ExecErrorCallback;
-  let successCB: ExecSuccessCallback<SyncEvent>;
   let syncName: string | undefined;
+  let successCB: ExecSuccessCallback<SyncEvent>;
+  let errorCB: ExecErrorCallback;
 
   // syncName optional (new in 6.0)
-  if (typeof args[0] === "function") {
-    errorCB = args[1] as ExecErrorCallback;
-    successCB = args[0] as ExecSuccessCallback<SyncEvent>;
+  if (typeof x === "function") {
     syncName = undefined;
+    successCB = x;
+    errorCB = y as ExecErrorCallback;
   } else {
-    errorCB = args[2] as ExecErrorCallback;
-    successCB = args[1] as ExecSuccessCallback<SyncEvent>;
-    syncName = args[0] as string;
+    syncName = x;
+    successCB = y as ExecSuccessCallback<SyncEvent>;
+    errorCB = z as ExecErrorCallback;
   }
 
   exec<SyncEvent>(successCB, errorCB, "syncDown", {
@@ -128,28 +150,50 @@ export const cleanResyncGhosts = (
   });
 };
 
-export const syncUp = (
+type SyncUpOverload = {
+  (
+    storeConfig: StoreConfig,
+    target: SyncDownTarget,
+    soupName: string,
+    options: SyncOptions,
+    syncName: string,
+    successCB: ExecSuccessCallback<SyncEvent>,
+    errorCB: ExecErrorCallback,
+  ): void;
+  (
+    storeConfig: StoreConfig,
+    target: SyncDownTarget,
+    soupName: string,
+    options: SyncOptions,
+    successCB: ExecSuccessCallback<SyncEvent>,
+    errorCB: ExecErrorCallback,
+  ): void;
+};
+
+export const syncUp: SyncUpOverload = (
   storeConfig: StoreConfig,
   target: SyncDownTarget,
   soupName: string,
   options: SyncOptions,
-  ...args: unknown[]
+  x: string | ExecSuccessCallback<SyncEvent>,
+  y: ExecSuccessCallback<SyncEvent> | ExecErrorCallback,
+  z?: ExecErrorCallback,
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
 
-  let errorCB: ExecErrorCallback;
-  let successCB: ExecSuccessCallback<SyncEvent>;
   let syncName: string | undefined;
+  let successCB: ExecSuccessCallback<SyncEvent>;
+  let errorCB: ExecErrorCallback;
 
   // syncName optional (new in 6.0)
-  if (typeof args[0] === "function") {
-    errorCB = args[1] as ExecErrorCallback;
-    successCB = args[0] as ExecSuccessCallback<SyncEvent>;
+  if (typeof x === "function") {
     syncName = undefined;
+    successCB = x;
+    errorCB = y as ExecErrorCallback;
   } else {
-    errorCB = args[2] as ExecErrorCallback;
-    successCB = args[1] as ExecSuccessCallback<SyncEvent>;
-    syncName = args[0] as string;
+    syncName = x;
+    successCB = y as ExecSuccessCallback<SyncEvent>;
+    errorCB = z as ExecErrorCallback;
   }
 
   exec(successCB, errorCB, "syncUp", {

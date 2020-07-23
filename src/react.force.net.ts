@@ -173,6 +173,17 @@ export const create = <T>(
   errorCB: ExecErrorCallback,
 ): void => sendRequest("/services/data", `/${apiVersion}/sobjects/${objtype}/`, successCB, errorCB, "POST", fields);
 
+type RetrieveOverload = {
+  <T>(
+    objtype: string,
+    id: string,
+    fieldlist: string[],
+    successCB: ExecSuccessCallback<T>,
+    errorCB: ExecErrorCallback,
+  ): void;
+  <T>(objtype: string, id: string, successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback): void;
+};
+
 /*
  * Retrieves field values for a record of the given type.
  * @param objtype object type; e.g. "Account"
@@ -182,21 +193,25 @@ export const create = <T>(
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const retrieve = <T>(...args: unknown[]): void => {
-  const objtype = args[0];
-  const id = args[1];
-  let errorCB: ExecErrorCallback;
-  let successCB: ExecSuccessCallback<T>;
+export const retrieve: RetrieveOverload = <T>(
+  objtype: string,
+  id: string,
+  x: string[] | ExecSuccessCallback<T>,
+  y: ExecSuccessCallback<T> | ExecErrorCallback,
+  z?: ExecErrorCallback,
+): void => {
   let fieldlist;
+  let successCB: ExecSuccessCallback<T>;
+  let errorCB: ExecErrorCallback;
 
-  if (args.length == 4) {
-    errorCB = args[3] as ExecErrorCallback;
-    successCB = args[2] as ExecSuccessCallback<T>;
+  if (typeof x === "function") {
     fieldlist = null;
+    successCB = x as ExecSuccessCallback<T>;
+    errorCB = y as ExecErrorCallback;
   } else {
-    errorCB = args[4] as ExecErrorCallback;
-    successCB = args[3] as ExecSuccessCallback<T>;
-    fieldlist = args[2];
+    fieldlist = x;
+    successCB = y as ExecSuccessCallback<T>;
+    errorCB = z as ExecErrorCallback;
   }
 
   const fields = fieldlist ? { fields: fieldlist } : null;
