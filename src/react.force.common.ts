@@ -82,7 +82,7 @@ interface ModuleAndroid {
  * @param {ExecSuccessCallback<T> | null} successCB
  * @param {ExecErrorCallback | null} errorCB
  * @param {string} methodName
- * @param {Record<string, unknown>} argsaight
+ * @param {Record<string, unknown>} args
  */
 export const exec = <T>(
   moduleIOSName: ModuleIOSName,
