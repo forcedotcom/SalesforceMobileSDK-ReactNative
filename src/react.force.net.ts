@@ -87,7 +87,7 @@ export const sendRequest = <T>(
   );
 };
 
-/*
+/**
  * Lists summary information about each Salesforce.com version currently
  * available, including the version, label, and a link to each version's
  * root.
@@ -97,7 +97,7 @@ export const sendRequest = <T>(
 export const versions = <T>(successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback): void =>
   sendRequest("/services/data", "/", successCB, errorCB);
 
-/*
+/**
  * Lists available resources for the client's API version, including
  * resource name and URI.
  * @param callback function to which response will be passed
@@ -106,7 +106,7 @@ export const versions = <T>(successCB: ExecSuccessCallback<T>, errorCB: ExecErro
 export const resources = <T>(successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback): void =>
   sendRequest("/services/data", `/${apiVersion}/`, successCB, errorCB);
 
-/*
+/**
  * Lists the available objects and their metadata for your organization's
  * data.
  * @param callback function to which response will be passed
@@ -115,7 +115,7 @@ export const resources = <T>(successCB: ExecSuccessCallback<T>, errorCB: ExecErr
 export const describeGlobal = <T>(successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback): void =>
   sendRequest("/services/data", `/${apiVersion}/sobjects/`, successCB, errorCB);
 
-/*
+/**
  * Describes the individual metadata for the specified object.
  * @param objtype object type; e.g. "Account"
  * @param callback function to which response will be passed
@@ -124,7 +124,7 @@ export const describeGlobal = <T>(successCB: ExecSuccessCallback<T>, errorCB: Ex
 export const metadata = <T>(objtype: string, successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback): void =>
   sendRequest("/services/data", `/${apiVersion}/sobjects/${objtype}/`, successCB, errorCB);
 
-/*
+/**
  * Completely describes the individual metadata at all levels for the
  * specified object.
  * @param objtype object type; e.g. "Account"
@@ -134,7 +134,7 @@ export const metadata = <T>(objtype: string, successCB: ExecSuccessCallback<T>, 
 export const describe = <T>(objtype: string, successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback): void =>
   sendRequest("/services/data", `/${apiVersion}/sobjects/${objtype}/describe/`, successCB, errorCB);
 
-/*
+/**
  * Fetches the layout configuration for a particular sobject type and record type id.
  * @param objtype object type; e.g. "Account"
  * @param (Optional) recordTypeId Id of the layout's associated record type
@@ -157,7 +157,7 @@ export const describeLayout = <T>(
   );
 };
 
-/*
+/**
  * Creates a new record of the given type.
  * @param objtype object type; e.g. "Account"
  * @param fields an object containing initial field names and values for
@@ -184,7 +184,7 @@ type RetrieveOverload = {
   <T>(objtype: string, id: string, successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback): void;
 };
 
-/*
+/**
  * Retrieves field values for a record of the given type.
  * @param objtype object type; e.g. "Account"
  * @param id the record's object ID
@@ -218,7 +218,7 @@ export const retrieve: RetrieveOverload = <T>(
   return sendRequest("/services/data", `/${apiVersion}/sobjects/${objtype}/${id}`, successCB, errorCB, "GET", fields);
 };
 
-/*
+/**
  * Upsert - creates or updates record of the given type, based on the
  * given external Id.
  * @param objtype object type; e.g. "Account"
@@ -247,7 +247,7 @@ export const upsert = <T>(
     fields,
   );
 
-/*
+/**
  * Updates field values on a record of the given type.
  * @param objtype object type; e.g. "Account"
  * @param id the record's object ID
@@ -266,7 +266,7 @@ export const update = <T>(
 ): void =>
   sendRequest("/services/data", `/${apiVersion}/sobjects/${objtype}/${id}`, successCB, errorCB, "PATCH", fields);
 
-/*
+/**
  * Deletes a record of the given type. Unfortunately, 'delete' is a
  * reserved word in JavaScript.
  * @param objtype object type; e.g. "Account"
@@ -281,7 +281,7 @@ export const del = <T>(
   errorCB: ExecErrorCallback,
 ): void => sendRequest("/services/data", `/${apiVersion}/sobjects/${objtype}/${id}`, successCB, errorCB, "DELETE");
 
-/*
+/**
  * Executes the specified SOQL query.
  * @param soql a string containing the query to execute - e.g. "SELECT Id,
  *             Name from Account ORDER BY Name LIMIT 20"
@@ -291,7 +291,7 @@ export const del = <T>(
 export const query = <T>(soql: string, successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback): void =>
   sendRequest("/services/data", `/${apiVersion}/query`, successCB, errorCB, "GET", { q: soql });
 
-/*
+/**
  * Queries the next set of records based on pagination.
  * <p>This should be used if performing a query that retrieves more than can be returned
  * in accordance with http://www.salesforce.com/us/developer/docs/api_rest/Content/dome_query.htm</p>
@@ -309,7 +309,7 @@ export const queryMore = <T>(url: string, successCB: ExecSuccessCallback<T>, err
   }
 };
 
-/*
+/**
  * Executes the specified SOSL search.
  * @param sosl a string containing the search to execute - e.g. "FIND
  *             {needle}"
