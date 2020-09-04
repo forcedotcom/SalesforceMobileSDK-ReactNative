@@ -1,8 +1,15 @@
+anchors:
+  - &latest-xcode "11.7.0"
+  - &latest-ios   "13.7"
+  - &min-ios      "12.2"
+  - &beta-xcode   "12.0.0"
+  - &beta-ios     "14.0"
+
 executors:
   mac:
     working_directory: ~/SalesforceMobileSDK-ReactNative
     macos:
-      xcode: 11.6.0
+      xcode: *latest-xcode
     shell: /bin/bash --login -eo pipefail
     environment:
       BASH_ENV: ~/.bashr
@@ -11,7 +18,7 @@ executors:
   mac-beta:
     working_directory: ~/SalesforceMobileSDK-ReactNative
     macos:
-      xcode: 12.0.0
+      xcode: *beta-xcode
     shell: /bin/bash --login -eo pipefail
     environment:
       BASH_ENV: ~/.bashrc
@@ -27,7 +34,7 @@ jobs:
         default: "iPhone 11"
       ios:
         type: string
-        default: "13.6"
+        default: *latest-ios
       nightly-test:
         type: boolean
         default: false
@@ -86,7 +93,7 @@ workflows:
 
   # Cron are on a timezone 8 hours ahead of PST
   # Build everything at ~11:30pm Sunday/Wednesday Nights
-  weekly-run-tests:
+  run-tests:
     triggers:
       - schedule:
           cron: "30 7 * * 1,4"
@@ -96,26 +103,14 @@ workflows:
                 - dev
     jobs:
       - test-ios:
+          name: test ReactNative iOS << matrix.ios >>
           matrix:
             parameters:
               nightly-test: [true]
-              ios: ["12.2", "13.6"]
+              ios: [*min-ios, *latest-ios]
               device: ["iPhone 8"]
-
-  # TODO: Move this run into above matrix when Xcode 12 launches.  
-  # Cron are on a timezone 8 hours ahead of PST
-  # Build everything at ~12:00pm Sunday/Wednesday Nights
-  weekly-run-tests-ios14:
-    triggers:
-      - schedule:
-          cron: "00 8 * * 1,4"
-          filters:
-            branches:
-              only:
-                - dev
-    jobs:
       - test-ios:
-          name: "ReactNative iOS 14 Nightly"
+          name: test ReactNative iOS 14.0
           nightly-test: true
           env: mac-beta
-          ios: "14.0"
+          ios: *beta-ios
