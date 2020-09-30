@@ -1,14 +1,29 @@
+anchors:
+  - &latest-xcode "11.7.0"
+  - &latest-ios   "13.7"
+  - &min-ios      "12.2"
+  - &beta-xcode   "12.0.0"
+  - &beta-ios     "14.0"
+
 executors:
   mac:
     working_directory: ~/SalesforceMobileSDK-ReactNative
     macos:
-      xcode: 11.2.1
+      xcode: *latest-xcode
+    shell: /bin/bash --login -eo pipefail
+    environment:
+      BASH_ENV: ~/.bashr
+      FASTLANE_SKIP_UPDATE_CHECK: "true"
+      CHRUBY_VER: 2.7.1
+  mac-beta:
+    working_directory: ~/SalesforceMobileSDK-ReactNative
+    macos:
+      xcode: *beta-xcode
     shell: /bin/bash --login -eo pipefail
     environment:
       BASH_ENV: ~/.bashrc
       FASTLANE_SKIP_UPDATE_CHECK: "true"
-      CHRUBY_VER: 2.6.5
-
+      CHRUBY_VER: 2.7.1
 
 version: 2.1
 jobs:
@@ -19,7 +34,7 @@ jobs:
         default: "iPhone 11"
       ios:
         type: string
-        default: "13.2"
+        default: *latest-ios
       nightly-test:
         type: boolean
         default: false
@@ -78,7 +93,7 @@ workflows:
 
   # Cron are on a timezone 8 hours ahead of PST
   # Build everything at ~11:30pm Sunday/Wednesday Nights
-  weekly-run-tests:
+  run-tests:
     triggers:
       - schedule:
           cron: "30 7 * * 1,4"
@@ -88,23 +103,14 @@ workflows:
                 - dev
     jobs:
       - test-ios:
-          name: "ReactNative iOS 13 Nightly"
-          nightly-test: true
-
-  # Cron are on a timezone 8 hours ahead of PST
-  # Build everything at ~12:00pm Sunday/Wednesday Nights
-  weekly-run-tests-ios12:
-    triggers:
-      - schedule:
-          cron: "00 8 * * 1,4"
-          filters:
-            branches:
-              only:
-                - dev
-
-    jobs:
+          name: test ReactNative iOS << matrix.ios >>
+          matrix:
+            parameters:
+              nightly-test: [true]
+              ios: [*min-ios, *latest-ios]
+              device: ["iPhone 8"]
       - test-ios:
-          name: "ReactNative iOS 12 Nightly"
+          name: test ReactNative iOS 14.0
           nightly-test: true
-          ios: "12.2"
-          device: "iPhone 8"
+          env: mac-beta
+          ios: *beta-ios
