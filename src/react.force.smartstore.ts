@@ -674,7 +674,7 @@ export const moveCursorToPreviousPage = <T>(
 export const closeCursor = <T>(
   storeConfig: StoreConfig | boolean,
   cursor: StoreCursor<T>,
-  successCB: ExecSuccessCallback<T>,
+  successCB: ExecSuccessCallback<"OK">,
   errorCB: ExecErrorCallback,
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
