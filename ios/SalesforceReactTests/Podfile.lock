@@ -21,10 +21,10 @@ PODS:
     - DoubleConversion
     - glog
   - glog (0.3.5)
-  - MobileSync (8.3.0):
-    - MobileSync/MobileSync (= 8.3.0)
-  - MobileSync/MobileSync (8.3.0):
-    - SmartStore (~> 8.3.0)
+  - MobileSync (9.0.0):
+    - MobileSync/MobileSync (= 9.0.0)
+  - MobileSync/MobileSync (9.0.0):
+    - SmartStore (~> 9.0.0)
   - RCTRequired (0.63.2)
   - RCTTypeSafety (0.63.2):
     - FBLazyVector (= 0.63.2)
@@ -257,39 +257,39 @@ PODS:
     - React-Core (= 0.63.2)
     - React-cxxreact (= 0.63.2)
     - React-jsi (= 0.63.2)
-  - SalesforceAnalytics (8.3.0):
-    - SalesforceAnalytics/SalesforceAnalytics (= 8.3.0)
-  - SalesforceAnalytics/SalesforceAnalytics (8.3.0):
-    - SalesforceSDKCommon (~> 8.3.0)
-  - SalesforceReact (8.3.0):
-    - SalesforceReact/SalesforceReact (= 8.3.0)
-  - SalesforceReact/SalesforceReact (8.3.0):
-    - MobileSync (~> 8.3.0)
+  - SalesforceAnalytics (9.0.0):
+    - SalesforceAnalytics/SalesforceAnalytics (= 9.0.0)
+  - SalesforceAnalytics/SalesforceAnalytics (9.0.0):
+    - SalesforceSDKCommon (~> 9.0.0)
+  - SalesforceReact (9.0.0):
+    - SalesforceReact/SalesforceReact (= 9.0.0)
+  - SalesforceReact/SalesforceReact (9.0.0):
+    - MobileSync (~> 9.0.0)
     - React
-  - SalesforceSDKCommon (8.3.0):
-    - SalesforceSDKCommon/SalesforceSDKCommon (= 8.3.0)
-  - SalesforceSDKCommon/SalesforceSDKCommon (8.3.0)
-  - SalesforceSDKCore (8.3.0):
-    - SalesforceSDKCore/SalesforceSDKCore (= 8.3.0)
-  - SalesforceSDKCore/SalesforceSDKCore (8.3.0):
-    - SalesforceAnalytics (~> 8.3.0)
-    - SalesforceSDKCore/SalesforceSDKCore/arc (= 8.3.0)
-    - SalesforceSDKCore/SalesforceSDKCore/base (= 8.3.0)
-    - SalesforceSDKCore/SalesforceSDKCore/no-arc (= 8.3.0)
-  - SalesforceSDKCore/SalesforceSDKCore/arc (8.3.0):
-    - SalesforceAnalytics (~> 8.3.0)
+  - SalesforceSDKCommon (9.0.0):
+    - SalesforceSDKCommon/SalesforceSDKCommon (= 9.0.0)
+  - SalesforceSDKCommon/SalesforceSDKCommon (9.0.0)
+  - SalesforceSDKCore (9.0.0):
+    - SalesforceSDKCore/SalesforceSDKCore (= 9.0.0)
+  - SalesforceSDKCore/SalesforceSDKCore (9.0.0):
+    - SalesforceAnalytics (~> 9.0.0)
+    - SalesforceSDKCore/SalesforceSDKCore/arc (= 9.0.0)
+    - SalesforceSDKCore/SalesforceSDKCore/base (= 9.0.0)
+    - SalesforceSDKCore/SalesforceSDKCore/no-arc (= 9.0.0)
+  - SalesforceSDKCore/SalesforceSDKCore/arc (9.0.0):
+    - SalesforceAnalytics (~> 9.0.0)
     - SalesforceSDKCore/SalesforceSDKCore/base
     - SalesforceSDKCore/SalesforceSDKCore/no-arc
-  - SalesforceSDKCore/SalesforceSDKCore/base (8.3.0):
-    - SalesforceAnalytics (~> 8.3.0)
-  - SalesforceSDKCore/SalesforceSDKCore/no-arc (8.3.0):
-    - SalesforceAnalytics (~> 8.3.0)
+  - SalesforceSDKCore/SalesforceSDKCore/base (9.0.0):
+    - SalesforceAnalytics (~> 9.0.0)
+  - SalesforceSDKCore/SalesforceSDKCore/no-arc (9.0.0):
+    - SalesforceAnalytics (~> 9.0.0)
     - SalesforceSDKCore/SalesforceSDKCore/base
-  - SmartStore (8.3.0):
-    - SmartStore/SmartStore (= 8.3.0)
-  - SmartStore/SmartStore (8.3.0):
+  - SmartStore (9.0.0):
+    - SmartStore/SmartStore (= 9.0.0)
+  - SmartStore/SmartStore (9.0.0):
     - FMDB/SQLCipher (~> 2.7.5)
-    - SalesforceSDKCore (~> 8.3.0)
+    - SalesforceSDKCore (~> 9.0.0)
     - SQLCipher/fts (~> 4.4.0)
   - SQLCipher (4.4.0):
     - SQLCipher/standard (= 4.4.0)
@@ -419,7 +419,7 @@ SPEC CHECKSUMS:
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
   glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
-  MobileSync: 4cd095fa7e3cec98b9098bcb34bded265407a0f1
+  MobileSync: 06dfb7370129fafbbe5f682a8308e276b85ff261
   RCTRequired: f13f25e7b12f925f1f6a6a8c69d929a03c0129fe
   RCTTypeSafety: 44982c5c8e43ff4141eb519a8ddc88059acd1f3a
   React: e1c65dd41cb9db13b99f24608e47dd595f28ca9a
@@ -441,14 +441,14 @@ SPEC CHECKSUMS:
   React-RCTText: 1b6773e776e4b33f90468c20fe3b16ca3e224bb8
   React-RCTVibration: 4d2e726957f4087449739b595f107c0d4b6c2d2d
   ReactCommon: a0a1edbebcac5e91338371b72ffc66aa822792ce
-  SalesforceAnalytics: 3681f00955b288cc16cf7bccd60973a20f70dcd2
-  SalesforceReact: 3df4447cbe7877c126e250e523527adf2822c39b
-  SalesforceSDKCommon: 0e7a211fd2a488b6f7ba5ceeda5b1457d615ec8d
-  SalesforceSDKCore: 6ddebe735e15f1c40876cfd239246ce132d52988
-  SmartStore: d2f0692e333e405797777af919667d79e81677e3
+  SalesforceAnalytics: c75181da7f470480ebee95e636c623284f57e93f
+  SalesforceReact: a3ad607bbfea737d9e7662e973a0b117505a8585
+  SalesforceSDKCommon: 7776950a718856cfd43f40363b084b56c7449688
+  SalesforceSDKCore: 5364f02bd60bfc5f61c194f56f8215ecf324ab47
+  SmartStore: df4dd8add5cdcbb69b4f4bca12b8766f3a074049
   SQLCipher: e434ed542b24f38ea7b36468a13f9765e1b5c072
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598
 
-PODFILE CHECKSUM: 2551f5ee2ce00ca35815fb6b0708f4bdc49d4231
+PODFILE CHECKSUM: 130c5a25e0c92489c580020ce041bae94bd64e6d
 
 COCOAPODS: 1.9.3

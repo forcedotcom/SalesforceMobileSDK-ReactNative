@@ -1,9 +1,7 @@
 anchors:
-  - &latest-xcode "11.7.0"
-  - &latest-ios   "13.7"
-  - &min-ios      "12.2"
-  - &beta-xcode   "12.0.0"
-  - &beta-ios     "14.0"
+  - &latest-xcode "12.0.1"
+  - &latest-ios   "14.0"
+  - &min-ios      "13.5"
 
 executors:
   mac:
@@ -13,15 +11,6 @@ executors:
     shell: /bin/bash --login -eo pipefail
     environment:
       BASH_ENV: ~/.bashr
-      FASTLANE_SKIP_UPDATE_CHECK: "true"
-      CHRUBY_VER: 2.7.1
-  mac-beta:
-    working_directory: ~/SalesforceMobileSDK-ReactNative
-    macos:
-      xcode: *beta-xcode
-    shell: /bin/bash --login -eo pipefail
-    environment:
-      BASH_ENV: ~/.bashrc
       FASTLANE_SKIP_UPDATE_CHECK: "true"
       CHRUBY_VER: 2.7.1
 
@@ -109,8 +98,3 @@ workflows:
               nightly-test: [true]
               ios: [*min-ios, *latest-ios]
               device: ["iPhone 8"]
-      - test-ios:
-          name: test ReactNative iOS 14.0
-          nightly-test: true
-          env: mac-beta
-          ios: *beta-ios

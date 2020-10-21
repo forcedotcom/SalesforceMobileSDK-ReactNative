@@ -1,5 +1,5 @@
 $device = ENV.has_key?('DEVICE') ? ENV['DEVICE'] : 'iPhone 11'
-$ios = ENV.has_key?('IOS_VERSION') ? ENV['IOS_VERSION'] : '13.7'
+$ios = ENV.has_key?('IOS_VERSION') ? ENV['IOS_VERSION'] : '14.0'
 
 lane :build do
     analyze_scheme("SalesforceReactTestApp")
