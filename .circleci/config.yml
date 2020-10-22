@@ -1,6 +1,6 @@
 anchors:
-  - &latest-xcode "12.0.1"
-  - &latest-ios   "14.0"
+  - &latest-xcode "12.1.0"
+  - &latest-ios   "14.1"
   - &min-ios      "13.5"
 
 executors:

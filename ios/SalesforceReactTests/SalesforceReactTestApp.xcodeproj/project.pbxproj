@@ -17,6 +17,7 @@
 		4FFF1F472166E14A00C050EF /* ReactNetTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF1F402166E14900C050EF /* ReactNetTests.m */; };
 		4FFF1F482166E14A00C050EF /* ReactOauthTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF1F422166E14A00C050EF /* ReactOauthTests.m */; };
 		4FFF1F4B2166E50C00C050EF /* test_credentials.json in Resources */ = {isa = PBXBuildFile; fileRef = 4FFF1F4A2166E50C00C050EF /* test_credentials.json */; };
+		A3B98D8E2542364E0066A87C /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3B98D8D2542364E0066A87C /* JavaScriptCore.framework */; };
 		AFF8607B7CB340D176FB7E04 /* Pods_SalesforceReactTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8552B3C397A44688A07636B /* Pods_SalesforceReactTests.framework */; };
 		E109CF3A486C9672412A5CCA /* Pods_SalesforceReactTestApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED3472E37E0AF8221AFF4508 /* Pods_SalesforceReactTestApp.framework */; };
 /* End PBXBuildFile section */
@@ -51,6 +52,7 @@
 		4FFF1F4A2166E50C00C050EF /* test_credentials.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = test_credentials.json; sourceTree = SOURCE_ROOT; };
 		8833450A1F8DDA34E9264712 /* Pods-SalesforceReactTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SalesforceReactTests.debug.xcconfig"; path = "Target Support Files/Pods-SalesforceReactTests/Pods-SalesforceReactTests.debug.xcconfig"; sourceTree = "<group>"; };
 		9434D973458317F53AEB081C /* Pods-SalesforceReactTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SalesforceReactTests.release.xcconfig"; path = "Target Support Files/Pods-SalesforceReactTests/Pods-SalesforceReactTests.release.xcconfig"; sourceTree = "<group>"; };
+		A3B98D8D2542364E0066A87C /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		D8552B3C397A44688A07636B /* Pods_SalesforceReactTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SalesforceReactTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED3472E37E0AF8221AFF4508 /* Pods_SalesforceReactTestApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SalesforceReactTestApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -60,6 +62,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A3B98D8E2542364E0066A87C /* JavaScriptCore.framework in Frameworks */,
 				E109CF3A486C9672412A5CCA /* Pods_SalesforceReactTestApp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -144,6 +147,7 @@
 		F5BE60D311B128CF34C86462 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A3B98D8D2542364E0066A87C /* JavaScriptCore.framework */,
 				ED3472E37E0AF8221AFF4508 /* Pods_SalesforceReactTestApp.framework */,
 				D8552B3C397A44688A07636B /* Pods_SalesforceReactTests.framework */,
 			);
