@@ -12,7 +12,7 @@ executors:
     environment:
       BASH_ENV: ~/.bashr
       FASTLANE_SKIP_UPDATE_CHECK: "true"
-      CHRUBY_VER: 2.7.1
+      CHRUBY_VER: 2.7.2
 
 version: 2.1
 jobs:
