@@ -5,3 +5,8 @@ sfdx/yarn.lock
 .circleci/fastlane/README.md
 .circleci/test_output/
 ios/SalesforceReactTests/clangReport/
+ios/SalesforceReactTests/Index
+ios/SalesforceReactTests/Logs
+ios/SalesforceReactTests/Build
+ios/SalesforceReactTests/ModuleCache.noindex
+ios/SalesforceReactTests/info.plist

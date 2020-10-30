@@ -16,15 +16,18 @@ def test_scheme(scheme)
     sim_id = `xcrun simctl create test_device com.apple.CoreSimulator.SimDeviceType.#{$device} com.apple.CoreSimulator.SimRuntime.iOS-#{$ios}`.delete("\n")
     destination = "test_device (" + `instruments -s devices | grep test_device | awk -F"[()]" '{print $2}'`.delete("\n") + ")"
     
-    scan(
-        workspace: '../ios/SalesforceReactTests/SalesforceReactTestApp.xcworkspace',
-        scheme: scheme,
-        device: destination,
-        output_directory: 'test_output',
-        output_types: 'html,junit',
-        code_coverage: true,
-        skip_build: true
-    )
+    Dir.chdir("../../ios/SalesforceReactTests") do
+        puts "pwd: " + `pwd`
+        scan(
+            workspace: '../ios/SalesforceReactTests/SalesforceReactTestApp.xcworkspace',
+            scheme: scheme,
+            device: destination,
+            output_directory: 'test_output',
+            output_types: 'html,junit',
+            code_coverage: true,
+            skip_build: true
+        )
+    end
 end
 
 def analyze_scheme(scheme)
