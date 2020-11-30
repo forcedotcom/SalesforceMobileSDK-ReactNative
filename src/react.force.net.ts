@@ -30,7 +30,7 @@ import { sdkConsole } from "./react.force.log";
 import { HttpMethod } from "./typings";
 const { SalesforceNetReactBridge, SFNetReactBridge } = NativeModules;
 
-let apiVersion = "v46.0";
+var  apiVersion = 'v49.0';
 
 /**
  * Set apiVersion to be used

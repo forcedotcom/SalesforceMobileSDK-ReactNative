@@ -7,3 +7,8 @@ node_modules/
 package-lock.json
 sfdx/yarn.lock
 yarn-error.log
+ios/SalesforceReactTests/Index
+ios/SalesforceReactTests/Logs
+ios/SalesforceReactTests/Build
+ios/SalesforceReactTests/ModuleCache.noindex
+ios/SalesforceReactTests/info.plist

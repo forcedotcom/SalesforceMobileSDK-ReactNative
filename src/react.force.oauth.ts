@@ -48,12 +48,6 @@ const exec = <T>(
 };
 
 /**
- * Whether or not logout has already been initiated.  Can only be initiated once
- * per page load.
- */
-let logoutInitiated = false;
-
-/**
  * Initiates the authentication process, with the given app configuration.
  *   success         - The success callback function to use.
  *   fail            - The failure/error callback function to use.
@@ -95,24 +89,9 @@ export const getAuthCredentials = (successCB: ExecSuccessCallback<UserAccount>, 
 
 /**
  * Logout the current authenticated user. This removes any current valid session token
- * as well as any OAuth refresh token.  The user is forced to login again.
- * This method does not call back with a success or failure callback, as
- * (1) this method must not fail and (2) in the success case, the current user
- * will be logged out and asked to re-authenticate.  Note also that this method can only
- * be called once per page load.  Initiating logout will ultimately redirect away from
- * the given page (effectively resetting the logout flag), and calling this method again
- * while it's currently processing will result in app state issues.
+ * as well as any OAuth refresh token.  
  */
-export const logout = (): void => {
-  // only set callback for android, since iOS will not invoke callback.
-  const logoutCb = SalesforceOauthReactBridge
-    ? () => {
-        logoutInitiated = false;
-      }
-    : null;
-  if (!logoutInitiated) {
-    logoutInitiated = true;
+export const logout = (success, fail) => {
     // @ts-ignore
-    exec(logoutCb, null, "logoutCurrentUser", {});
-  }
+    exec(success, fail, "logoutCurrentUser", {});
 };
