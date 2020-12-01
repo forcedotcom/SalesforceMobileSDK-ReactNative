@@ -91,7 +91,7 @@ export const getAuthCredentials = (successCB: ExecSuccessCallback<UserAccount>, 
  * Logout the current authenticated user. This removes any current valid session token
  * as well as any OAuth refresh token.  
  */
-export const logout = (success, fail) => {
+export const logout = <T>(success: ExecSuccessCallback<T>, fail: ExecErrorCallback) => {
     // @ts-ignore
     exec(success, fail, "logoutCurrentUser", {});
 };
