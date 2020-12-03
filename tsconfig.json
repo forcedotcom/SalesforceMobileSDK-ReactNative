@@ -31,5 +31,5 @@
     "typeRoots": ["node_modules/@types"]
   },
   "include": ["./src/**/*"],
-  "exclude": ["node_modules", "src/__tests__/**/*"]
+  "exclude": ["node_modules"]
 }
