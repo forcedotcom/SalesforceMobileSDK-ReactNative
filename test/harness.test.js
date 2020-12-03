@@ -24,8 +24,21 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import "./harness.spec";
-import "./oauth.spec";
-import "./net.spec";
-import "./smartstore.spec";
-import "./mobilesync.spec";
+import { assert } from 'chai';
+import { oauth, forceTest } from 'react-native-force';
+const { registerTest, testDone } = forceTest;
+
+testPassing = () => {
+    assert(true, "testPassing should have succeeded");
+    testDone();
+};
+
+testAsyncPassing = () => {
+    oauth.getAuthCredentials(
+        (creds) => { testDone(); },
+        (error) => { throw error; }
+    );
+};
+
+registerTest(testPassing);
+registerTest(testAsyncPassing);

@@ -24,26 +24,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { assert } from "chai";
-import * as oauth from "../react.force.oauth";
-import { registerTest, testDone } from "../react.force.test";
-
-const testGetAuthCredentials = () => {
-  oauth.getAuthCredentials(
-    (creds) => {
-      assert.containsAllKeys(
-        creds,
-        ["accessToken", "instanceUrl", "loginUrl", "orgId", "refreshToken", "userAgent", "userId"],
-        "Wrong keys in credentials",
-      );
-      testDone();
-    },
-    (error) => {
-      throw error;
-    },
-  );
-
-  return false; // not done
-};
-
-registerTest(testGetAuthCredentials);
+import '../test/harness.test';
+import '../test/oauth.test';
+import '../test/net.test';
+import '../test/smartstore.test';
+import '../test/mobilesync.test';
