@@ -4,7 +4,7 @@ const path = require('path')
 var execSync = require('child_process').execSync;
 
 console.log('=== Installing npm dependencies');
-execSync('npm install', {stdio:[0,1,2]});
+execSync('yarn install', {stdio:[0,1,2]});
 
 var rimraf = require('rimraf');
 

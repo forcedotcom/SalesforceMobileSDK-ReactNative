@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-present, salesforce.com, inc.
+ * Copyright (c) 2020-present, salesforce.com, inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided
@@ -24,13 +24,42 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-module.exports = {
-    net:require('./src/react.force.net'),
-    oauth:require('./src/react.force.oauth'),
-    smartstore:require('./src/react.force.smartstore'),
-    mobilesync:require('./src/react.force.mobilesync'),
-    forceClient:require('./src/react.force.net'),
-    forceUtil:require('./src/react.force.util'),
-    forceLog:require('./src/react.force.log'),
-    forceTest:require('./src/react.force.test')
+import { LogLevel, SDKConsole } from "./typings";
+
+/**
+ * logging support
+ */
+let logLevel: LogLevel = "info";
+
+export const getLogLevel = (): string => {
+  return logLevel;
 };
+
+export const sdkConsole: SDKConsole = {
+  debug: console.debug.bind(console),
+  info: console.info.bind(console),
+  warn: () => {
+    /** */
+  },
+  error: () => {
+    /** */
+  },
+  log: console.log.bind(console),
+};
+
+export const setLogLevel = (level: LogLevel): void => {
+  logLevel = level;
+  const methods = ["debug", "info", "warn", "error"];
+  const levelAsInt = methods.indexOf(level.toLowerCase());
+  const noop = () => {
+    /** */
+  };
+
+  sdkConsole.debug = levelAsInt <= 0 ? console.debug.bind(console) : noop;
+  sdkConsole.info = levelAsInt <= 1 ? console.info.bind(console) : noop;
+  sdkConsole.warn = levelAsInt <= 2 ? console.log.bind(console) : noop; // we don't want the yellow box
+  sdkConsole.error = levelAsInt <= 3 ? console.log.bind(console) : noop; // we don't want the red box
+  sdkConsole.log = console.log.bind(console);
+};
+
+setLogLevel("info");
