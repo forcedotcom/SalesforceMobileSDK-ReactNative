@@ -5,6 +5,8 @@ dist
 ios/SalesforceReactTests/clangReport/
 node_modules/
 package-lock.json
+yarn.lock
+Podfile.lock
 sfdx/yarn.lock
 yarn-error.log
 ios/SalesforceReactTests/Index
