@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "allowJs": true,
+    "allowJs": false,
     "allowSyntheticDefaultImports": true,
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
@@ -11,7 +11,7 @@
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
-    "isolatedModules": true,
+    "isolatedModules": false,
     "jsx": "react-native",
     "lib": ["es6"],
     "module": "commonjs",
