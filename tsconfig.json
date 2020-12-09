@@ -6,6 +6,7 @@
     "allowUnusedLabels": false,
     "baseUrl": ".",
     "checkJs": true,
+    "declaration": true,
     "emitDecoratorMetadata": false,
     "esModuleInterop": true,
     "experimentalDecorators": true,
