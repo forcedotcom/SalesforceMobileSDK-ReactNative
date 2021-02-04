@@ -1,0 +1,27 @@
+require_relative '../node_modules/react-native/scripts/react_native_pods'
+require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+
+platform :ios, '13.0'
+
+use_frameworks!
+
+project 'SalesforceReactTestApp.xcodeproj'
+target 'SalesforceReactTestApp' do
+end
+
+target 'SalesforceReactTests' do
+
+source 'https://cdn.cocoapods.org/'
+
+config = use_native_modules!
+use_react_native!(:path => config["reactNativePath"])
+pod 'React-RCTTest', :path => '../RCTTest'
+
+pod 'SalesforceSDKCommon', :path => '../mobile_sdk/SalesforceMobileSDK-iOS'
+pod 'SalesforceAnalytics', :path => '../mobile_sdk/SalesforceMobileSDK-iOS'
+pod 'SalesforceSDKCore', :path => '../mobile_sdk/SalesforceMobileSDK-iOS'
+pod 'SmartStore', :path => '../mobile_sdk/SalesforceMobileSDK-iOS'
+pod 'MobileSync', :path => '../mobile_sdk/SalesforceMobileSDK-iOS'
+pod 'SalesforceReact', :path => '../..'
+
+end
