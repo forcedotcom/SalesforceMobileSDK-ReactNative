@@ -59,9 +59,9 @@ jobs:
             cd .circleci
             fastlane scan --workspace SalesforceReactTestApp.xcworkspace --scheme SalesforceReactTestApp --destination "platform=iOS Simulator,name=$DEVICE,OS=$IOS_VERSION"
       - store_test_results:
-          path: /Users/distiller/SalesforceMobileSDK-ReactNative/ios/test_output
+          path: /Users/distiller/SalesforceMobileSDK-ReactNative/iosTests/test_output
       - store_artifacts:
-          path: /Users/distiller/SalesforceMobileSDK-ReactNative/ios/test_output
+          path: /Users/distiller/SalesforceMobileSDK-ReactNative/iosTests/test_output
           destination: Test-Results
       - store_artifacts:
           path: /Users/distiller/SalesforceMobileSDK-ReactNative/iosTests/clangReport/
