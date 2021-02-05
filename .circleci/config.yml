@@ -40,13 +40,14 @@ jobs:
           name: Installing Dependencies
           command: |
             brew install gnu-sed
-            cd ios/SalesforceReactTests
+            npm install -g typescript
+            cd iosTests
             ./prepareios.js 
       - run:
           name: Creating test_credentials.json
           command: |
-            cd ios/SalesforceReactTests
-            node ./create_test_credentials_from_env.js
+            cd iosTests
+            ./create_test_credentials_from_env.js
       - run:
           name: Compile
           command:  |
@@ -55,15 +56,15 @@ jobs:
       - run:
           name: Run Tests
           command:  |
-            cd ios/SalesforceReactTests
+            cd iosTests/ios
             fastlane scan --workspace SalesforceReactTestApp.xcworkspace --scheme SalesforceReactTestApp --destination "platform=iOS Simulator,name=$DEVICE,OS=$IOS_VERSION"
       - store_test_results:
-          path: /Users/distiller/SalesforceMobileSDK-ReactNative/ios/test_output
+          path: /Users/distiller/SalesforceMobileSDK-ReactNative/iosTests/ios/test_output
       - store_artifacts:
-          path: /Users/distiller/SalesforceMobileSDK-ReactNative/ios/test_output
+          path: /Users/distiller/SalesforceMobileSDK-ReactNative/iosTests/ios/test_output
           destination: Test-Results
       - store_artifacts:
-          path: /Users/distiller/SalesforceMobileSDK-ReactNative/ios/SalesforceReactTests/clangReport/
+          path: /Users/distiller/SalesforceMobileSDK-ReactNative/iosTests/ios/clangReport/
           destination: Static-Analysis
       - run:
           name: Upload code coverage
