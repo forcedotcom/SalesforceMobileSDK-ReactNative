@@ -40,6 +40,7 @@ jobs:
           name: Installing Dependencies
           command: |
             brew install gnu-sed
+            npm install -g typescript
             cd iosTests
             ./prepareios.js 
       - run:
