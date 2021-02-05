@@ -45,7 +45,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --build tsconfig.json",
     "postinstall": "yarn build",
     "prepublish": "npm run build"
   },
