@@ -2,15 +2,7 @@
 .circleci/fastlane/report.*
 .circleci/test_output/
 dist
-iosTests/clangReport/
 node_modules/
 package-lock.json
 yarn.lock
 Podfile.lock
-sfdx/yarn.lock
-yarn-error.log
-iosTests/Index
-iosTests/Logs
-iosTests/Build
-iosTests/ModuleCache.noindex
-iosTests/info.plist
