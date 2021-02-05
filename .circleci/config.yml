@@ -47,7 +47,7 @@ jobs:
           name: Creating test_credentials.json
           command: |
             cd iosTests
-            node ./create_test_credentials_from_env.js
+            ./create_test_credentials_from_env.js
       - run:
           name: Compile
           command:  |
@@ -56,7 +56,7 @@ jobs:
       - run:
           name: Run Tests
           command:  |
-            cd iosTests
+            cd .circleci
             fastlane scan --workspace SalesforceReactTestApp.xcworkspace --scheme SalesforceReactTestApp --destination "platform=iOS Simulator,name=$DEVICE,OS=$IOS_VERSION"
       - store_test_results:
           path: /Users/distiller/SalesforceMobileSDK-ReactNative/ios/test_output

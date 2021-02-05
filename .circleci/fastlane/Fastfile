@@ -16,7 +16,7 @@ def test_scheme(scheme)
     sim_id = `xcrun simctl create test_device com.apple.CoreSimulator.SimDeviceType.#{$device} com.apple.CoreSimulator.SimRuntime.iOS-#{$ios}`.delete("\n")
     destination = "test_device (" + `instruments -s devices | grep test_device | awk -F"[()]" '{print $2}'`.delete("\n") + ")"
     
-    Dir.chdir("../../iosTests") do
+    Dir.chdir("../iosTests") do
         puts "pwd: " + `pwd`
         scan(
             workspace: './ios/SalesforceReactTestApp.xcworkspace',
@@ -33,7 +33,7 @@ end
 def analyze_scheme(scheme)
     xcodebuild(
         xcargs: 'CLANG_ANALYZER_OUTPUT=plist-html CLANG_ANALYZER_OUTPUT_DIR=./clangReport RUN_CLANG_STATIC_ANALYZER=YES ARCHS=x86_64',
-        workspace: './ios/SalesforceReactTestApp.xcworkspace',
+        workspace: '../iosTests/ios/SalesforceReactTestApp.xcworkspace',
         scheme: scheme,
         sdk: 'iphonesimulator',
     )
