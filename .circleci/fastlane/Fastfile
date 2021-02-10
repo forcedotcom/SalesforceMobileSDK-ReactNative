@@ -1,5 +1,5 @@
 $device = ENV.has_key?('DEVICE') ? ENV['DEVICE'] : 'iPhone 11'
-$ios = ENV.has_key?('IOS_VERSION') ? ENV['IOS_VERSION'] : '13.7'
+$ios = ENV.has_key?('IOS_VERSION') ? ENV['IOS_VERSION'] : '14.1'
 
 lane :build do
     analyze_scheme("SalesforceReactTestApp")
@@ -17,10 +17,10 @@ def test_scheme(scheme)
     destination = "test_device (" + `instruments -s devices | grep test_device | awk -F"[()]" '{print $2}'`.delete("\n") + ")"
     
     scan(
-        workspace: '../ios/SalesforceReactTests/SalesforceReactTestApp.xcworkspace',
+        workspace: '../iosTests/ios/SalesforceReactTestApp.xcworkspace',
         scheme: scheme,
         device: destination,
-        output_directory: 'test_output',
+        output_directory: './test_output',
         output_types: 'html,junit',
         code_coverage: true,
         skip_build: true
@@ -30,7 +30,7 @@ end
 def analyze_scheme(scheme)
     xcodebuild(
         xcargs: 'CLANG_ANALYZER_OUTPUT=plist-html CLANG_ANALYZER_OUTPUT_DIR=./clangReport RUN_CLANG_STATIC_ANALYZER=YES ARCHS=x86_64',
-        workspace: '../ios/SalesforceReactTests/SalesforceReactTestApp.xcworkspace',
+        workspace: '../iosTests/ios/SalesforceReactTestApp.xcworkspace',
         scheme: scheme,
         sdk: 'iphonesimulator',
     )

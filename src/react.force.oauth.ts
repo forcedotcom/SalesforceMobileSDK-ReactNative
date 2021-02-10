@@ -24,12 +24,27 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { NativeModules } from 'react-native';
+import { NativeModules } from "react-native";
+import { exec as forceExec, ExecSuccessCallback, ExecErrorCallback } from "./react.force.common";
+import { OAuthMethod, UserAccount } from "./typings/oauth";
 const { SalesforceOauthReactBridge, SFOauthReactBridge } = NativeModules;
-import {exec as forceExec} from './react.force.common';
 
-const exec = (successCB, errorCB, methodName, args) => {
-    forceExec("SFOauthReactBridge", "SalesforceOauthReactBridge", SFOauthReactBridge, SalesforceOauthReactBridge, successCB, errorCB, methodName, args);
+const exec = <T>(
+  successCB: ExecSuccessCallback<T>,
+  errorCB: ExecErrorCallback,
+  methodName: OAuthMethod,
+  args: Record<string, unknown>,
+): void => {
+  forceExec(
+    "SFOauthReactBridge",
+    "SalesforceOauthReactBridge",
+    SFOauthReactBridge,
+    SalesforceOauthReactBridge,
+    successCB,
+    errorCB,
+    methodName,
+    args,
+  );
 };
 
 /**
@@ -48,8 +63,8 @@ const exec = (successCB, errorCB, methodName, args) => {
  *   community id
  *   community url
  */
-export const authenticate = (success, fail) => {
-    exec(success, fail, "authenticate", {});
+export const authenticate = (successCB: ExecSuccessCallback<UserAccount>, errorCB: ExecErrorCallback): void => {
+  exec(successCB, errorCB, "authenticate", {});
 };
 
 /**
@@ -68,15 +83,15 @@ export const authenticate = (success, fail) => {
  *   community id
  *   community url
  */
-export const getAuthCredentials = (success, fail) => {
-    exec(success, fail, "getAuthCredentials", {});
+export const getAuthCredentials = (successCB: ExecSuccessCallback<UserAccount>, errorCB: ExecErrorCallback): void => {
+  exec(successCB, errorCB, "getAuthCredentials", {});
 };
 
 /**
  * Logout the current authenticated user. This removes any current valid session token
  * as well as any OAuth refresh token.  
  */
-export const logout = (success, fail) => {
+export const logout = <T>(success: ExecSuccessCallback<T>, fail: ExecErrorCallback) => {
+    // @ts-ignore
     exec(success, fail, "logoutCurrentUser", {});
 };
-

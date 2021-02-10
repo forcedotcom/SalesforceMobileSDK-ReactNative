@@ -24,34 +24,34 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import React from 'react';
-import { AppRegistry, NativeModules, View } from 'react-native';
+import * as React from "react";
+import { AppRegistry, NativeModules, View } from "react-native";
 const { SalesforceTestBridge, TestModule } = NativeModules;
-const createReactClass = require('create-react-class');
+const createReactClass = require("create-react-class");
 
-const componentForTest = (test) => {
-    return createReactClass({
-        componentDidMount() {
-            test(); // NB: test must call testDone() when it completes
-        },
-        
-        render() {
-            return (<View/>);
-        }            
-    });
+const componentForTest = (test: any) => {
+  return createReactClass({
+    componentDidMount() {
+      test(); // NB: test must call testDone() when it completes
+    },
+
+    render() {
+      return <View />;
+    },
+  });
 };
 
-export const registerTest = (test) => {
-    AppRegistry.registerComponent(test.name.substring("test".length), () => componentForTest(test));
+export const registerTest = (test: any) => {
+  AppRegistry.registerComponent(test.name.substring("test".length), () => componentForTest(test));
 };
 
 export const testDone = () => {
-    // iOS
-    if (TestModule) {
-        TestModule.markTestCompleted();
-    }
-    // Android
-    else if (SalesforceTestBridge) {
-        SalesforceTestBridge.markTestCompleted();
-    }
+  // iOS
+  if (TestModule) {
+    TestModule.markTestCompleted();
+  }
+  // Android
+  else if (SalesforceTestBridge) {
+    SalesforceTestBridge.markTestCompleted();
+  }
 };

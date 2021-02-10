@@ -30,3 +30,6 @@ package-lock.json.*
 test_credentials.json
 index.ios.bundle
 RCTTest/
+clangReport/
+yarn-error.log
+
