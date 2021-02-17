@@ -13,17 +13,17 @@ export type UserAccount = {
   userId: string;
 };
 
-export type AuthenticateOverload = {
+export type Authenticate = {
   (): Promise<UserAccount>;
   (successCB: ExecSuccessCallback<UserAccount>, errorCB: ExecErrorCallback): void;
 };
 
-export type GetAuthCredentialsOverload = {
+export type GetAuthCredentials = {
   (): Promise<UserAccount>;
   (successCB: ExecSuccessCallback<UserAccount>, errorCB: ExecErrorCallback): void;
 };
 
-export type LogoutOverload = {
+export type Logout = {
   (): Promise<UserAccount>;
   (successCB: ExecSuccessCallback<UserAccount>, errorCB: ExecErrorCallback): void;
 };

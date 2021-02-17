@@ -25,14 +25,8 @@
  */
 
 import { NativeModules } from "react-native";
-import { exec as forceExec, ExecSuccessCallback, ExecErrorCallback } from "./react.force.common";
-import {
-  AuthenticateOverload,
-  GetAuthCredentialsOverload,
-  LogoutOverload,
-  OAuthMethod,
-  UserAccount,
-} from "./typings/oauth";
+import { exec as forceExec, ExecErrorCallback, ExecSuccessCallback } from "./react.force.common";
+import { Authenticate, GetAuthCredentials, Logout, OAuthMethod, UserAccount } from "./typings/oauth";
 const { SalesforceOauthReactBridge, SFOauthReactBridge } = NativeModules;
 
 const exec = <T>(
@@ -41,7 +35,18 @@ const exec = <T>(
   methodName: OAuthMethod,
   args: Record<string, unknown>,
 ): Promise<T> | void => {
-  if (!successCB || !errorCB) {
+  if (successCB && errorCB) {
+    forceExec(
+      "SFOauthReactBridge",
+      "SalesforceOauthReactBridge",
+      SFOauthReactBridge,
+      SalesforceOauthReactBridge,
+      successCB,
+      errorCB,
+      methodName,
+      args,
+    );
+  } else {
     return new Promise((resolve, reject) => {
       forceExec(
         "SFOauthReactBridge",
@@ -55,17 +60,6 @@ const exec = <T>(
       );
     });
   }
-
-  forceExec(
-    "SFOauthReactBridge",
-    "SalesforceOauthReactBridge",
-    SFOauthReactBridge,
-    SalesforceOauthReactBridge,
-    successCB,
-    errorCB,
-    methodName,
-    args,
-  );
 };
 
 /**
@@ -73,7 +67,7 @@ const exec = <T>(
  * @param successCB
  * @param errorCB
  */
-export const authenticate: AuthenticateOverload = (
+export const authenticate: Authenticate = (
   successCB?: ExecSuccessCallback<UserAccount>,
   errorCB?: ExecErrorCallback,
 ): any => {
@@ -85,7 +79,7 @@ export const authenticate: AuthenticateOverload = (
  * @param successCB
  * @param errorCB
  */
-export const getAuthCredentials: GetAuthCredentialsOverload = (
+export const getAuthCredentials: GetAuthCredentials = (
   successCB?: ExecSuccessCallback<UserAccount>,
   errorCB?: ExecErrorCallback,
 ): any => {
@@ -98,6 +92,6 @@ export const getAuthCredentials: GetAuthCredentialsOverload = (
  * @param successCB
  * @param errorCB
  */
-export const logout: LogoutOverload = <T>(successCB?: ExecSuccessCallback<T>, errorCB?: ExecErrorCallback): any => {
+export const logout: Logout = <T>(successCB?: ExecSuccessCallback<T>, errorCB?: ExecErrorCallback): any => {
   return exec(successCB, errorCB, "logoutCurrentUser", {});
 };
