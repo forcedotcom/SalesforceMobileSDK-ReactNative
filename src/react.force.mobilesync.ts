@@ -27,16 +27,17 @@ import { NativeModules } from "react-native";
 import { exec as forceExec, ExecErrorCallback, ExecSuccessCallback } from "./react.force.common";
 import { StoreConfig } from "./react.force.smartstore";
 import {
-  CleanResyncGhostsOverload,
-  GetSyncStatusOverload,
-  ReSyncOverload,
-  SyncDownOverload,
+  CleanResyncGhosts,
+  DeleteSync,
+  GetSyncStatus,
+  ReSync,
+  SyncDown,
   SyncDownTarget,
   SyncEvent,
   SyncMethod,
   SyncOptions,
   SyncStatus,
-  SyncUpOverload,
+  SyncUp,
 } from "./typings/mobilesync";
 
 const { MobileSyncReactBridge, SFMobileSyncReactBridge } = NativeModules;
@@ -64,7 +65,18 @@ const exec = <T>(
   methodName: SyncMethod,
   args: Record<string, unknown>,
 ): Promise<T> | void => {
-  if (!successCB || !errorCB) {
+  if (successCB && errorCB) {
+    forceExec(
+      "SFMobileSyncReactBridge",
+      "MobileSyncReactBridge",
+      SFMobileSyncReactBridge,
+      MobileSyncReactBridge,
+      successCB,
+      errorCB,
+      methodName,
+      args,
+    );
+  } else {
     return new Promise((resolve, reject) => {
       forceExec(
         "SFMobileSyncReactBridge",
@@ -78,20 +90,9 @@ const exec = <T>(
       );
     });
   }
-
-  forceExec(
-    "SFMobileSyncReactBridge",
-    "MobileSyncReactBridge",
-    SFMobileSyncReactBridge,
-    MobileSyncReactBridge,
-    successCB,
-    errorCB,
-    methodName,
-    args,
-  );
 };
 
-export const syncDown: SyncDownOverload = (
+export const syncDown: SyncDown = (
   storeConfig: StoreConfig,
   target: SyncDownTarget,
   soupName: string,
@@ -113,7 +114,7 @@ export const syncDown: SyncDownOverload = (
   });
 };
 
-export const reSync: ReSyncOverload = (
+export const reSync: ReSync = (
   storeConfig: StoreConfig,
   syncIdOrName: string,
   successCB?: ExecSuccessCallback<SyncEvent>,
@@ -129,7 +130,7 @@ export const reSync: ReSyncOverload = (
   });
 };
 
-export const cleanResyncGhosts: CleanResyncGhostsOverload = (
+export const cleanResyncGhosts: CleanResyncGhosts = (
   storeConfig: StoreConfig,
   syncId: string,
   successCB?: ExecSuccessCallback<unknown>,
@@ -144,7 +145,7 @@ export const cleanResyncGhosts: CleanResyncGhostsOverload = (
   });
 };
 
-export const syncUp: SyncUpOverload = (
+export const syncUp: SyncUp = (
   storeConfig: StoreConfig,
   target: SyncDownTarget,
   soupName: string,
@@ -166,7 +167,7 @@ export const syncUp: SyncUpOverload = (
   });
 };
 
-export const getSyncStatus: GetSyncStatusOverload = (
+export const getSyncStatus: GetSyncStatus = (
   storeConfig: StoreConfig,
   syncIdOrName: string,
   successCB?: ExecSuccessCallback<SyncStatus>,
@@ -182,12 +183,12 @@ export const getSyncStatus: GetSyncStatusOverload = (
   });
 };
 
-export const deleteSync = (
+export const deleteSync: DeleteSync = (
   storeConfig: StoreConfig,
   syncIdOrName: string,
   successCB?: ExecSuccessCallback<unknown>,
   errorCB?: ExecErrorCallback,
-): Promise<unknown> | void => {
+): any => {
   storeConfig = checkFirstArg(storeConfig);
 
   return exec(successCB, errorCB, "deleteSync", {

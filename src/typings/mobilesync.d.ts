@@ -55,7 +55,7 @@ export interface SyncStatus {
   type: string;
 }
 
-export type SyncDownOverload = {
+export type SyncDown = {
   (
     storeConfig: StoreConfig,
     target: SyncDownTarget,
@@ -83,7 +83,7 @@ export type SyncDownOverload = {
   (storeConfig: StoreConfig, target: SyncDownTarget, soupName: string, options: SyncOptions): Promise<SyncEvent>;
 };
 
-export type ReSyncOverload = {
+export type ReSync = {
   (storeConfig: StoreConfig, syncIdOrName: string): Promise<SyncEvent>;
   (
     storeConfig: StoreConfig,
@@ -93,12 +93,12 @@ export type ReSyncOverload = {
   ): void;
 };
 
-export type CleanResyncGhostsOverload = {
+export type CleanResyncGhosts = {
   (storeConfig: StoreConfig, syncId: string): Promise<unknown>;
   (storeConfig: StoreConfig, syncId: string, successCB: ExecSuccessCallback<unknown>, errorCB: ExecErrorCallback): void;
 };
 
-export type SyncUpOverload = {
+export type SyncUp = {
   (
     storeConfig: StoreConfig,
     target: SyncDownTarget,
@@ -126,7 +126,7 @@ export type SyncUpOverload = {
   (storeConfig: StoreConfig, target: SyncDownTarget, soupName: string, options: SyncOptions): Promise<SyncEvent>;
 };
 
-export type GetSyncStatusOverload = {
+export type GetSyncStatus = {
   (storeConfig: StoreConfig, syncIdOrName: string): Promise<SyncStatus>;
   (
     storeConfig: StoreConfig,
@@ -136,7 +136,7 @@ export type GetSyncStatusOverload = {
   ): void;
 };
 
-export type DeleteSyncOverload = {
+export type DeleteSync = {
   (storeConfig: StoreConfig, syncIdOrName: string): Promise<unknown>;
   (
     storeConfig: StoreConfig,
