@@ -3,6 +3,10 @@ import { StoreConfig } from "../react.force.smartstore";
 
 export type SyncMethod = "cleanResyncGhosts" | "deleteSync" | "getSyncStatus" | "reSync" | "syncDown" | "syncUp";
 
+export type SyncDownTypes = "soql" | "sosl" | "mru" | "custom";
+
+export type SyncOptionsMergeModes = "OVERWRITE" | "LEAVE_IF_CHANGED";
+
 export interface SyncEvent {
   soupName: string;
   options: SyncOptions;
@@ -21,23 +25,99 @@ export interface SyncEvent {
   name: string;
 }
 
-export type SyncDownTarget = {
-  type: "soql" | "sosl" | "mru" | "custom";
+export type SyncDownTarget =
+  | SyncDownCustomTarget
+  | SyncDownLayoutTarget
+  | SyncDownMetadataTarget
+  | SyncDownMRUTarget
+  | SyncDownParentChildrenTarget
+  | SyncDownRefreshTarget
+  | SyncDownSOQLTarget
+  | SyncDownSOSLTarget;
+
+export type SyncDownSOQLTarget = {
+  type: "soql";
   query: string;
-  modificationDateFieldName?: string;
+};
+
+export type SyncDownSOSLTarget = {
+  type: "sosl";
+  query: string;
+};
+
+export type SyncDownMRUTarget = {
+  type: "mru";
+  sobjectType: string;
+  fieldlist: string[];
+};
+
+export type SyncDownRefreshTarget = {
+  type: "refresh";
+  sobjectType: string;
+  fieldlist: string[];
+  soupName: string;
+};
+
+export type SyncDownLayoutTarget = {
+  type: "layout";
+  sobjectType: string;
+  formFactor: string;
+  layoutType: string;
+  mode: string;
+};
+
+export type SyncDownMetadataTarget = {
+  type: "metadata";
+  sobjectType: string;
+};
+
+export type SyncDownParentChildrenTarget = {
+  type: "parent_children";
+  parent: {
+    idFieldName: string;
+    sobjectType: string;
+    modificationDateFieldName: string;
+    soupName: string;
+  };
+  parentFieldlist: string[];
+  children: {
+    parentIdFieldName: string;
+    idFieldName: string;
+    sobjectType: string;
+    modificationDateFieldName: string;
+    soupName: string;
+    sobjectTypePlural: string;
+  };
+  childrenFieldlist: string[];
+  relationshipType: string;
+  parentSoqlFilter: string;
+};
+
+export type SyncDownCustomTarget = {
+  type: "custom";
   iOSImpl?: string;
-  idFieldName?: string;
+  androidImpl?: string;
+
+  [key: string]: any;
 };
 
 export type SyncUpTarget = {
   createFieldlist?: string[];
   updateFieldlist?: string[];
+
+  [key: string]: any;
 };
 
-export type SyncOptions = {
-  mergeMode?: "OVERWRITE" | "LEAVE_IF_CHANGED";
-  fieldlist?: string[];
+export type SyncUpOptions = {
+  mergeMode: SyncOptionsMergeModes;
+  fieldlist: string[];
 };
+
+export type SyncDownOptions = {
+  mergeMode: SyncOptionsMergeModes;
+};
+
+export type SyncOptions = SyncUpOptions | SyncDownOptions;
 
 export interface SyncStatus {
   _soupEntryId: number;
