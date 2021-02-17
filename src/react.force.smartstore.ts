@@ -27,25 +27,70 @@
 import { NativeModules } from "react-native";
 import { exec as forceExec, ExecErrorCallback, ExecSuccessCallback, safeJSONparse } from "./react.force.common";
 import { QuerySpecType, StoreOrder } from "./typings";
-import { SmartStoreMethod } from "./typings/smartstore";
+import {
+  AlterSoup,
+  AlterSoupWithSpec,
+  ClearSoup,
+  CloseCursor,
+  GetAllGlobalStores,
+  GetAllStores,
+  GetDatabaseSize,
+  GetSoupIndexSpecs,
+  GetSoupSpec,
+  MoveCursorToNextPage,
+  MoveCursorToPageIndex,
+  MoveCursorToPreviousPage,
+  OK,
+  QuerySoup,
+  RegisterSoup,
+  RegisterSoupWithSpec,
+  ReIndexSoup,
+  RemoveAllGlobalStores,
+  RemoveAllStores,
+  RemoveFromSoup,
+  RemoveSoup,
+  RemoveStore,
+  RetrieveSoupEntries,
+  RunSmartQuery,
+  SmartStoreMethod,
+  SObject,
+  SoupExists,
+  UpsertSoupEntries,
+  UpsertSoupEntriesWithExternalId,
+} from "./typings/smartstore";
 const { SmartStoreReactBridge, SFSmartStoreReactBridge } = NativeModules;
 
 const exec = <T>(
-  successCB: ExecSuccessCallback<T>,
-  errorCB: ExecErrorCallback,
+  successCB: ExecSuccessCallback<T> | undefined,
+  errorCB: ExecErrorCallback | undefined,
   methodName: SmartStoreMethod,
   args: any,
-) => {
-  forceExec(
-    "SFSmartStoreReactBridge",
-    "SmartStoreReactBridge",
-    SFSmartStoreReactBridge,
-    SmartStoreReactBridge,
-    successCB,
-    errorCB,
-    methodName,
-    args,
-  );
+): Promise<T> | void => {
+  if (successCB && errorCB) {
+    return forceExec(
+      "SFSmartStoreReactBridge",
+      "SmartStoreReactBridge",
+      SFSmartStoreReactBridge,
+      SmartStoreReactBridge,
+      successCB,
+      errorCB,
+      methodName,
+      args,
+    );
+  } else {
+    return new Promise((resolve, reject) => {
+      forceExec(
+        "SFSmartStoreReactBridge",
+        "SmartStoreReactBridge",
+        SFSmartStoreReactBridge,
+        SmartStoreReactBridge,
+        resolve,
+        reject,
+        methodName,
+        args,
+      );
+    });
+  }
 };
 
 /**
@@ -66,9 +111,9 @@ export class StoreConfig {
  */
 export class SoupSpec {
   public name: string;
-  public features: { [key: string]: any };
+  public features: SObject;
 
-  constructor(soupName: string, features: { [key: string]: any }) {
+  constructor(soupName: string, features: SObject) {
     this.name = soupName;
     this.features = features;
   }
@@ -312,28 +357,29 @@ const checkFirstArg = (arg: StoreConfig | boolean) => {
 };
 
 // ====== Soup manipulation ======
-export const getDatabaseSize = (
+export const getDatabaseSize: GetDatabaseSize = (
   storeConfig: StoreConfig | boolean,
-  successCB: ExecSuccessCallback<number>,
-  errorCB: ExecErrorCallback,
-): void => {
+  successCB?: ExecSuccessCallback<number>,
+  errorCB?: ExecErrorCallback,
+): any => {
   storeConfig = checkFirstArg(storeConfig);
-  exec(successCB, errorCB, "getDatabaseSize", {
+
+  return exec(successCB, errorCB, "getDatabaseSize", {
     isGlobalStore: storeConfig.isGlobalStore,
     storeName: storeConfig.storeName,
   });
 };
 
-export const registerSoup = (
+export const registerSoup: RegisterSoup = (
   storeConfig: StoreConfig | boolean,
   soupName: string,
   indexSpecs: SoupIndexSpec[],
-  successCB: ExecSuccessCallback<string>,
-  errorCB: ExecErrorCallback,
-): void => {
+  successCB?: ExecSuccessCallback<string>,
+  errorCB?: ExecErrorCallback,
+): any => {
   storeConfig = checkFirstArg(storeConfig);
 
-  exec(successCB, errorCB, "registerSoup", {
+  return exec(successCB, errorCB, "registerSoup", {
     soupName,
     indexes: indexSpecs,
     isGlobalStore: storeConfig.isGlobalStore,
@@ -341,16 +387,16 @@ export const registerSoup = (
   });
 };
 
-export const registerSoupWithSpec = (
+export const registerSoupWithSpec: RegisterSoupWithSpec = (
   storeConfig: StoreConfig | boolean,
   soupSpec: QuerySpec,
   indexSpecs: SoupIndexSpec[],
-  successCB: ExecSuccessCallback<string>,
-  errorCB: ExecErrorCallback,
-): void => {
+  successCB?: ExecSuccessCallback<string>,
+  errorCB?: ExecErrorCallback,
+): any => {
   storeConfig = checkFirstArg(storeConfig);
 
-  exec(successCB, errorCB, "registerSoup", {
+  return exec(successCB, errorCB, "registerSoup", {
     soupSpec,
     indexes: indexSpecs,
     isGlobalStore: storeConfig.isGlobalStore,
@@ -358,62 +404,62 @@ export const registerSoupWithSpec = (
   });
 };
 
-export const removeSoup = (
+export const removeSoup: RemoveSoup = (
   storeConfig: StoreConfig | boolean,
   soupName: string,
-  successCB: ExecSuccessCallback<"OK">,
-  errorCB: ExecErrorCallback,
-): void => {
+  successCB?: ExecSuccessCallback<OK>,
+  errorCB?: ExecErrorCallback,
+): any => {
   storeConfig = checkFirstArg(storeConfig);
 
-  exec(successCB, errorCB, "removeSoup", {
+  return exec(successCB, errorCB, "removeSoup", {
     soupName,
     isGlobalStore: storeConfig.isGlobalStore,
     storeName: storeConfig.storeName,
   });
 };
 
-export const getSoupIndexSpecs = (
+export const getSoupIndexSpecs: GetSoupIndexSpecs = (
   storeConfig: StoreConfig | boolean,
   soupName: string,
-  successCB: ExecSuccessCallback<SoupIndexSpec[]>,
-  errorCB: ExecErrorCallback,
-): void => {
+  successCB?: ExecSuccessCallback<SoupIndexSpec[]>,
+  errorCB?: ExecErrorCallback,
+): any => {
   storeConfig = checkFirstArg(storeConfig);
 
-  exec(successCB, errorCB, "getSoupIndexSpecs", {
+  return exec(successCB, errorCB, "getSoupIndexSpecs", {
     soupName,
     isGlobalStore: storeConfig.isGlobalStore,
     storeName: storeConfig.storeName,
   });
 };
 
-export const getSoupSpec = (
+export const getSoupSpec: GetSoupSpec = (
   storeConfig: StoreConfig | boolean,
   soupName: string,
-  successCB: ExecSuccessCallback<SoupSpec>,
-  errorCB: ExecErrorCallback,
-): void => {
+  successCB?: ExecSuccessCallback<SoupSpec>,
+  errorCB?: ExecErrorCallback,
+): any => {
   storeConfig = checkFirstArg(storeConfig);
 
-  exec(successCB, errorCB, "getSoupSpec", {
+  return exec(successCB, errorCB, "getSoupSpec", {
     soupName,
     isGlobalStore: storeConfig.isGlobalStore,
     storeName: storeConfig.storeName,
   });
 };
 
-export const alterSoup = (
+export const alterSoup: AlterSoup = (
   storeConfig: StoreConfig | boolean,
   soupName: string,
   indexSpecs: SoupIndexSpec[],
   reIndexData: boolean,
-  successCB: ExecSuccessCallback<string>,
-  errorCB: ExecErrorCallback,
-): void => {
+  successCB?: ExecSuccessCallback<string>,
+  errorCB?: ExecErrorCallback,
+): any => {
   storeConfig = checkFirstArg(storeConfig);
 
-  exec(successCB, errorCB, "alterSoup", {
+  return exec(successCB, errorCB, "alterSoup", {
     soupName,
     indexes: indexSpecs,
     reIndexData,
@@ -422,18 +468,18 @@ export const alterSoup = (
   });
 };
 
-export const alterSoupWithSpec = (
+export const alterSoupWithSpec: AlterSoupWithSpec = (
   storeConfig: StoreConfig | boolean,
   soupName: string,
   soupSpec: SoupSpec,
   indexSpecs: SoupIndexSpec[],
   reIndexData: boolean,
-  successCB: ExecSuccessCallback<string>,
-  errorCB: ExecErrorCallback,
-): void => {
+  successCB?: ExecSuccessCallback<string>,
+  errorCB?: ExecErrorCallback,
+): any => {
   storeConfig = checkFirstArg(storeConfig);
 
-  exec(successCB, errorCB, "alterSoup", {
+  return exec(successCB, errorCB, "alterSoup", {
     soupName,
     soupSpec,
     indexes: indexSpecs,
@@ -443,16 +489,16 @@ export const alterSoupWithSpec = (
   });
 };
 
-export const reIndexSoup = (
+export const reIndexSoup: ReIndexSoup = (
   storeConfig: StoreConfig | boolean,
   soupName: string,
   paths: string,
-  successCB: ExecSuccessCallback<string>,
-  errorCB: ExecErrorCallback,
-): void => {
+  successCB?: ExecSuccessCallback<string>,
+  errorCB?: ExecErrorCallback,
+): any => {
   storeConfig = checkFirstArg(storeConfig);
 
-  exec(successCB, errorCB, "reIndexSoup", {
+  return exec(successCB, errorCB, "reIndexSoup", {
     soupName,
     paths,
     isGlobalStore: storeConfig.isGlobalStore,
@@ -460,56 +506,60 @@ export const reIndexSoup = (
   });
 };
 
-export const clearSoup = <T>(
+export const clearSoup: ClearSoup = <T>(
   storeConfig: StoreConfig | boolean,
   soupName: string,
-  successCB: ExecSuccessCallback<T>,
-  errorCB: ExecErrorCallback,
-): void => {
+  successCB?: ExecSuccessCallback<T>,
+  errorCB?: ExecErrorCallback,
+): any => {
   storeConfig = checkFirstArg(storeConfig);
 
-  exec(successCB, errorCB, "clearSoup", {
+  return exec(successCB, errorCB, "clearSoup", {
     soupName,
     isGlobalStore: storeConfig.isGlobalStore,
     storeName: storeConfig.storeName,
   });
 };
 
-export const soupExists = (
+export const soupExists: SoupExists = (
   storeConfig: StoreConfig | boolean,
   soupName: string,
-  successCB: ExecSuccessCallback<boolean>,
-  errorCB: ExecErrorCallback,
-): void => {
+  successCB?: ExecSuccessCallback<boolean>,
+  errorCB?: ExecErrorCallback,
+): any => {
   storeConfig = checkFirstArg(storeConfig);
 
-  exec(successCB, errorCB, "soupExists", {
+  return exec(successCB, errorCB, "soupExists", {
     soupName,
     isGlobalStore: storeConfig.isGlobalStore,
     storeName: storeConfig.storeName,
   });
 };
 
-export const querySoup = <T>(
+export const querySoup: QuerySoup = <T>(
   storeConfig: StoreConfig | boolean,
   soupName: string,
   querySpec: QuerySpec,
-  successCB: ExecSuccessCallback<StoreCursor<T>>,
-  errorCB: ExecErrorCallback,
-): void => {
+  successCB?: ExecSuccessCallback<StoreCursor<T>>,
+  errorCB?: ExecErrorCallback,
+): any => {
   storeConfig = checkFirstArg(storeConfig);
 
   if (querySpec.queryType === "smart") {
     throw new Error("Smart queries can only be run using runSmartQuery");
   }
+
   if (querySpec.order != null && querySpec.orderPath == null) {
     querySpec.orderPath = querySpec.indexPath;
-  } // for backward compatibility with pre-3.3 code
+  }
+
+  // for backward compatibility with pre-3.3 code
   // query returns serialized json on iOS starting in 7.0
   const successCBdeserializing = successCB
     ? (result: StoreCursor<T>) => successCB(typeof result === "string" ? safeJSONparse(result) : result)
     : successCB;
-  exec(successCBdeserializing, errorCB, "querySoup", {
+
+  return exec(successCBdeserializing, errorCB, "querySoup", {
     soupName,
     querySpec,
     isGlobalStore: storeConfig.isGlobalStore,
@@ -517,38 +567,40 @@ export const querySoup = <T>(
   });
 };
 
-export const runSmartQuery = <T>(
+export const runSmartQuery: RunSmartQuery = <T>(
   storeConfig: StoreConfig | boolean,
   querySpec: QuerySpec,
-  successCB: ExecSuccessCallback<StoreCursor<T>>,
-  errorCB: ExecErrorCallback,
-): void => {
+  successCB?: ExecSuccessCallback<StoreCursor<T>>,
+  errorCB?: ExecErrorCallback,
+): any => {
   storeConfig = checkFirstArg(storeConfig);
 
   if (querySpec.queryType !== "smart") {
     throw new Error("runSmartQuery can only run smart queries");
   }
+
   // query returns serialized json on iOS starting in 7.0
   const successCBdeserializing = successCB
     ? (result: StoreCursor<T>) => successCB(typeof result === "string" ? safeJSONparse(result) : result)
     : successCB;
-  exec(successCBdeserializing, errorCB, "runSmartQuery", {
+
+  return exec(successCBdeserializing, errorCB, "runSmartQuery", {
     querySpec,
     isGlobalStore: storeConfig.isGlobalStore,
     storeName: storeConfig.storeName,
   });
 };
 
-export const retrieveSoupEntries = <T>(
+export const retrieveSoupEntries: RetrieveSoupEntries = <T>(
   storeConfig: StoreConfig | boolean,
   soupName: string,
   entryIds: string[],
-  successCB: ExecSuccessCallback<StoreCursor<T>>,
-  errorCB: ExecErrorCallback,
-): void => {
+  successCB?: ExecSuccessCallback<StoreCursor<T>>,
+  errorCB?: ExecErrorCallback,
+): any => {
   storeConfig = checkFirstArg(storeConfig);
 
-  exec(successCB, errorCB, "retrieveSoupEntries", {
+  return exec(successCB, errorCB, "retrieveSoupEntries", {
     soupName,
     entryIds,
     isGlobalStore: storeConfig.isGlobalStore,
@@ -556,29 +608,33 @@ export const retrieveSoupEntries = <T>(
   });
 };
 
-export const upsertSoupEntries = <T>(
+export const upsertSoupEntries: UpsertSoupEntries = <T>(
   storeConfig: StoreConfig | boolean,
   soupName: string,
-  entries: { [key: string]: any }[],
-  successCB: ExecSuccessCallback<T>,
-  errorCB: ExecErrorCallback,
-): void => {
+  entries: SObject[],
+  successCB?: ExecSuccessCallback<T>,
+  errorCB?: ExecErrorCallback,
+): any => {
   storeConfig = checkFirstArg(storeConfig);
 
-  upsertSoupEntriesWithExternalId(storeConfig, soupName, entries, "_soupEntryId", successCB, errorCB);
+  if (successCB && errorCB) {
+    return upsertSoupEntriesWithExternalId(storeConfig, soupName, entries, "_soupEntryId", successCB, errorCB);
+  } else {
+    return upsertSoupEntriesWithExternalId(storeConfig, soupName, entries, "_soupEntryId");
+  }
 };
 
-export let upsertSoupEntriesWithExternalId = <T>(
+export const upsertSoupEntriesWithExternalId: UpsertSoupEntriesWithExternalId = <T>(
   storeConfig: StoreConfig | boolean,
   soupName: string,
-  entries: { [key: string]: any }[],
+  entries: SObject[],
   externalIdPath: string,
-  successCB: ExecSuccessCallback<T>,
-  errorCB: ExecErrorCallback,
-): void => {
+  successCB?: ExecSuccessCallback<T>,
+  errorCB?: ExecErrorCallback,
+): any => {
   storeConfig = checkFirstArg(storeConfig);
 
-  exec(successCB, errorCB, "upsertSoupEntries", {
+  return exec(successCB, errorCB, "upsertSoupEntries", {
     soupName,
     entries,
     externalIdPath,
@@ -587,13 +643,13 @@ export let upsertSoupEntriesWithExternalId = <T>(
   });
 };
 
-export const removeFromSoup = (
+export const removeFromSoup: RemoveFromSoup = (
   storeConfig: StoreConfig | boolean,
   soupName: string,
   entryIdsOrQuerySpec: string[],
-  successCB: ExecSuccessCallback<"OK">,
-  errorCB: ExecErrorCallback,
-): void => {
+  successCB?: ExecSuccessCallback<OK>,
+  errorCB?: ExecErrorCallback,
+): any => {
   storeConfig = checkFirstArg(storeConfig);
 
   const execArgs = {
@@ -601,19 +657,21 @@ export const removeFromSoup = (
     isGlobalStore: storeConfig.isGlobalStore,
     storeName: storeConfig.storeName,
   };
+
   execArgs[entryIdsOrQuerySpec instanceof Array ? "entryIds" : "querySpec"] = entryIdsOrQuerySpec;
   execArgs[entryIdsOrQuerySpec instanceof Array ? "querySpec" : "entryIds"] = null;
-  exec(successCB, errorCB, "removeFromSoup", execArgs);
+
+  return exec(successCB, errorCB, "removeFromSoup", execArgs);
 };
 
 // ====== Cursor manipulation ======
-export const moveCursorToPageIndex = <T>(
+export const moveCursorToPageIndex: MoveCursorToPageIndex = <T>(
   storeConfig: StoreConfig | boolean,
   cursor: StoreCursor<T>,
   newPageIndex: number,
-  successCB: ExecSuccessCallback<T>,
-  errorCB: ExecErrorCallback,
-): void => {
+  successCB?: ExecSuccessCallback<T>,
+  errorCB?: ExecErrorCallback,
+): any => {
   storeConfig = checkFirstArg(storeConfig);
 
   // query returns serialized json on iOS starting in 7.0
@@ -625,7 +683,7 @@ export const moveCursorToPageIndex = <T>(
     successCBdeserializing = successCB;
   }
 
-  exec(successCBdeserializing, errorCB, "moveCursorToPageIndex", {
+  return exec(successCBdeserializing, errorCB, "moveCursorToPageIndex", {
     cursorId: cursor.cursorId,
     index: newPageIndex,
     isGlobalStore: storeConfig.isGlobalStore,
@@ -633,53 +691,69 @@ export const moveCursorToPageIndex = <T>(
   });
 };
 
-export const moveCursorToNextPage = <T>(
+export const moveCursorToNextPage: MoveCursorToNextPage = <T>(
   storeConfig: StoreConfig | boolean,
   cursor: StoreCursor<T>,
-  successCB: ExecSuccessCallback<T>,
-  errorCB: ExecErrorCallback,
-): void => {
+  successCB?: ExecSuccessCallback<T>,
+  errorCB?: ExecErrorCallback,
+): any => {
   storeConfig = checkFirstArg(storeConfig);
 
   const newPageIndex = cursor.currentPageIndex + 1;
+
   if (newPageIndex >= cursor.totalPages) {
-    errorCB(
-      // cursor,
-      new Error("moveCursorToNextPage called while on last page"),
-    );
+    const err = new Error("moveCursorToNextPage called while on last page");
+
+    if (errorCB) {
+      errorCB(err);
+    } else {
+      throw err;
+    }
   } else {
-    moveCursorToPageIndex(storeConfig, cursor, newPageIndex, successCB, errorCB);
+    if (successCB && errorCB) {
+      moveCursorToPageIndex(storeConfig, cursor, newPageIndex, successCB, errorCB);
+    } else {
+      return moveCursorToPageIndex(storeConfig, cursor, newPageIndex);
+    }
   }
 };
 
-export const moveCursorToPreviousPage = <T>(
+export const moveCursorToPreviousPage: MoveCursorToPreviousPage = <T>(
   storeConfig: StoreConfig | boolean,
   cursor: StoreCursor<T>,
-  successCB: ExecSuccessCallback<T>,
-  errorCB: ExecErrorCallback,
-): void => {
+  successCB?: ExecSuccessCallback<T>,
+  errorCB?: ExecErrorCallback,
+): any => {
   storeConfig = checkFirstArg(storeConfig);
 
   const newPageIndex = cursor.currentPageIndex - 1;
+
   if (newPageIndex < 0) {
-    errorCB(
-      // cursor,
-      new Error("moveCursorToPreviousPage called while on first page"),
-    );
+    const err = new Error("moveCursorToPreviousPage called while on last page");
+
+    if (errorCB) {
+      errorCB(err);
+    } else {
+      throw err;
+    }
   } else {
-    moveCursorToPageIndex(storeConfig, cursor, newPageIndex, successCB, errorCB);
+    if (successCB && errorCB) {
+      return moveCursorToPageIndex(storeConfig, cursor, newPageIndex, successCB, errorCB);
+    } else {
+      return moveCursorToPageIndex(storeConfig, cursor, newPageIndex);
+    }
   }
 };
 
-export const closeCursor = <T>(
+export const closeCursor: CloseCursor = <T>(
   storeConfig: StoreConfig | boolean,
   cursor: StoreCursor<T>,
-  successCB: ExecSuccessCallback<"OK">,
-  errorCB: ExecErrorCallback,
-): void => {
+  successCB?: ExecSuccessCallback<OK>,
+  errorCB?: ExecErrorCallback,
+): any => {
   storeConfig = checkFirstArg(storeConfig);
 
-  exec(successCB, errorCB, "closeCursor", {
+  return exec(successCB, errorCB, "closeCursor", {
     cursorId: cursor.cursorId,
     isGlobalStore: storeConfig.isGlobalStore,
     storeName: storeConfig.storeName,
@@ -687,31 +761,35 @@ export const closeCursor = <T>(
 };
 
 // ====== Store Operations ======
-export const getAllStores = (successCB: ExecSuccessCallback<StoreConfig[]>, errorCB: ExecErrorCallback): void => {
-  exec(successCB, errorCB, "getAllStores", {});
-};
+export const getAllStores: GetAllStores = (
+  successCB?: ExecSuccessCallback<StoreConfig[]>,
+  errorCB?: ExecErrorCallback,
+): any => exec(successCB, errorCB, "getAllStores", {});
 
-export const getAllGlobalStores = (successCB: ExecSuccessCallback<StoreConfig[]>, errorCB: ExecErrorCallback): void => {
-  exec(successCB, errorCB, "getAllGlobalStores", {});
-};
+export const getAllGlobalStores: GetAllGlobalStores = (
+  successCB?: ExecSuccessCallback<StoreConfig[]>,
+  errorCB?: ExecErrorCallback,
+): any => exec(successCB, errorCB, "getAllGlobalStores", {});
 
-export const removeStore = (
+export const removeStore: RemoveStore = (
   storeConfig: StoreConfig | boolean,
-  successCB: ExecSuccessCallback<"OK">,
-  errorCB: ExecErrorCallback,
-): void => {
+  successCB?: ExecSuccessCallback<OK>,
+  errorCB?: ExecErrorCallback,
+): any => {
   storeConfig = checkFirstArg(storeConfig);
 
-  exec(successCB, errorCB, "removeStore", {
+  return exec(successCB, errorCB, "removeStore", {
     isGlobalStore: storeConfig.isGlobalStore,
     storeName: storeConfig.storeName,
   });
 };
 
-export const removeAllGlobalStores = (successCB: ExecSuccessCallback<"OK">, errorCB: ExecErrorCallback): void => {
-  exec(successCB, errorCB, "removeAllGlobalStores", {});
-};
+export const removeAllGlobalStores: RemoveAllGlobalStores = (
+  successCB?: ExecSuccessCallback<OK>,
+  errorCB?: ExecErrorCallback,
+): any => exec(successCB, errorCB, "removeAllGlobalStores", {});
 
-export const removeAllStores = (successCB: ExecSuccessCallback<"OK">, errorCB: ExecErrorCallback): void => {
-  exec(successCB, errorCB, "removeAllStores", {});
-};
+export const removeAllStores: RemoveAllStores = (
+  successCB?: ExecSuccessCallback<OK>,
+  errorCB?: ExecErrorCallback,
+): any => exec(successCB, errorCB, "removeAllStores", {});
