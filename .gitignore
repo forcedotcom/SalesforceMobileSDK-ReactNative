@@ -1,7 +1,6 @@
 .circleci/fastlane/README.md
 .circleci/fastlane/report.*
 .circleci/test_output/
-dist
 node_modules/
 package-lock.json
 yarn.lock
