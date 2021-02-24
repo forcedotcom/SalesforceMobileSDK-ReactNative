@@ -46,7 +46,6 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc --build",
-    "postinstall": "yarn build",
     "prepublish": "npm run build"
   },
   "peerDependencies": {
@@ -56,6 +55,7 @@
     "react-native-timer": "^1.3.6"
   },
   "files": [
+    "dist/*",
     "tsconfig.json",
     "src/**/*",
     "ios/SalesforceReact/**/*",
