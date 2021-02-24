@@ -52,8 +52,11 @@ echo -e "${YELLOW}*** SETTING VERSION TO ${OPT_VERSION} ***${NC}"
 
 echo "*** Updating package.json ***"
 update_package_json "./package.json" "${OPT_VERSION}"
-update_package_json "./ios/SalesforceReactTests/package.json" "${OPT_VERSION}"
+update_package_json "./iosTests/package.json" "${OPT_VERSION}"
 
 echo "*** Updating podspecs ***"
 update_podspec "./SalesforceReact.podspec" "${OPT_VERSION}"
+
+echo "*** Updating dist ***"
+npm run build
 
