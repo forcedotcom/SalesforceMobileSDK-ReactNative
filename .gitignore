@@ -1,8 +1,9 @@
 .circleci/fastlane/README.md
 .circleci/fastlane/report.*
 .circleci/test_output/
+.DS_Store
 dist
 node_modules/
 package-lock.json
-yarn.lock
 Podfile.lock
+yarn.lock

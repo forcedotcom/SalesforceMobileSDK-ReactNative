@@ -26,7 +26,19 @@
 import { NativeModules } from "react-native";
 import { exec as forceExec, ExecErrorCallback, ExecSuccessCallback } from "./react.force.common";
 import { StoreConfig } from "./react.force.smartstore";
-import { SyncDownTarget, SyncEvent, SyncMethod, SyncOptions, SyncStatus } from "./typings/mobilesync";
+import {
+  CleanResyncGhosts,
+  DeleteSync,
+  GetSyncStatus,
+  ReSync,
+  SyncDown,
+  SyncDownTarget,
+  SyncEvent,
+  SyncMethod,
+  SyncOptions,
+  SyncStatus,
+  SyncUp,
+} from "./typings/mobilesync";
 
 const { MobileSyncReactBridge, SFMobileSyncReactBridge } = NativeModules;
 
@@ -48,70 +60,51 @@ const checkFirstArg = (arg: StoreConfig) => {
 };
 
 const exec = <T>(
-  successCB: ExecSuccessCallback<T>,
-  errorCB: ExecErrorCallback,
+  successCB: ExecSuccessCallback<T> | undefined,
+  errorCB: ExecErrorCallback | undefined,
   methodName: SyncMethod,
   args: Record<string, unknown>,
-) => {
-  forceExec(
-    "SFMobileSyncReactBridge",
-    "MobileSyncReactBridge",
-    SFMobileSyncReactBridge,
-    MobileSyncReactBridge,
-    successCB,
-    errorCB,
-    methodName,
-    args,
-  );
+): Promise<T> | void => {
+  if (successCB && errorCB) {
+    forceExec(
+      "SFMobileSyncReactBridge",
+      "MobileSyncReactBridge",
+      SFMobileSyncReactBridge,
+      MobileSyncReactBridge,
+      successCB,
+      errorCB,
+      methodName,
+      args,
+    );
+  } else {
+    return new Promise((resolve, reject) => {
+      forceExec(
+        "SFMobileSyncReactBridge",
+        "MobileSyncReactBridge",
+        SFMobileSyncReactBridge,
+        MobileSyncReactBridge,
+        resolve,
+        reject,
+        methodName,
+        args,
+      );
+    });
+  }
 };
 
-type SyncDownOverload = {
-  (
-    storeConfig: StoreConfig,
-    target: SyncDownTarget,
-    soupName: string,
-    options: SyncOptions,
-    syncName: string,
-    successCB: ExecSuccessCallback<SyncEvent>,
-    errorCB: ExecErrorCallback,
-  ): void;
-  (
-    storeConfig: StoreConfig,
-    target: SyncDownTarget,
-    soupName: string,
-    options: SyncOptions,
-    successCB: ExecSuccessCallback<SyncEvent>,
-    errorCB: ExecErrorCallback,
-  ): void;
-};
-
-export const syncDown: SyncDownOverload = (
+export const syncDown: SyncDown = (
   storeConfig: StoreConfig,
   target: SyncDownTarget,
   soupName: string,
   options: SyncOptions,
-  x: string | ExecSuccessCallback<SyncEvent>,
-  y: ExecSuccessCallback<SyncEvent> | ExecErrorCallback,
-  z?: ExecErrorCallback,
-): void => {
+  x?: any,
+  y?: any,
+  z?: any,
+): any => {
   storeConfig = checkFirstArg(storeConfig);
+  const { syncName, successCB, errorCB } = processOpts(x, y, z);
 
-  let syncName: string | undefined;
-  let successCB: ExecSuccessCallback<SyncEvent>;
-  let errorCB: ExecErrorCallback;
-
-  // syncName optional (new in 6.0)
-  if (typeof x === "function") {
-    syncName = undefined;
-    successCB = x;
-    errorCB = y as ExecErrorCallback;
-  } else {
-    syncName = x;
-    successCB = y as ExecSuccessCallback<SyncEvent>;
-    errorCB = z as ExecErrorCallback;
-  }
-
-  exec<SyncEvent>(successCB, errorCB, "syncDown", {
+  return exec<SyncEvent>(successCB, errorCB, "syncDown", {
     target: target,
     soupName: soupName,
     options: options,
@@ -121,14 +114,15 @@ export const syncDown: SyncDownOverload = (
   });
 };
 
-export const reSync = (
+export const reSync: ReSync = (
   storeConfig: StoreConfig,
   syncIdOrName: string,
-  successCB: ExecSuccessCallback<SyncEvent>,
-  errorCB: ExecErrorCallback,
-): void => {
+  successCB?: ExecSuccessCallback<SyncEvent>,
+  errorCB?: ExecErrorCallback,
+): any => {
   storeConfig = checkFirstArg(storeConfig);
-  exec(successCB, errorCB, "reSync", {
+
+  return exec(successCB, errorCB, "reSync", {
     syncId: typeof syncIdOrName === "string" ? null : syncIdOrName,
     syncName: typeof syncIdOrName === "string" ? syncIdOrName : null,
     isGlobalStore: storeConfig.isGlobalStore,
@@ -136,67 +130,34 @@ export const reSync = (
   });
 };
 
-export const cleanResyncGhosts = (
+export const cleanResyncGhosts: CleanResyncGhosts = (
   storeConfig: StoreConfig,
   syncId: string,
-  successCB: ExecSuccessCallback<unknown>,
-  errorCB: ExecErrorCallback,
-): void => {
+  successCB?: ExecSuccessCallback<unknown>,
+  errorCB?: ExecErrorCallback,
+): any => {
   storeConfig = checkFirstArg(storeConfig);
-  exec(successCB, errorCB, "cleanResyncGhosts", {
+
+  return exec(successCB, errorCB, "cleanResyncGhosts", {
     syncId: syncId,
     isGlobalStore: storeConfig.isGlobalStore,
     storeName: storeConfig.storeName,
   });
 };
 
-type SyncUpOverload = {
-  (
-    storeConfig: StoreConfig,
-    target: SyncDownTarget,
-    soupName: string,
-    options: SyncOptions,
-    syncName: string,
-    successCB: ExecSuccessCallback<SyncEvent>,
-    errorCB: ExecErrorCallback,
-  ): void;
-  (
-    storeConfig: StoreConfig,
-    target: SyncDownTarget,
-    soupName: string,
-    options: SyncOptions,
-    successCB: ExecSuccessCallback<SyncEvent>,
-    errorCB: ExecErrorCallback,
-  ): void;
-};
-
-export const syncUp: SyncUpOverload = (
+export const syncUp: SyncUp = (
   storeConfig: StoreConfig,
   target: SyncDownTarget,
   soupName: string,
   options: SyncOptions,
-  x: string | ExecSuccessCallback<SyncEvent>,
-  y: ExecSuccessCallback<SyncEvent> | ExecErrorCallback,
-  z?: ExecErrorCallback,
-): void => {
+  x?: any,
+  y?: any,
+  z?: any,
+): any => {
   storeConfig = checkFirstArg(storeConfig);
+  const { syncName, successCB, errorCB } = processOpts(x, y, z);
 
-  let syncName: string | undefined;
-  let successCB: ExecSuccessCallback<SyncEvent>;
-  let errorCB: ExecErrorCallback;
-
-  // syncName optional (new in 6.0)
-  if (typeof x === "function") {
-    syncName = undefined;
-    successCB = x;
-    errorCB = y as ExecErrorCallback;
-  } else {
-    syncName = x;
-    successCB = y as ExecSuccessCallback<SyncEvent>;
-    errorCB = z as ExecErrorCallback;
-  }
-
-  exec(successCB, errorCB, "syncUp", {
+  return exec(successCB, errorCB, "syncUp", {
     target: target,
     soupName: soupName,
     options: options,
@@ -206,14 +167,15 @@ export const syncUp: SyncUpOverload = (
   });
 };
 
-export const getSyncStatus = (
+export const getSyncStatus: GetSyncStatus = (
   storeConfig: StoreConfig,
   syncIdOrName: string,
-  successCB: ExecSuccessCallback<SyncStatus>,
-  errorCB: ExecErrorCallback,
-): void => {
+  successCB?: ExecSuccessCallback<SyncStatus>,
+  errorCB?: ExecErrorCallback,
+): any => {
   storeConfig = checkFirstArg(storeConfig);
-  exec(successCB, errorCB, "getSyncStatus", {
+
+  return exec(successCB, errorCB, "getSyncStatus", {
     syncId: typeof syncIdOrName === "string" ? null : syncIdOrName,
     syncName: typeof syncIdOrName === "string" ? syncIdOrName : null,
     isGlobalStore: storeConfig.isGlobalStore,
@@ -221,14 +183,15 @@ export const getSyncStatus = (
   });
 };
 
-export const deleteSync = (
+export const deleteSync: DeleteSync = (
   storeConfig: StoreConfig,
   syncIdOrName: string,
-  successCB: ExecSuccessCallback<unknown>,
-  errorCB: ExecErrorCallback,
-): void => {
+  successCB?: ExecSuccessCallback<unknown>,
+  errorCB?: ExecErrorCallback,
+): any => {
   storeConfig = checkFirstArg(storeConfig);
-  exec(successCB, errorCB, "deleteSync", {
+
+  return exec(successCB, errorCB, "deleteSync", {
     syncId: typeof syncIdOrName === "string" ? null : syncIdOrName,
     syncName: typeof syncIdOrName === "string" ? syncIdOrName : null,
     isGlobalStore: storeConfig.isGlobalStore,
@@ -239,4 +202,25 @@ export const deleteSync = (
 export const MERGE_MODE = {
   OVERWRITE: "OVERWRITE",
   LEAVE_IF_CHANGED: "LEAVE_IF_CHANGED",
+};
+
+const processOpts = (x: any, y: any, z: any) => {
+  let syncName: string | undefined;
+  let successCB: ExecSuccessCallback<SyncEvent> | undefined;
+  let errorCB: ExecErrorCallback | undefined;
+
+  // syncName optional (new in 6.0)
+  if (typeof x === "string") {
+    syncName = x;
+  }
+
+  if (typeof x === "function") {
+    successCB = x as ExecSuccessCallback<SyncEvent>;
+    errorCB = y as ExecErrorCallback;
+  } else if (typeof z === "function") {
+    successCB = y as ExecSuccessCallback<SyncEvent>;
+    errorCB = z as ExecErrorCallback;
+  }
+
+  return { syncName, successCB, errorCB };
 };

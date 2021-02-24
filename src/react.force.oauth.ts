@@ -25,73 +25,73 @@
  */
 
 import { NativeModules } from "react-native";
-import { exec as forceExec, ExecSuccessCallback, ExecErrorCallback } from "./react.force.common";
-import { OAuthMethod, UserAccount } from "./typings/oauth";
+import { exec as forceExec, ExecErrorCallback, ExecSuccessCallback } from "./react.force.common";
+import { Authenticate, GetAuthCredentials, Logout, OAuthMethod, UserAccount } from "./typings/oauth";
 const { SalesforceOauthReactBridge, SFOauthReactBridge } = NativeModules;
 
 const exec = <T>(
-  successCB: ExecSuccessCallback<T>,
-  errorCB: ExecErrorCallback,
+  successCB: ExecSuccessCallback<T> | undefined,
+  errorCB: ExecErrorCallback | undefined,
   methodName: OAuthMethod,
   args: Record<string, unknown>,
-): void => {
-  forceExec(
-    "SFOauthReactBridge",
-    "SalesforceOauthReactBridge",
-    SFOauthReactBridge,
-    SalesforceOauthReactBridge,
-    successCB,
-    errorCB,
-    methodName,
-    args,
-  );
+): Promise<T> | void => {
+  if (successCB && errorCB) {
+    forceExec(
+      "SFOauthReactBridge",
+      "SalesforceOauthReactBridge",
+      SFOauthReactBridge,
+      SalesforceOauthReactBridge,
+      successCB,
+      errorCB,
+      methodName,
+      args,
+    );
+  } else {
+    return new Promise((resolve, reject) => {
+      forceExec(
+        "SFOauthReactBridge",
+        "SalesforceOauthReactBridge",
+        SFOauthReactBridge,
+        SalesforceOauthReactBridge,
+        resolve,
+        reject,
+        methodName,
+        args,
+      );
+    });
+  }
 };
 
 /**
  * Initiates the authentication process, with the given app configuration.
- *   success         - The success callback function to use.
- *   fail            - The failure/error callback function to use.
- * Returns a dictionary with:
- *   accessToken
- *   refreshToken
- *   clientId
- *   userId
- *   orgId
- *   loginUrl
- *   instanceUrl
- *   userAgent
- *   community id
- *   community url
+ * @param successCB
+ * @param errorCB
  */
-export const authenticate = (successCB: ExecSuccessCallback<UserAccount>, errorCB: ExecErrorCallback): void => {
-  exec(successCB, errorCB, "authenticate", {});
+export const authenticate: Authenticate = (
+  successCB?: ExecSuccessCallback<UserAccount>,
+  errorCB?: ExecErrorCallback,
+): any => {
+  return exec(successCB, errorCB, "authenticate", {});
 };
 
 /**
  * Obtain authentication credentials.
- *   success - The success callback function to use.
- *   fail    - The failure/error callback function to use.
- * Returns a dictionary with:
- *   accessToken
- *   refreshToken
- *   clientId
- *   userId
- *   orgId
- *   loginUrl
- *   instanceUrl
- *   userAgent
- *   community id
- *   community url
+ * @param successCB
+ * @param errorCB
  */
-export const getAuthCredentials = (successCB: ExecSuccessCallback<UserAccount>, errorCB: ExecErrorCallback): void => {
-  exec(successCB, errorCB, "getAuthCredentials", {});
+export const getAuthCredentials: GetAuthCredentials = (
+  successCB?: ExecSuccessCallback<UserAccount>,
+  errorCB?: ExecErrorCallback,
+): any => {
+  return exec(successCB, errorCB, "getAuthCredentials", {});
 };
 
 /**
- * Logout the current authenticated user. This removes any current valid session token
- * as well as any OAuth refresh token.  
+ * Logout the current authenticated user. This removes any current valid session
+ * token as well as any OAuth refresh token.
+ * @param successCB
+ * @param errorCB
  */
-export const logout = <T>(success: ExecSuccessCallback<T>, fail: ExecErrorCallback) => {
-    // @ts-ignore
-    exec(success, fail, "logoutCurrentUser", {});
+export const logout: Logout = <T>(successCB?: ExecSuccessCallback<T>, errorCB?: ExecErrorCallback): any => {
+  return exec(successCB, errorCB, "logoutCurrentUser", {});
 };

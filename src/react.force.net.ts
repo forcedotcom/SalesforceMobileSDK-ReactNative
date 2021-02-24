@@ -28,9 +28,27 @@ import { NativeModules } from "react-native";
 import { exec as forceExec, ExecErrorCallback, ExecSuccessCallback } from "./react.force.common";
 import { sdkConsole } from "./react.force.log";
 import { HttpMethod } from "./typings";
+import {
+  Create,
+  Del,
+  Describe,
+  DescribeGlobal,
+  DescribeLayout,
+  GetAttachment,
+  Metadata,
+  Query,
+  QueryMore,
+  Resources,
+  Retrieve,
+  Search,
+  SendRequest,
+  Update,
+  Upsert,
+  Versions,
+} from "./typings/net";
 const { SalesforceNetReactBridge, SFNetReactBridge } = NativeModules;
 
-var  apiVersion = 'v49.0';
+var apiVersion = "v49.0";
 
 /**
  * Set apiVersion to be used
@@ -47,44 +65,54 @@ export const getApiVersion = (): string => apiVersion;
 /**
  * Send arbitray force.com request
  */
-export const sendRequest = <T>(
+export const sendRequest: SendRequest = (
   endPoint: string,
   path: string,
-  successCB: ExecSuccessCallback<T>,
-  errorCB: ExecErrorCallback,
+  successCB: any,
+  errorCB: any,
   method?: HttpMethod,
   payload?: Record<string, unknown> | null,
   headerParams?: Record<string, unknown> | null,
   fileParams?: unknown,
   returnBinary?: boolean,
   doesNotRequireAuthentication?: boolean,
-): void => {
-  method = method || "GET";
-  payload = payload || {};
-  headerParams = headerParams || {};
-  fileParams = fileParams || {}; // File params expected to be of the form: {<fileParamNameInPost>: {fileMimeType:<someMimeType>, fileUrl:<fileUrl>, fileName:<fileNameForPost>}}
-  returnBinary = !!returnBinary;
-  doesNotRequireAuthentication = !!doesNotRequireAuthentication;
+): any => {
   const args = {
     endPoint,
     path,
-    method,
-    queryParams: payload,
-    headerParams,
-    fileParams,
-    returnBinary,
-    doesNotRequireAuthentication,
+    method: method || "GET",
+    queryParams: payload || {},
+    headerParams: headerParams || {},
+    fileParams: fileParams || {}, // File params expected to be of the form: {<fileParamNameInPost>: {fileMimeType:<someMimeType>, fileUrl:<fileUrl>, fileName:<fileNameForPost>}}
+    returnBinary: !!returnBinary,
+    doesNotRequireAuthentication: !!doesNotRequireAuthentication,
   };
-  forceExec(
-    "SFNetReactBridge",
-    "SalesforceNetReactBridge",
-    SFNetReactBridge,
-    SalesforceNetReactBridge,
-    successCB,
-    errorCB,
-    "sendRequest",
-    args,
-  );
+
+  if (typeof successCB === "function" && typeof errorCB === "function") {
+    return forceExec(
+      "SFNetReactBridge",
+      "SalesforceNetReactBridge",
+      SFNetReactBridge,
+      SalesforceNetReactBridge,
+      successCB,
+      errorCB,
+      "sendRequest",
+      args,
+    );
+  } else {
+    return new Promise((resolve, reject) => {
+      forceExec(
+        "SFNetReactBridge",
+        "SalesforceNetReactBridge",
+        SFNetReactBridge,
+        SalesforceNetReactBridge,
+        resolve,
+        reject,
+        "sendRequest",
+        args,
+      );
+    });
+  }
 };
 
 /**
@@ -94,7 +122,7 @@ export const sendRequest = <T>(
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const versions = <T>(successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback): void =>
+export const versions: Versions = <T>(successCB?: ExecSuccessCallback<T>, errorCB?: ExecErrorCallback): any =>
   sendRequest("/services/data", "/", successCB, errorCB);
 
 /**
@@ -103,7 +131,7 @@ export const versions = <T>(successCB: ExecSuccessCallback<T>, errorCB: ExecErro
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const resources = <T>(successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback): void =>
+export const resources: Resources = <T>(successCB?: ExecSuccessCallback<T>, errorCB?: ExecErrorCallback): any =>
   sendRequest("/services/data", `/${apiVersion}/`, successCB, errorCB);
 
 /**
@@ -112,8 +140,10 @@ export const resources = <T>(successCB: ExecSuccessCallback<T>, errorCB: ExecErr
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const describeGlobal = <T>(successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback): void =>
-  sendRequest("/services/data", `/${apiVersion}/sobjects/`, successCB, errorCB);
+export const describeGlobal: DescribeGlobal = <T>(
+  successCB?: ExecSuccessCallback<T>,
+  errorCB?: ExecErrorCallback,
+): any => sendRequest("/services/data", `/${apiVersion}/sobjects/`, successCB, errorCB);
 
 /**
  * Describes the individual metadata for the specified object.
@@ -121,8 +151,11 @@ export const describeGlobal = <T>(successCB: ExecSuccessCallback<T>, errorCB: Ex
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const metadata = <T>(objtype: string, successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback): void =>
-  sendRequest("/services/data", `/${apiVersion}/sobjects/${objtype}/`, successCB, errorCB);
+export const metadata: Metadata = <T>(
+  objtype: string,
+  successCB?: ExecSuccessCallback<T>,
+  errorCB?: ExecErrorCallback,
+): any => sendRequest("/services/data", `/${apiVersion}/sobjects/${objtype}/`, successCB, errorCB);
 
 /**
  * Completely describes the individual metadata at all levels for the
@@ -131,8 +164,11 @@ export const metadata = <T>(objtype: string, successCB: ExecSuccessCallback<T>, 
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const describe = <T>(objtype: string, successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback): void =>
-  sendRequest("/services/data", `/${apiVersion}/sobjects/${objtype}/describe/`, successCB, errorCB);
+export const describe: Describe = <T>(
+  objtype: string,
+  successCB?: ExecSuccessCallback<T>,
+  errorCB?: ExecErrorCallback,
+): any => sendRequest("/services/data", `/${apiVersion}/sobjects/${objtype}/describe/`, successCB, errorCB);
 
 /**
  * Fetches the layout configuration for a particular sobject type and record type id.
@@ -141,14 +177,15 @@ export const describe = <T>(objtype: string, successCB: ExecSuccessCallback<T>, 
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const describeLayout = <T>(
+export const describeLayout: DescribeLayout = <T>(
   objtype: string,
   recordTypeId: string,
   // todo: add describe typings
-  successCB: ExecSuccessCallback<T>,
-  errorCB: ExecErrorCallback,
-): void => {
+  successCB?: ExecSuccessCallback<T>,
+  errorCB?: ExecErrorCallback,
+): any => {
   recordTypeId = recordTypeId ? recordTypeId : "";
+
   return sendRequest(
     "/services/data",
     `/${apiVersion}/sobjects/${objtype}/describe/layouts/${recordTypeId}`,
@@ -166,23 +203,12 @@ export const describeLayout = <T>(
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const create = <T>(
+export const create: Create = <T>(
   objtype: string,
   fields: Record<string, unknown>,
-  successCB: ExecSuccessCallback<T>,
-  errorCB: ExecErrorCallback,
-): void => sendRequest("/services/data", `/${apiVersion}/sobjects/${objtype}/`, successCB, errorCB, "POST", fields);
-
-type RetrieveOverload = {
-  <T>(
-    objtype: string,
-    id: string,
-    fieldlist: string[],
-    successCB: ExecSuccessCallback<T>,
-    errorCB: ExecErrorCallback,
-  ): void;
-  <T>(objtype: string, id: string, successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback): void;
-};
+  successCB?: ExecSuccessCallback<T>,
+  errorCB?: ExecErrorCallback,
+): any => sendRequest("/services/data", `/${apiVersion}/sobjects/${objtype}/`, successCB, errorCB, "POST", fields);
 
 /**
  * Retrieves field values for a record of the given type.
@@ -193,13 +219,7 @@ type RetrieveOverload = {
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const retrieve: RetrieveOverload = <T>(
-  objtype: string,
-  id: string,
-  x: string[] | ExecSuccessCallback<T>,
-  y: ExecSuccessCallback<T> | ExecErrorCallback,
-  z?: ExecErrorCallback,
-): void => {
+export const retrieve: Retrieve = <T>(objtype: string, id: string, x?: any, y?: any, z?: any): any => {
   let fieldlist;
   let successCB: ExecSuccessCallback<T>;
   let errorCB: ExecErrorCallback;
@@ -230,14 +250,14 @@ export const retrieve: RetrieveOverload = <T>(
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const upsert = <T>(
+export const upsert: Upsert = <T>(
   objtype: string,
   externalIdField: string,
   externalId: string,
   fields: Record<string, unknown>,
-  successCB: ExecSuccessCallback<T>,
-  errorCB: ExecErrorCallback,
-): void =>
+  successCB?: ExecSuccessCallback<T>,
+  errorCB?: ExecErrorCallback,
+): any =>
   sendRequest(
     "/services/data",
     `/${apiVersion}/sobjects/${objtype}/${externalIdField}/${externalId ? externalId : ""}`,
@@ -257,13 +277,13 @@ export const upsert = <T>(
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const update = <T>(
+export const update: Update = <T>(
   objtype: string,
   id: string,
   fields: Record<string, unknown>,
-  successCB: ExecSuccessCallback<T>,
-  errorCB: ExecErrorCallback,
-): void =>
+  successCB?: ExecSuccessCallback<T>,
+  errorCB?: ExecErrorCallback,
+): any =>
   sendRequest("/services/data", `/${apiVersion}/sobjects/${objtype}/${id}`, successCB, errorCB, "PATCH", fields);
 
 /**
@@ -274,12 +294,12 @@ export const update = <T>(
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const del = <T>(
+export const del: Del = <T>(
   objtype: string,
   id: string,
-  successCB: ExecSuccessCallback<T>,
-  errorCB: ExecErrorCallback,
-): void => sendRequest("/services/data", `/${apiVersion}/sobjects/${objtype}/${id}`, successCB, errorCB, "DELETE");
+  successCB?: ExecSuccessCallback<T>,
+  errorCB?: ExecErrorCallback,
+): any => sendRequest("/services/data", `/${apiVersion}/sobjects/${objtype}/${id}`, successCB, errorCB, "DELETE");
 
 /**
  * Executes the specified SOQL query.
@@ -288,7 +308,7 @@ export const del = <T>(
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const query = <T>(soql: string, successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback): void =>
+export const query: Query = <T>(soql: string, successCB?: ExecSuccessCallback<T>, errorCB?: ExecErrorCallback): any =>
   sendRequest("/services/data", `/${apiVersion}/query`, successCB, errorCB, "GET", { q: soql });
 
 /**
@@ -300,7 +320,11 @@ export const query = <T>(soql: string, successCB: ExecSuccessCallback<T>, errorC
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const queryMore = <T>(url: string, successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback): void => {
+export const queryMore: QueryMore = <T>(
+  url: string,
+  successCB?: ExecSuccessCallback<T>,
+  errorCB?: ExecErrorCallback,
+): any => {
   const pathFromUrl = url.match(/https:\/\/[^/]*(.*)/);
   if (pathFromUrl && pathFromUrl.length === 2) {
     return sendRequest("", pathFromUrl[1], successCB, errorCB);
@@ -316,7 +340,7 @@ export const queryMore = <T>(url: string, successCB: ExecSuccessCallback<T>, err
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
-export const search = <T>(sosl: string, successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback): void =>
+export const search: Search = <T>(sosl: string, successCB?: ExecSuccessCallback<T>, errorCB?: ExecErrorCallback): any =>
   sendRequest("/services/data", `/${apiVersion}/search`, successCB, errorCB, "GET", { q: sosl });
 
 /**
@@ -325,12 +349,12 @@ export const search = <T>(sosl: string, successCB: ExecSuccessCallback<T>, error
  * @param callback function to which response will be passed (attachment is returned as {encodedBody:"base64-encoded-response", contentType:"content-type"})
  * @param [error=null] function called in case of error
  */
-export const getAttachment = <T>(
+export const getAttachment: GetAttachment = <T>(
   id: string,
   // todo: add attachment typings
-  successCB: ExecSuccessCallback<T>,
-  errorCB: ExecErrorCallback,
-): void =>
+  successCB?: ExecSuccessCallback<T>,
+  errorCB?: ExecErrorCallback,
+): any =>
   sendRequest(
     "/services/data",
     `/${apiVersion}/sobjects/Attachment/${id}/Body`,
