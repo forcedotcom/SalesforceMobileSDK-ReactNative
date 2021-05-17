@@ -29,6 +29,7 @@
     "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,
     "target": "es6",
+    "types": ["react-native"],
     "typeRoots": ["node_modules/@types"]
   },
   "include": ["./src/**/*"],
