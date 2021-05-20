@@ -1,6 +1,6 @@
 {
   "name": "react-native-force",
-  "version": "9.0.0",
+  "version": "9.1.0",
   "description": "Salesforce Mobile SDK JavaScript libraries for React Native",
   "keywords": [
     "mobilesdk",
@@ -46,16 +46,16 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc --build",
-    "postinstall": "yarn build",
     "prepublish": "npm run build"
   },
   "peerDependencies": {
-   "react-native": "0.63.4"
+    "react-native": "0.63.4"
   },
   "dependencies": {
     "react-native-timer": "^1.3.6"
   },
   "files": [
+    "dist/*",
     "tsconfig.json",
     "src/**/*",
     "ios/SalesforceReact/**/*",

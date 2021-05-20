@@ -66,9 +66,6 @@ jobs:
       - store_artifacts:
           path: /Users/distiller/SalesforceMobileSDK-ReactNative/iosTests/ios/clangReport/
           destination: Static-Analysis
-      - run:
-          name: Upload code coverage
-          command: bash <(curl -s https://codecov.io/bash) -X gcov -X xcode
 
 workflows:
   version: 2
