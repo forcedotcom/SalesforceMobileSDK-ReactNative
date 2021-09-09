@@ -69,7 +69,7 @@ RCT_EXPORT_METHOD(sendRequest:(NSDictionary *)argsDict callback:(RCTResponseSend
     // Sets HTTP body explicitly for a POST, PATCH or PUT request.
     if (method == SFRestMethodPOST || method == SFRestMethodPATCH || method == SFRestMethodPUT) {
         request = [SFRestRequest requestWithMethod:method path:path queryParams:nil];
-        if (!fileParams || fileParams.allKeys.count == 0) { // when there are file params, the non-binary params need to be passed in the call
+        if (!fileParams || fileParams.count == 0) { // when there are file params, the non-binary params need to be passed in the call
             [request setCustomRequestBodyDictionary:queryParams contentType:@"application/json"];
         }
     } else {
