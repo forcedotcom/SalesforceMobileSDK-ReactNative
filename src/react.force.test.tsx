@@ -27,22 +27,22 @@
 import * as React from "react";
 import { AppRegistry, NativeModules, View } from "react-native";
 const { SalesforceTestBridge, TestModule } = NativeModules;
-const createReactClass = require("create-react-class");
 
-const componentForTest = (test: any) => {
-  return createReactClass({
+class ComponentForTest extends React.Component<{ test: () => void }> {
     componentDidMount() {
-      test(); // NB: test must call testDone() when it completes
-    },
-
+        this.props.test();
+    }
     render() {
-      return <View />;
-    },
-  });
+        return (<View/>);
+    }
+}
+
+const testComponentProvider = (test: any) => {
+  return () => <ComponentForTest test={test} />;
 };
 
 export const registerTest = (test: any) => {
-  AppRegistry.registerComponent(test.name.substring("test".length), () => componentForTest(test));
+  AppRegistry.registerComponent(test.name.substring("test".length), () => testComponentProvider(test));
 };
 
 export const testDone = () => {
