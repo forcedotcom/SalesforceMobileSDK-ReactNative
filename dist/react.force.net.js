@@ -29,25 +29,25 @@ const sendRequest = (endPoint, path, successCB, errorCB, method, payload, header
         returnBinary,
         doesNotRequireAuthentication,
     };
-    (0, react_force_common_1.exec)("SFNetReactBridge", "SalesforceNetReactBridge", SFNetReactBridge, SalesforceNetReactBridge, successCB, errorCB, "sendRequest", args);
+    react_force_common_1.exec("SFNetReactBridge", "SalesforceNetReactBridge", SFNetReactBridge, SalesforceNetReactBridge, successCB, errorCB, "sendRequest", args);
 };
 exports.sendRequest = sendRequest;
-const versions = (successCB, errorCB) => (0, exports.sendRequest)("/services/data", "/", successCB, errorCB);
+const versions = (successCB, errorCB) => exports.sendRequest("/services/data", "/", successCB, errorCB);
 exports.versions = versions;
-const resources = (successCB, errorCB) => (0, exports.sendRequest)("/services/data", `/${apiVersion}/`, successCB, errorCB);
+const resources = (successCB, errorCB) => exports.sendRequest("/services/data", `/${apiVersion}/`, successCB, errorCB);
 exports.resources = resources;
-const describeGlobal = (successCB, errorCB) => (0, exports.sendRequest)("/services/data", `/${apiVersion}/sobjects/`, successCB, errorCB);
+const describeGlobal = (successCB, errorCB) => exports.sendRequest("/services/data", `/${apiVersion}/sobjects/`, successCB, errorCB);
 exports.describeGlobal = describeGlobal;
-const metadata = (objtype, successCB, errorCB) => (0, exports.sendRequest)("/services/data", `/${apiVersion}/sobjects/${objtype}/`, successCB, errorCB);
+const metadata = (objtype, successCB, errorCB) => exports.sendRequest("/services/data", `/${apiVersion}/sobjects/${objtype}/`, successCB, errorCB);
 exports.metadata = metadata;
-const describe = (objtype, successCB, errorCB) => (0, exports.sendRequest)("/services/data", `/${apiVersion}/sobjects/${objtype}/describe/`, successCB, errorCB);
+const describe = (objtype, successCB, errorCB) => exports.sendRequest("/services/data", `/${apiVersion}/sobjects/${objtype}/describe/`, successCB, errorCB);
 exports.describe = describe;
 const describeLayout = (objtype, recordTypeId, successCB, errorCB) => {
     recordTypeId = recordTypeId ? recordTypeId : "";
-    return (0, exports.sendRequest)("/services/data", `/${apiVersion}/sobjects/${objtype}/describe/layouts/${recordTypeId}`, successCB, errorCB);
+    return exports.sendRequest("/services/data", `/${apiVersion}/sobjects/${objtype}/describe/layouts/${recordTypeId}`, successCB, errorCB);
 };
 exports.describeLayout = describeLayout;
-const create = (objtype, fields, successCB, errorCB) => (0, exports.sendRequest)("/services/data", `/${apiVersion}/sobjects/${objtype}/`, successCB, errorCB, "POST", fields);
+const create = (objtype, fields, successCB, errorCB) => exports.sendRequest("/services/data", `/${apiVersion}/sobjects/${objtype}/`, successCB, errorCB, "POST", fields);
 exports.create = create;
 const retrieve = (objtype, id, x, y, z) => {
     let fieldlist;
@@ -64,29 +64,29 @@ const retrieve = (objtype, id, x, y, z) => {
         errorCB = z;
     }
     const fields = fieldlist ? { fields: fieldlist } : null;
-    return (0, exports.sendRequest)("/services/data", `/${apiVersion}/sobjects/${objtype}/${id}`, successCB, errorCB, "GET", fields);
+    return exports.sendRequest("/services/data", `/${apiVersion}/sobjects/${objtype}/${id}`, successCB, errorCB, "GET", fields);
 };
 exports.retrieve = retrieve;
-const upsert = (objtype, externalIdField, externalId, fields, successCB, errorCB) => (0, exports.sendRequest)("/services/data", `/${apiVersion}/sobjects/${objtype}/${externalIdField}/${externalId ? externalId : ""}`, successCB, errorCB, externalId ? "PATCH" : "POST", fields);
+const upsert = (objtype, externalIdField, externalId, fields, successCB, errorCB) => exports.sendRequest("/services/data", `/${apiVersion}/sobjects/${objtype}/${externalIdField}/${externalId ? externalId : ""}`, successCB, errorCB, externalId ? "PATCH" : "POST", fields);
 exports.upsert = upsert;
-const update = (objtype, id, fields, successCB, errorCB) => (0, exports.sendRequest)("/services/data", `/${apiVersion}/sobjects/${objtype}/${id}`, successCB, errorCB, "PATCH", fields);
+const update = (objtype, id, fields, successCB, errorCB) => exports.sendRequest("/services/data", `/${apiVersion}/sobjects/${objtype}/${id}`, successCB, errorCB, "PATCH", fields);
 exports.update = update;
-const del = (objtype, id, successCB, errorCB) => (0, exports.sendRequest)("/services/data", `/${apiVersion}/sobjects/${objtype}/${id}`, successCB, errorCB, "DELETE");
+const del = (objtype, id, successCB, errorCB) => exports.sendRequest("/services/data", `/${apiVersion}/sobjects/${objtype}/${id}`, successCB, errorCB, "DELETE");
 exports.del = del;
-const query = (soql, successCB, errorCB) => (0, exports.sendRequest)("/services/data", `/${apiVersion}/query`, successCB, errorCB, "GET", { q: soql });
+const query = (soql, successCB, errorCB) => exports.sendRequest("/services/data", `/${apiVersion}/query`, successCB, errorCB, "GET", { q: soql });
 exports.query = query;
 const queryMore = (url, successCB, errorCB) => {
     const pathFromUrl = url.match(/https:\/\/[^/]*(.*)/);
     if (pathFromUrl && pathFromUrl.length === 2) {
-        return (0, exports.sendRequest)("", pathFromUrl[1], successCB, errorCB);
+        return exports.sendRequest("", pathFromUrl[1], successCB, errorCB);
     }
     else {
         react_force_log_1.sdkConsole.error(`queryMore failed: url must be a valid`);
     }
 };
 exports.queryMore = queryMore;
-const search = (sosl, successCB, errorCB) => (0, exports.sendRequest)("/services/data", `/${apiVersion}/search`, successCB, errorCB, "GET", { q: sosl });
+const search = (sosl, successCB, errorCB) => exports.sendRequest("/services/data", `/${apiVersion}/search`, successCB, errorCB, "GET", { q: sosl });
 exports.search = search;
-const getAttachment = (id, successCB, errorCB) => (0, exports.sendRequest)("/services/data", `/${apiVersion}/sobjects/Attachment/${id}/Body`, successCB, errorCB, "GET", null, null, null, true);
+const getAttachment = (id, successCB, errorCB) => exports.sendRequest("/services/data", `/${apiVersion}/sobjects/Attachment/${id}/Body`, successCB, errorCB, "GET", null, null, null, true);
 exports.getAttachment = getAttachment;
 //# sourceMappingURL=react.force.net.js.map
