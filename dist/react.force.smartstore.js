@@ -5,7 +5,7 @@ const react_native_1 = require("react-native");
 const react_force_common_1 = require("./react.force.common");
 const { SmartStoreReactBridge, SFSmartStoreReactBridge } = react_native_1.NativeModules;
 const exec = (successCB, errorCB, methodName, args) => {
-    react_force_common_1.exec("SFSmartStoreReactBridge", "SmartStoreReactBridge", SFSmartStoreReactBridge, SmartStoreReactBridge, successCB, errorCB, methodName, args);
+    (0, react_force_common_1.exec)("SFSmartStoreReactBridge", "SmartStoreReactBridge", SFSmartStoreReactBridge, SmartStoreReactBridge, successCB, errorCB, methodName, args);
 };
 class StoreConfig {
     constructor(storeName, isGlobalStore) {
@@ -267,7 +267,7 @@ const querySoup = (storeConfig, soupName, querySpec, successCB, errorCB) => {
         querySpec.orderPath = querySpec.indexPath;
     }
     const successCBdeserializing = successCB
-        ? (result) => successCB(typeof result === "string" ? react_force_common_1.safeJSONparse(result) : result)
+        ? (result) => successCB(typeof result === "string" ? (0, react_force_common_1.safeJSONparse)(result) : result)
         : successCB;
     exec(successCBdeserializing, errorCB, "querySoup", {
         soupName,
@@ -283,7 +283,7 @@ const runSmartQuery = (storeConfig, querySpec, successCB, errorCB) => {
         throw new Error("runSmartQuery can only run smart queries");
     }
     const successCBdeserializing = successCB
-        ? (result) => successCB(typeof result === "string" ? react_force_common_1.safeJSONparse(result) : result)
+        ? (result) => successCB(typeof result === "string" ? (0, react_force_common_1.safeJSONparse)(result) : result)
         : successCB;
     exec(successCBdeserializing, errorCB, "runSmartQuery", {
         querySpec,
@@ -304,7 +304,7 @@ const retrieveSoupEntries = (storeConfig, soupName, entryIds, successCB, errorCB
 exports.retrieveSoupEntries = retrieveSoupEntries;
 const upsertSoupEntries = (storeConfig, soupName, entries, successCB, errorCB) => {
     storeConfig = checkFirstArg(storeConfig);
-    exports.upsertSoupEntriesWithExternalId(storeConfig, soupName, entries, "_soupEntryId", successCB, errorCB);
+    (0, exports.upsertSoupEntriesWithExternalId)(storeConfig, soupName, entries, "_soupEntryId", successCB, errorCB);
 };
 exports.upsertSoupEntries = upsertSoupEntries;
 let upsertSoupEntriesWithExternalId = (storeConfig, soupName, entries, externalIdPath, successCB, errorCB) => {
@@ -334,7 +334,7 @@ const moveCursorToPageIndex = (storeConfig, cursor, newPageIndex, successCB, err
     storeConfig = checkFirstArg(storeConfig);
     let successCBdeserializing;
     if (successCB) {
-        successCBdeserializing = (result) => successCB(typeof result === "string" ? react_force_common_1.safeJSONparse(result) : result);
+        successCBdeserializing = (result) => successCB(typeof result === "string" ? (0, react_force_common_1.safeJSONparse)(result) : result);
     }
     else {
         successCBdeserializing = successCB;
@@ -354,7 +354,7 @@ const moveCursorToNextPage = (storeConfig, cursor, successCB, errorCB) => {
         errorCB(new Error("moveCursorToNextPage called while on last page"));
     }
     else {
-        exports.moveCursorToPageIndex(storeConfig, cursor, newPageIndex, successCB, errorCB);
+        (0, exports.moveCursorToPageIndex)(storeConfig, cursor, newPageIndex, successCB, errorCB);
     }
 };
 exports.moveCursorToNextPage = moveCursorToNextPage;
@@ -365,7 +365,7 @@ const moveCursorToPreviousPage = (storeConfig, cursor, successCB, errorCB) => {
         errorCB(new Error("moveCursorToPreviousPage called while on first page"));
     }
     else {
-        exports.moveCursorToPageIndex(storeConfig, cursor, newPageIndex, successCB, errorCB);
+        (0, exports.moveCursorToPageIndex)(storeConfig, cursor, newPageIndex, successCB, errorCB);
     }
 };
 exports.moveCursorToPreviousPage = moveCursorToPreviousPage;

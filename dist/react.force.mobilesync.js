@@ -15,7 +15,7 @@ const checkFirstArg = (arg) => {
     return { isGlobalStore: isGlobalStore };
 };
 const exec = (successCB, errorCB, methodName, args) => {
-    react_force_common_1.exec("SFMobileSyncReactBridge", "MobileSyncReactBridge", SFMobileSyncReactBridge, MobileSyncReactBridge, successCB, errorCB, methodName, args);
+    (0, react_force_common_1.exec)("SFMobileSyncReactBridge", "MobileSyncReactBridge", SFMobileSyncReactBridge, MobileSyncReactBridge, successCB, errorCB, methodName, args);
 };
 const syncDown = (storeConfig, target, soupName, options, x, y, z) => {
     storeConfig = checkFirstArg(storeConfig);
