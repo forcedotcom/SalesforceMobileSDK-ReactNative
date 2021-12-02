@@ -1,8 +1,7 @@
 import { ExecErrorCallback, ExecSuccessCallback } from "./react.force.common";
-import { HttpMethod } from "./typings";
 export declare const setApiVersion: (version: string) => void;
 export declare const getApiVersion: () => string;
-export declare const sendRequest: <T>(endPoint: string, path: string, successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback, method?: HttpMethod | undefined, payload?: Record<string, unknown> | null | undefined, headerParams?: Record<string, unknown> | null | undefined, fileParams?: unknown, returnBinary?: boolean | undefined, doesNotRequireAuthentication?: boolean | undefined) => void;
+export declare const sendRequest: <T>(endPoint: string, path: string, successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback, method?: "POST" | "GET" | "PUT" | "PATCH" | "DELETE" | undefined, payload?: Record<string, unknown> | null | undefined, headerParams?: Record<string, unknown> | null | undefined, fileParams?: unknown, returnBinary?: boolean | undefined, doesNotRequireAuthentication?: boolean | undefined) => void;
 export declare const versions: <T>(successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback) => void;
 export declare const resources: <T>(successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback) => void;
 export declare const describeGlobal: <T>(successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback) => void;
