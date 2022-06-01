@@ -60,7 +60,7 @@ testGetApiVersion = () => {
 testVersions = () => {
     netVersions()
         .then((response) => {
-            assert.deepInclude(response, {'label':'Summer \'20','url':'/services/data/v55.0','version':'49.0'}, 'Wrong version response');
+            assert.deepInclude(response, {'label':'Summer \'22','url':'/services/data/v55.0','version':'55.0'}, 'Wrong version response');
             testDone();
         });
 };
