@@ -5,7 +5,7 @@ const react_native_1 = require("react-native");
 const react_force_common_1 = require("./react.force.common");
 const react_force_log_1 = require("./react.force.log");
 const { SalesforceNetReactBridge, SFNetReactBridge } = react_native_1.NativeModules;
-var apiVersion = 'v49.0';
+var apiVersion = 'v55.0';
 const setApiVersion = (version) => {
     apiVersion = version;
 };
