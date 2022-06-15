@@ -43,6 +43,7 @@ netUpdate = promiser(net.update);
 netDel = promiser(net.del);
 netQuery = promiser(net.query);
 netSearch = promiser(net.search);
+netCollectionCreate = promiser(net.collectionCreate);
 
 const apiVersion = 'v55.0';
 
@@ -220,6 +221,37 @@ testPublicApiCall = () => {
 
 };
 
+testCollectionCreate = () => {
+    const uniq = Math.floor(Math.random() * 1000000);
+    const firstName = 'First_' + uniq;
+    const lastName = 'Last_' + uniq;
+    var contactId;
+    var otherContactId;
+
+    netCollectionCreate(true, [
+            {FirstName: firstName, LastName: lastName, attributes: { type: 'Contact'}},
+            {FirstName: firstName + '_2', LastName: lastName + '_2', attributes: { type: 'Contact'}},
+        ])
+        .then((response) => {
+            assert.isTrue(response[0].success, 'First create failed');
+            contactId = response[0].id;
+            assert.isTrue(response[1].success, 'Second create failed');
+            otherContactId = response[1].id;
+            return netRetrieve('contact', contactId, 'firstName,lastName');
+        })
+        .then((response) => {
+            assert.equal(response.Id, contactId, 'Wrong id');
+            assert.equal(response.FirstName, firstName, 'Wrong first name');
+            assert.equal(response.LastName, lastName, 'Wrong last name');
+
+            // Cleanup
+            return netDel('contact', contactId);
+        })
+        .then(() => {
+            testDone();
+        });
+}
+
 registerTest(testGetApiVersion);
 registerTest(testVersions);
 registerTest(testResources);
@@ -233,3 +265,4 @@ registerTest(testCreateDelRetrieve);
 registerTest(testQuery);
 registerTest(testSearch);
 registerTest(testPublicApiCall);
+registerTest(testCollectionCreate);

@@ -173,6 +173,22 @@ export const create = <T>(
   errorCB: ExecErrorCallback,
 ): void => sendRequest("/services/data", `/${apiVersion}/sobjects/${objtype}/`, successCB, errorCB, "POST", fields);
 
+
+/**
+ * Creates up to 2000 new records in one roundtrip to the server.
+ * @param records array of objects containing initial field names and values as well as a "attributes" property 
+ *            with value of the form {type: "object-type"}
+ * @param callback function to which response will be passed
+ * @param [error=null] function called in case of error
+ */
+export const collectionCreate = <T>(
+  allOrNone: boolean,
+  records: Array<Record<string, unknown>>,
+  successCB: ExecSuccessCallback<T>,
+  errorCB: ExecErrorCallback,
+): void => sendRequest("/services/data", `/${apiVersion}/composite/sobjects`, successCB, errorCB, "POST", {allOrNone: allOrNone, records: records});
+
+
 type RetrieveOverload = {
   <T>(
     objtype: string,

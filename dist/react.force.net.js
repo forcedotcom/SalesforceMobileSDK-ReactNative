@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAttachment = exports.search = exports.queryMore = exports.query = exports.del = exports.update = exports.upsert = exports.retrieve = exports.create = exports.describeLayout = exports.describe = exports.metadata = exports.describeGlobal = exports.resources = exports.versions = exports.sendRequest = exports.getApiVersion = exports.setApiVersion = void 0;
+exports.getAttachment = exports.search = exports.queryMore = exports.query = exports.del = exports.update = exports.upsert = exports.retrieve = exports.collectionCreate = exports.create = exports.describeLayout = exports.describe = exports.metadata = exports.describeGlobal = exports.resources = exports.versions = exports.sendRequest = exports.getApiVersion = exports.setApiVersion = void 0;
 const react_native_1 = require("react-native");
 const react_force_common_1 = require("./react.force.common");
 const react_force_log_1 = require("./react.force.log");
@@ -49,6 +49,8 @@ const describeLayout = (objtype, recordTypeId, successCB, errorCB) => {
 exports.describeLayout = describeLayout;
 const create = (objtype, fields, successCB, errorCB) => (0, exports.sendRequest)("/services/data", `/${apiVersion}/sobjects/${objtype}/`, successCB, errorCB, "POST", fields);
 exports.create = create;
+const collectionCreate = (allOrNone, records, successCB, errorCB) => (0, exports.sendRequest)("/services/data", `/${apiVersion}/composite/sobjects`, successCB, errorCB, "POST", { allOrNone: allOrNone, records: records });
+exports.collectionCreate = collectionCreate;
 const retrieve = (objtype, id, x, y, z) => {
     let fieldlist;
     let successCB;
