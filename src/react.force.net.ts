@@ -379,9 +379,9 @@ export const collectionUpdate= <T>(
  * @param [error=null] function called in case of error
  */
 export const collectionUpsert = <T>(
+  allOrNone: boolean,
   objectType: string,
   externalIdField: string,
-  allOrNone: boolean,
   records: Array<Record<string, unknown>>,
   successCB: ExecSuccessCallback<T>,
   errorCB: ExecErrorCallback,
