@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAttachment = exports.search = exports.queryMore = exports.query = exports.del = exports.update = exports.upsert = exports.retrieve = exports.collectionCreate = exports.create = exports.describeLayout = exports.describe = exports.metadata = exports.describeGlobal = exports.resources = exports.versions = exports.sendRequest = exports.getApiVersion = exports.setApiVersion = void 0;
+exports.collectionDelete = exports.collectionRetrieve = exports.collectionUpsert = exports.collectionUpdate = exports.collectionCreate = exports.getAttachment = exports.search = exports.queryMore = exports.query = exports.del = exports.update = exports.upsert = exports.retrieve = exports.create = exports.describeLayout = exports.describe = exports.metadata = exports.describeGlobal = exports.resources = exports.versions = exports.sendRequest = exports.getApiVersion = exports.setApiVersion = void 0;
 const react_native_1 = require("react-native");
 const react_force_common_1 = require("./react.force.common");
 const react_force_log_1 = require("./react.force.log");
@@ -49,8 +49,6 @@ const describeLayout = (objtype, recordTypeId, successCB, errorCB) => {
 exports.describeLayout = describeLayout;
 const create = (objtype, fields, successCB, errorCB) => (0, exports.sendRequest)("/services/data", `/${apiVersion}/sobjects/${objtype}/`, successCB, errorCB, "POST", fields);
 exports.create = create;
-const collectionCreate = (allOrNone, records, successCB, errorCB) => (0, exports.sendRequest)("/services/data", `/${apiVersion}/composite/sobjects`, successCB, errorCB, "POST", { allOrNone: allOrNone, records: records });
-exports.collectionCreate = collectionCreate;
 const retrieve = (objtype, id, x, y, z) => {
     let fieldlist;
     let successCB;
@@ -91,4 +89,14 @@ const search = (sosl, successCB, errorCB) => (0, exports.sendRequest)("/services
 exports.search = search;
 const getAttachment = (id, successCB, errorCB) => (0, exports.sendRequest)("/services/data", `/${apiVersion}/sobjects/Attachment/${id}/Body`, successCB, errorCB, "GET", null, null, null, true);
 exports.getAttachment = getAttachment;
+const collectionCreate = (allOrNone, records, successCB, errorCB) => (0, exports.sendRequest)("/services/data", `/${apiVersion}/composite/sobjects`, successCB, errorCB, "POST", { allOrNone: allOrNone, records: records });
+exports.collectionCreate = collectionCreate;
+const collectionUpdate = (allOrNone, records, successCB, errorCB) => (0, exports.sendRequest)("/services/data", `/${apiVersion}/composite/sobjects`, successCB, errorCB, "PATCH", { allOrNone: allOrNone, records: records });
+exports.collectionUpdate = collectionUpdate;
+const collectionUpsert = (objectType, externalIdField, allOrNone, records, successCB, errorCB) => (0, exports.sendRequest)("/services/data", `/${apiVersion}/composite/sobjects/${objectType}/${externalIdField}`, successCB, errorCB, "PATCH", { allOrNone: allOrNone, records: records });
+exports.collectionUpsert = collectionUpsert;
+const collectionRetrieve = (objectType, ids, fields, successCB, errorCB) => (0, exports.sendRequest)("/services/data", `/${apiVersion}/composite/sobjects/${objectType}`, successCB, errorCB, "POST", { ids: ids, fields: fields });
+exports.collectionRetrieve = collectionRetrieve;
+const collectionDelete = (ids, successCB, errorCB) => (0, exports.sendRequest)("/services/data", `/${apiVersion}/composite/sobjects?ids=${ids.join(',')}`, successCB, errorCB, "DELETE");
+exports.collectionDelete = collectionDelete;
 //# sourceMappingURL=react.force.net.js.map

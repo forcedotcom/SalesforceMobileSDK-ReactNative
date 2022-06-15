@@ -44,6 +44,10 @@ netDel = promiser(net.del);
 netQuery = promiser(net.query);
 netSearch = promiser(net.search);
 netCollectionCreate = promiser(net.collectionCreate);
+netCollectionRetrieve= promiser(net.netCollectionRetrieve);
+netCollectionUpdate = promiser(net.collectionUpdate);
+netCollectionUpsert = promiser(net.collectionUpsert);
+netCollectionDelete = promiser(net.collectionDelete);
 
 const apiVersion = 'v55.0';
 
@@ -221,33 +225,48 @@ testPublicApiCall = () => {
 
 };
 
-testCollectionCreate = () => {
+testCollectionCreateRetrieveDelete = () => {
     const uniq = Math.floor(Math.random() * 1000000);
     const firstName = 'First_' + uniq;
     const lastName = 'Last_' + uniq;
+    const otherFirstName = firstName + '_2'
+    const otherLastName = lastName + '_2'
     var contactId;
     var otherContactId;
 
     netCollectionCreate(true, [
             {FirstName: firstName, LastName: lastName, attributes: { type: 'Contact'}},
-            {FirstName: firstName + '_2', LastName: lastName + '_2', attributes: { type: 'Contact'}},
+            {FirstName: otherFirstName, LastName: otherLastName, attributes: { type: 'Contact'}},
         ])
         .then((response) => {
             assert.isTrue(response[0].success, 'First create failed');
             contactId = response[0].id;
             assert.isTrue(response[1].success, 'Second create failed');
             otherContactId = response[1].id;
-            return netRetrieve('contact', contactId, 'firstName,lastName');
+            return netCollectionRetrieve('contact', [contactId, otherContactId], ["FirstName", "LastName"]);
         })
         .then((response) => {
-            assert.equal(response.Id, contactId, 'Wrong id');
-            assert.equal(response.FirstName, firstName, 'Wrong first name');
-            assert.equal(response.LastName, lastName, 'Wrong last name');
+            assert.equal(response.length, 2, 'Wrong number of sub responses');
+            // Checking first sub response
+            assert.equal(response[0].Id, contactId, 'Wrong id');
+            assert.equal(response[0].FirstName, firstName, 'Wrong first name');
+            assert.equal(response[0].LastName, lastName, 'Wrong last name');
+            // Checking second sub response
+            assert.equal(response[1].Id, otherContactId, 'Wrong id');
+            assert.equal(response[1].FirstName, otherFirstName, 'Wrong first name');
+            assert.equal(response[1].LastName, otherLastName, 'Wrong last name');
 
             // Cleanup
-            return netDel('contact', contactId);
+            return netCollectionDelete(true, [contactId, otherContactId]);
         })
         .then(() => {
+            // Making sure deleted records are gone
+            return netCollectionRetrieve('contact', [contactId, otherContactId], ["FirstName", "LastName"]);
+        })
+        .then((response) => {
+            assert.equal(response.length, 2, 'Wrong number of sub responses');
+            assert.isNull(response[0]);
+            assert.isNull(response[1]);
             testDone();
         });
 }
