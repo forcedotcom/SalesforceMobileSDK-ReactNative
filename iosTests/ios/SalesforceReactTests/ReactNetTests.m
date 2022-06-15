@@ -51,7 +51,9 @@ RCT_TEST(CreateDelRetrieve)
 RCT_TEST(Query)
 RCT_TEST(Search)
 RCT_TEST(PublicApiCall)
-RCT_TEST(CollectionCreate)
+RCT_TEST(CollectionCreateRetrieve)
+RCT_TEST(CollectionUpsertUpdateRetrieve)
+RCT_TEST(CollectionCreateDeleteRetrieve)
 @end
 
 
