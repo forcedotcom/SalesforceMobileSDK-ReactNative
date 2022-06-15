@@ -93,7 +93,7 @@ const collectionCreate = (allOrNone, records, successCB, errorCB) => (0, exports
 exports.collectionCreate = collectionCreate;
 const collectionUpdate = (allOrNone, records, successCB, errorCB) => (0, exports.sendRequest)("/services/data", `/${apiVersion}/composite/sobjects`, successCB, errorCB, "PATCH", { allOrNone: allOrNone, records: records });
 exports.collectionUpdate = collectionUpdate;
-const collectionUpsert = (objectType, externalIdField, allOrNone, records, successCB, errorCB) => (0, exports.sendRequest)("/services/data", `/${apiVersion}/composite/sobjects/${objectType}/${externalIdField}`, successCB, errorCB, "PATCH", { allOrNone: allOrNone, records: records });
+const collectionUpsert = (allOrNone, objectType, externalIdField, records, successCB, errorCB) => (0, exports.sendRequest)("/services/data", `/${apiVersion}/composite/sobjects/${objectType}/${externalIdField}`, successCB, errorCB, "PATCH", { allOrNone: allOrNone, records: records });
 exports.collectionUpsert = collectionUpsert;
 const collectionRetrieve = (objectType, ids, fields, successCB, errorCB) => (0, exports.sendRequest)("/services/data", `/${apiVersion}/composite/sobjects/${objectType}`, successCB, errorCB, "POST", { ids: ids, fields: fields });
 exports.collectionRetrieve = collectionRetrieve;

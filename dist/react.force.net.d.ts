@@ -24,7 +24,7 @@ export declare const search: <T>(sosl: string, successCB: ExecSuccessCallback<T>
 export declare const getAttachment: <T>(id: string, successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback) => void;
 export declare const collectionCreate: <T>(allOrNone: boolean, records: Array<Record<string, unknown>>, successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback) => void;
 export declare const collectionUpdate: <T>(allOrNone: boolean, records: Array<Record<string, unknown>>, successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback) => void;
-export declare const collectionUpsert: <T>(objectType: string, externalIdField: string, allOrNone: boolean, records: Array<Record<string, unknown>>, successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback) => void;
+export declare const collectionUpsert: <T>(allOrNone: boolean, objectType: string, externalIdField: string, records: Array<Record<string, unknown>>, successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback) => void;
 export declare const collectionRetrieve: <T>(objectType: string, ids: Array<string>, fields: Array<string>, successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback) => void;
 export declare const collectionDelete: <T>(ids: Array<string>, successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback) => void;
 export {};
