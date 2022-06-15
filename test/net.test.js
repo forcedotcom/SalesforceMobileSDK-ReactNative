@@ -284,4 +284,4 @@ registerTest(testCreateDelRetrieve);
 registerTest(testQuery);
 registerTest(testSearch);
 registerTest(testPublicApiCall);
-registerTest(testCollectionCreate);
+registerTest(testCollectionCreateRetrieveDelete);
