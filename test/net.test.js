@@ -259,7 +259,7 @@ testCollectionCreateRetrieve = () => {
             assert.equal(response[1].LastName, otherLastName, 'Wrong last name');
 
             // Cleanup
-            return netCollectionDelete(true, [contactId, otherContactId]);
+            return netCollectionDelete([contactId, otherContactId]);
         })
         .then(() => {
             testDone();
@@ -311,7 +311,7 @@ testCollectionUpsertUpdateRetrieve = () => {
             assert.equal(response[1].LastName, otherLastName + '_u', 'Wrong last name');
 
             // Cleanup
-            return netCollectionDelete(true, [contactId, otherContactId]);
+            return netCollectionDelete([contactId, otherContactId]);
         })
         .then(() => {
             testDone();
@@ -337,7 +337,7 @@ testCollectionCreateDeleteRetrieve = () => {
             contactId = response[0].id;
             assert.isTrue(response[1].success, 'Second create failed');
             otherContactId = response[1].id;
-            return netCollectionDelete(true, [contactId, otherContactId]);
+            return netCollectionDelete([contactId, otherContactId]);
         })
         .then((response) => {
             console.log("2 response-->" + response);
