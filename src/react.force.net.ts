@@ -358,7 +358,7 @@ export const collectionCreate = <T>(
 ): void => sendRequest("/services/data", `/${apiVersion}/composite/sobjects`, successCB, errorCB, "POST", {allOrNone: allOrNone, records: records});
 
 /**
- * Updates up to 2000 records in one roundtrip to the server.
+ * Updates up to 200 records in one roundtrip to the server.
  * @param records array of objects containing field names and values as well as a "attributes" property with the object type e.g. {type: "Account"}
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
@@ -371,7 +371,7 @@ export const collectionUpdate= <T>(
 ): void => sendRequest("/services/data", `/${apiVersion}/composite/sobjects`, successCB, errorCB, "PATCH", {allOrNone: allOrNone, records: records});
 
 /**
- * Upserts up to 2000 records in one roundtrip to the server.
+ * Upserts up to 200 records in one roundtrip to the server.
  * @param objectType object type; e.g. "Account"
  * @param externalIdField  name of ID field in source data
  * @param records array of objects containing field names and values as well as a "attributes" property with the object type e.g. {type: "Account"}
@@ -404,7 +404,7 @@ export const collectionRetrieve = <T>(
 ): void => sendRequest("/services/data", `/${apiVersion}/composite/sobjects/${objectType}`, successCB, errorCB, "POST", {ids: ids, fields: fields});
 
 /**
- * Delete records in one roundtrip to the server.
+ * Delete up to 200 records in one roundtrip to the server.
  * @param ids the ids of records to delete
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
