@@ -239,7 +239,6 @@ testCollectionCreateRetrieve = () => {
             {FirstName: otherFirstName, LastName: otherLastName, attributes: {type: 'Contact'}},
         ])
         .then((response) => {
-            console.log("1  response-->" + JSON.stringify(response));
             assert.isTrue(response[0].success, 'First create failed');
             contactId = response[0].id;
             assert.isTrue(response[1].success, 'Second create failed');
@@ -247,7 +246,6 @@ testCollectionCreateRetrieve = () => {
             return netCollectionRetrieve('contact', [contactId, otherContactId], ["FirstName", "LastName"]);
         })
         .then((response) => {
-            console.log("2  response-->" + JSON.stringify(response));
             assert.equal(response.length, 2, 'Wrong number of sub responses');
             // Checking first sub response
             assert.equal(response[0].Id, contactId, 'Wrong id');
@@ -276,22 +274,20 @@ testCollectionUpsertUpdateRetrieve = () => {
     var otherContactId;
 
     netCollectionUpsert(true, 'Contact', 'Id', [
-        {FirstName: firstName, LastName: lastName}, 
-        {FirstName: otherFirstName, LastName: otherLastName}
+        {FirstName: firstName, LastName: lastName, attributes: {type: 'Contact'}}, 
+        {FirstName: otherFirstName, LastName: otherLastName, attributes: {type: 'Contact'}}
     ])
         .then((response) => {
-            console.log("1  response-->" + JSON.stringify(response));
             assert.isTrue(response[0].success, 'First upsert failed');
             contactId = response[0].id;
             assert.isTrue(response[1].success, 'Second upsert failed');
             otherContactId = response[1].id;
-            return netCollectionUpdate(true, 'Contact', 'Id', [
-                {FirstName: firstName + '_u', LastName: lastName + '_u'}, 
-                {FirstName: otherFirstName + '_u', LastName: otherLastName + '_u'}
+            return netCollectionUpdate(true, [
+                {Id: contactId, FirstName: firstName + '_u', LastName: lastName + '_u', attributes: {type: 'Contact'}}, 
+                {Id: otherContactId, FirstName: otherFirstName + '_u', LastName: otherLastName + '_u', attributes: {type: 'Contact'}}
             ]);
         })
         .then((response) => {
-            console.log("2  response-->" + JSON.stringify(response));
             assert.isTrue(response[0].success, 'First update failed');
             assert.equal(response[0].id, contactId, 'Wrong id');
             assert.isTrue(response[1].success, 'Second update failed');
@@ -299,7 +295,6 @@ testCollectionUpsertUpdateRetrieve = () => {
             return netCollectionRetrieve('contact', [contactId, otherContactId], ["FirstName", "LastName"]);
         })
         .then((response) => {
-            console.log("3  response-->" + JSON.stringify(response));
             assert.equal(response.length, 2, 'Wrong number of sub responses');
             // Checking first sub response
             assert.equal(response[0].Id, contactId, 'Wrong id');
@@ -332,7 +327,6 @@ testCollectionCreateDeleteRetrieve = () => {
             {FirstName: otherFirstName, LastName: otherLastName, attributes: {type: 'Contact'}},
         ])
         .then((response) => {
-            console.log("1  response-->" + JSON.stringify(response));
             assert.isTrue(response[0].success, 'First create failed');
             contactId = response[0].id;
             assert.isTrue(response[1].success, 'Second create failed');
@@ -340,7 +334,6 @@ testCollectionCreateDeleteRetrieve = () => {
             return netCollectionDelete([contactId, otherContactId]);
         })
         .then((response) => {
-            console.log("2 response-->" + JSON.stringify(response));
             assert.isTrue(response[0].success, 'First delete failed');
             assert.equal(response[0].id, contactId, 'Wrong id');
             assert.isTrue(response[1].success, 'Second delete failed');
@@ -348,7 +341,6 @@ testCollectionCreateDeleteRetrieve = () => {
             return netCollectionRetrieve('contact', [contactId, otherContactId], ['FirstName', 'LastName']);
         })
         .then((response) => {
-            console.log("3 response-->" + JSON.stringify(response));
             assert.isNull(response[0], 'First subresponse should be null');
             assert.isNull(response[1], 'First subresponse should be null');
             testDone();
