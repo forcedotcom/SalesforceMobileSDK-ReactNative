@@ -346,6 +346,7 @@ export const getAttachment = <T>(
 
 /**
  * Creates up to 2000 new records in one roundtrip to the server.
+ * @param allOrNone indicates whether to roll back the entire request when one record fails
  * @param records array of objects containing field names and values as well as a "attributes" property with the object type e.g. {type: "Account"}
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
@@ -359,6 +360,7 @@ export const collectionCreate = <T>(
 
 /**
  * Updates up to 200 records in one roundtrip to the server.
+ * @param allOrNone indicates whether to roll back the entire request when one record fails
  * @param records array of objects containing field names and values as well as a "attributes" property with the object type e.g. {type: "Account"}
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
@@ -372,6 +374,7 @@ export const collectionUpdate= <T>(
 
 /**
  * Upserts up to 200 records in one roundtrip to the server.
+ * @param allOrNone indicates whether to roll back the entire request when one record fails
  * @param objectType object type; e.g. "Account"
  * @param externalIdField  name of ID field in source data
  * @param records array of objects containing field names and values as well as a "attributes" property with the object type e.g. {type: "Account"}
@@ -405,13 +408,15 @@ export const collectionRetrieve = <T>(
 
 /**
  * Delete up to 200 records in one roundtrip to the server.
+ * @param allOrNone indicates whether to roll back the entire request when one record fails
  * @param ids the ids of records to delete
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
  */
 export const collectionDelete = <T>(
+  allOrNone: boolean,
   ids: Array<string>,
   successCB: ExecSuccessCallback<T>,
   errorCB: ExecErrorCallback,
-): void => sendRequest("/services/data", `/${apiVersion}/composite/sobjects?ids=${ids.join(',')}`, successCB, errorCB, "DELETE");
+): void => sendRequest("/services/data", `/${apiVersion}/composite/sobjects?allOrNone=${allOrNone}&ids=${ids.join(',')}`, successCB, errorCB, "DELETE");
 

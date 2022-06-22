@@ -97,6 +97,6 @@ const collectionUpsert = (allOrNone, objectType, externalIdField, records, succe
 exports.collectionUpsert = collectionUpsert;
 const collectionRetrieve = (objectType, ids, fields, successCB, errorCB) => (0, exports.sendRequest)("/services/data", `/${apiVersion}/composite/sobjects/${objectType}`, successCB, errorCB, "POST", { ids: ids, fields: fields });
 exports.collectionRetrieve = collectionRetrieve;
-const collectionDelete = (ids, successCB, errorCB) => (0, exports.sendRequest)("/services/data", `/${apiVersion}/composite/sobjects?ids=${ids.join(',')}`, successCB, errorCB, "DELETE");
+const collectionDelete = (allOrNone, ids, successCB, errorCB) => (0, exports.sendRequest)("/services/data", `/${apiVersion}/composite/sobjects?allOrNone=${allOrNone}&ids=${ids.join(',')}`, successCB, errorCB, "DELETE");
 exports.collectionDelete = collectionDelete;
 //# sourceMappingURL=react.force.net.js.map

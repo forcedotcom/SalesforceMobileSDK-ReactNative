@@ -257,7 +257,7 @@ testCollectionCreateRetrieve = () => {
             assert.equal(response[1].LastName, otherLastName, 'Wrong last name');
 
             // Cleanup
-            return netCollectionDelete([contactId, otherContactId]);
+            return netCollectionDelete(false, [contactId, otherContactId]);
         })
         .then(() => {
             testDone();
@@ -306,7 +306,7 @@ testCollectionUpsertUpdateRetrieve = () => {
             assert.equal(response[1].LastName, otherLastName + '_u', 'Wrong last name');
 
             // Cleanup
-            return netCollectionDelete([contactId, otherContactId]);
+            return netCollectionDelete(false, [contactId, otherContactId]);
         })
         .then(() => {
             testDone();
@@ -331,7 +331,7 @@ testCollectionCreateDeleteRetrieve = () => {
             contactId = response[0].id;
             assert.isTrue(response[1].success, 'Second create failed');
             otherContactId = response[1].id;
-            return netCollectionDelete([contactId, otherContactId]);
+            return netCollectionDelete(true, [contactId, otherContactId]);
         })
         .then((response) => {
             assert.isTrue(response[0].success, 'First delete failed');
