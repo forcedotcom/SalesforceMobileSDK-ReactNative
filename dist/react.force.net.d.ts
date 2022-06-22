@@ -26,5 +26,5 @@ export declare const collectionCreate: <T>(allOrNone: boolean, records: Array<Re
 export declare const collectionUpdate: <T>(allOrNone: boolean, records: Array<Record<string, unknown>>, successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback) => void;
 export declare const collectionUpsert: <T>(allOrNone: boolean, objectType: string, externalIdField: string, records: Array<Record<string, unknown>>, successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback) => void;
 export declare const collectionRetrieve: <T>(objectType: string, ids: Array<string>, fields: Array<string>, successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback) => void;
-export declare const collectionDelete: <T>(ids: Array<string>, successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback) => void;
+export declare const collectionDelete: <T>(allOrNone: boolean, ids: Array<string>, successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback) => void;
 export {};
