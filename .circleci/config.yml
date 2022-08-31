@@ -1,7 +1,13 @@
+#  Xcode version announcments can be found here: https://discuss.circleci.com/c/announcements/
+#  Each post contains a full image manifest, including iOS runtimes, devices, CocoaPods version, etc.
+#  NOTE: When updaing Xcode check the manifest for compatible chruby versions.
 anchors:
-  - &latest-xcode "13.2.1"
-  - &latest-ios   "15.2"
+  - &latest-xcode "13.4.1"
+  - &beta-xcode   "14.0.0"
+  - &latest-ios   "15.5"
   - &min-ios      "14.5"
+  - &beta-ios     "16.0"
+  - &chruby       "3.1.2"
 
 executors:
   mac:
@@ -10,22 +16,29 @@ executors:
       xcode: *latest-xcode
     shell: /bin/bash --login -eo pipefail
     environment:
-      BASH_ENV: ~/.bashr
+      BASH_ENV: ~/.bashrc
       FASTLANE_SKIP_UPDATE_CHECK: "true"
+      CHRUBY_VER: *chruby
+  mac-beta:
+    working_directory: ~/SalesforceMobileSDK-iOS
+    macos:
+      xcode: *beta-xcode
+    shell: /bin/bash --login -eo pipefail
+    environment:
+      BASH_ENV: ~/.bashrc
+      FASTLANE_SKIP_UPDATE_CHECK: "true"
+      CHRUBY_VER: *chruby
 
 version: 2.1
 jobs:
   test-ios:
     parameters:
-      device:
-        type: string
-        default: "iPhone 12"
       ios:
         type: string
         default: *latest-ios
-      nightly-test:
-        type: boolean
-        default: false
+      device:
+        type: string
+        default: "iPhone 12"
       env: 
         type: executor
         default: "mac"
@@ -33,7 +46,6 @@ jobs:
     environment:
       DEVICE: << parameters.device >>
       IOS_VERSION: << parameters.ios >>
-      NIGHTLY_TEST: << parameters.nightly-test >>
     steps:
       - checkout
       - run:
@@ -67,28 +79,45 @@ jobs:
           path: /Users/distiller/SalesforceMobileSDK-ReactNative/iosTests/ios/clangReport/
           destination: Static-Analysis
 
+#  Potential parameters that can come from the project GUI Triggers
+parameters:
+  beta:
+    type: boolean
+    default: false
+
 workflows:
   version: 2
 
   pr-run-tests:
+    when: 
+      equal: [ "webhook", << pipeline.trigger_source >> ]
     jobs:
       - test-ios
 
-  # Cron are on a timezone 8 hours ahead of PST
-  # Build everything at ~11:30pm Sunday/Wednesday Nights
+  # Build everything at 10 PM PST Sunday
   run-tests:
-    triggers:
-      - schedule:
-          cron: "30 7 * * 1,4"
-          filters:
-            branches:
-              only:
-                - dev
+    when:
+      not:  
+        equal: [ "webhook", << pipeline.trigger_source >> ]
     jobs:
       - test-ios:
           name: test ReactNative iOS << matrix.ios >>
           matrix:
             parameters:
-              nightly-test: [true]
               ios: [*min-ios, *latest-ios]
-              device: ["iPhone 12"]
+
+  # Build everything at 11 PM PST Sunday
+  run-tests-beta:
+    when:
+      and:
+        - << pipeline.parameters.beta >>
+        - not:  
+            equal: [ "webhook", << pipeline.trigger_source >> ]
+    jobs:
+      - test-ios:
+          name: test ReactNative iOS << matrix.ios >>
+          matrix:
+            parameters:
+              ios: [*beta-ios]
+              device: ["iPhone 13"]
+              env: ["mac-beta"]
