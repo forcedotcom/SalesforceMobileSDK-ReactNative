@@ -3,49 +3,42 @@
 #  NOTE: When updaing Xcode check the manifest for compatible chruby versions.
 anchors:
   - &latest-xcode "13.4.1"
-  - &beta-xcode   "14.0.0"
   - &latest-ios   "15.5"
   - &min-ios      "14.5"
-  - &beta-ios     "16.0"
   - &chruby       "3.1.2"
+  - &invalid      ""
 
 executors:
   mac:
-    working_directory: ~/SalesforceMobileSDK-ReactNative
     macos:
       xcode: *latest-xcode
-    shell: /bin/bash --login -eo pipefail
-    environment:
-      BASH_ENV: ~/.bashrc
-      FASTLANE_SKIP_UPDATE_CHECK: "true"
-      CHRUBY_VER: *chruby
-  mac-beta:
-    working_directory: ~/SalesforceMobileSDK-ReactNative
-    macos:
-      xcode: *beta-xcode
-    shell: /bin/bash --login -eo pipefail
-    environment:
-      BASH_ENV: ~/.bashrc
-      FASTLANE_SKIP_UPDATE_CHECK: "true"
-      CHRUBY_VER: *chruby
 
 version: 2.1
 jobs:
   test-ios:
     parameters:
+      xcode:
+        type: string
+        default: *latest-xcode
       ios:
         type: string
         default: *latest-ios
+      chruby:
+        type: string
+        default: *chruby
       device:
         type: string
         default: "iPhone 12"
-      env: 
-        type: executor
-        default: "mac"
-    executor: << parameters.env >> 
+    macos:
+      xcode: << parameters.xcode >>
+    working_directory: ~/SalesforceMobileSDK-ReactNative
+    shell: /bin/bash --login -eo pipefail
     environment:
       DEVICE: << parameters.device >>
       IOS_VERSION: << parameters.ios >>
+      BASH_ENV: ~/.bashrc
+      FASTLANE_SKIP_UPDATE_CHECK: "true"
+      CHRUBY_VER: << parameters.chruby >>
     steps:
       - checkout
       - run:
@@ -81,9 +74,15 @@ jobs:
 
 #  Potential parameters that can come from the project GUI Triggers
 parameters:
-  beta:
-    type: boolean
-    default: false
+  xcode:
+    type: string
+    default: *invalid
+  ios:
+    type: string
+    default: *invalid
+  chruby:
+    type: string
+    default: *chruby
 
 workflows:
   version: 2
@@ -97,8 +96,10 @@ workflows:
   # Build everything at 10 PM PST Sunday
   run-tests:
     when:
-      not:  
-        equal: [ "webhook", << pipeline.trigger_source >> ]
+      and:
+        - not: << pipeline.parameters.xcode >>
+        - not:  
+            equal: [ "webhook", << pipeline.trigger_source >> ]
     jobs:
       - test-ios:
           name: test ReactNative iOS << matrix.ios >>
@@ -110,14 +111,16 @@ workflows:
   run-tests-beta:
     when:
       and:
-        - << pipeline.parameters.beta >>
+        - << pipeline.parameters.xcode >>
+        - << pipeline.parameters.ios >>
         - not:  
             equal: [ "webhook", << pipeline.trigger_source >> ]
     jobs:
       - test-ios:
-          name: test ReactNative iOS << matrix.ios >>
+          name: test ReactNative iOS << pipeline.parameters.ios >>
           matrix:
             parameters:
-              ios: [*beta-ios]
+              xcode: [<< pipeline.parameters.xcode >>]
+              ios: [<< pipeline.parameters.ios >>]
+              chruby: [<< pipeline.parameters.chruby >>]
               device: ["iPhone 13"]
-              env: ["mac-beta"]
