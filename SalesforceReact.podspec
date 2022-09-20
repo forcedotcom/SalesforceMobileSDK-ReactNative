@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "SalesforceReact"
-  s.version      = "10.1.0"
+  s.version      = "10.2.0"
   s.summary      = "Salesforce Mobile SDK for iOS - SalesforceReact"
   s.homepage     = "https://github.com/forcedotcom/SalesforceMobileSDK-ReactNative"
   s.license      = { :type => "Salesforce.com Mobile SDK License", :file => "LICENSE" }
