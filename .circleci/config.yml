@@ -6,6 +6,7 @@ anchors:
   - &latest-ios   "15.5"
   - &min-ios      "14.5"
   - &chruby       "3.1.2"
+  - &device       "iPhone 12"
   - &invalid      ""
 
 executors:
@@ -28,7 +29,7 @@ jobs:
         default: *chruby
       device:
         type: string
-        default: "iPhone 12"
+        default: *device
     macos:
       xcode: << parameters.xcode >>
     working_directory: ~/SalesforceMobileSDK-ReactNative
@@ -83,6 +84,9 @@ parameters:
   chruby:
     type: string
     default: *chruby
+  device:
+    type: string
+    default: *device
 
 workflows:
   version: 2
@@ -91,9 +95,13 @@ workflows:
     when: 
       equal: [ "webhook", << pipeline.trigger_source >> ]
     jobs:
-      - test-ios
+      - test-ios:
+          filters:
+            branches:
+              only:
+                - /pull.*/
 
-  # Build everything at 10 PM PST Sunday
+  # Scheduled Trigger at 10 PM PST Sunday
   run-tests:
     when:
       and:
@@ -107,7 +115,7 @@ workflows:
             parameters:
               ios: [*min-ios, *latest-ios]
 
-  # Build everything at 11 PM PST Sunday
+  # Scheduled Trigger (when beta exists) at 11 PM PST Sunday
   run-tests-beta:
     when:
       and:
@@ -123,4 +131,4 @@ workflows:
               xcode: [<< pipeline.parameters.xcode >>]
               ios: [<< pipeline.parameters.ios >>]
               chruby: [<< pipeline.parameters.chruby >>]
-              device: ["iPhone 13"]
+              device: [<< pipeline.parameters.device >>]
