@@ -2,6 +2,7 @@ require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 require_relative '../mobile_sdk/SalesforceMobileSDK-iOS/mobilesdk_pods'
 
+
 platform :ios, '14.0'
 
 use_frameworks!
@@ -13,15 +14,45 @@ end
 target 'SalesforceReactTests' do
   source 'https://cdn.cocoapods.org/'
   config = use_native_modules!
-  use_react_native!(:path => config["reactNativePath"])
+
+  # Flags change depending on the env values.
+  flags = get_default_flags()
+
+  use_react_native!(
+    :path => config[:reactNativePath],
+    :hermes_enabled => false,
+    :fabric_enabled => flags[:fabric_enabled],
+    :flipper_configuration => FlipperConfiguration.disabled,
+    :app_path => "#{Pod::Config.instance.installation_root}/.."
+  )
   pod 'React-RCTTest', :path => '../RCTTest'
   use_mobile_sdk!(:path => '../mobile_sdk/SalesforceMobileSDK-iOS')
-  pod 'SalesforceReact', :path => '../..'
+  pod 'SalesforceReact', :path => '../node_modules/react-native-force'
+end
+
+# To avoid Xcode 12 compilation errors in RNScreens and RNCMaskedView
+pre_install do |installer|
+  installer.pod_targets.each do |pod|
+    if pod.name.eql?('RNScreens') || pod.name.eql?('RNCMaskedView')
+      def pod.build_type
+        Pod::BuildType.static_library
+      end
+    end
+  end
 end
 
 post_install do |installer|
-  react_native_post_install(installer)
+  # Comment the following if you do not want the SDK to emit signpost events for instrumentation. Signposts are  enabled for non release version of the app.
+  signposts_post_install(installer)
 
+  # React native post install
+  react_native_post_install(
+      installer,
+      # Set `mac_catalyst_enabled` to `true` in order to apply patches
+      # necessary for Mac Catalyst builds
+      :mac_catalyst_enabled => false
+  )
+  
   # Cocoapods workaround for M1 machines
   __apply_Xcode_12_5_M1_post_install_workaround(installer)
   
