@@ -17,8 +17,8 @@
 		4FFF1F472166E14A00C050EF /* ReactNetTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF1F402166E14900C050EF /* ReactNetTests.m */; };
 		4FFF1F482166E14A00C050EF /* ReactOauthTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FFF1F422166E14A00C050EF /* ReactOauthTests.m */; };
 		4FFF1F4B2166E50C00C050EF /* test_credentials.json in Resources */ = {isa = PBXBuildFile; fileRef = 4FFF1F4A2166E50C00C050EF /* test_credentials.json */; };
-		B9776D7D5546B7C402F33B9F /* Pods_SalesforceReactTestApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA75D6DECF2567FEC4F39B08 /* Pods_SalesforceReactTestApp.framework */; };
-		F313E20869463B5E07B41574 /* Pods_SalesforceReactTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 233817178B07E6B93C7677AD /* Pods_SalesforceReactTests.framework */; };
+		85C2AA0DE1DC28C432817F39 /* libPods-SalesforceReactTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 05CDD6BB6CC32D2274D01623 /* libPods-SalesforceReactTests.a */; };
+		DA761EA3C40EE22F63A783B7 /* libPods-SalesforceReactTestApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2EE7D400CC7A2A8A22F695E4 /* libPods-SalesforceReactTestApp.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -32,8 +32,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		05CDD6BB6CC32D2274D01623 /* libPods-SalesforceReactTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SalesforceReactTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C32A93F7274A1A7CF2DA17F /* Pods-SalesforceReactTestApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SalesforceReactTestApp.debug.xcconfig"; path = "Target Support Files/Pods-SalesforceReactTestApp/Pods-SalesforceReactTestApp.debug.xcconfig"; sourceTree = "<group>"; };
-		233817178B07E6B93C7677AD /* Pods_SalesforceReactTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SalesforceReactTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		2EE7D400CC7A2A8A22F695E4 /* libPods-SalesforceReactTestApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SalesforceReactTestApp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		487CCB960B85A051F0053EEA /* Pods-SalesforceReactTestApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SalesforceReactTestApp.release.xcconfig"; path = "Target Support Files/Pods-SalesforceReactTestApp/Pods-SalesforceReactTestApp.release.xcconfig"; sourceTree = "<group>"; };
 		4FDC96FE25CD048400B103C6 /* index.ios.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = index.ios.bundle; sourceTree = SOURCE_ROOT; };
 		4FFF1EE82166DFF900C050EF /* SalesforceReactTestApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SalesforceReactTestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -52,7 +53,6 @@
 		4FFF1F4A2166E50C00C050EF /* test_credentials.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = test_credentials.json; sourceTree = SOURCE_ROOT; };
 		8833450A1F8DDA34E9264712 /* Pods-SalesforceReactTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SalesforceReactTests.debug.xcconfig"; path = "Target Support Files/Pods-SalesforceReactTests/Pods-SalesforceReactTests.debug.xcconfig"; sourceTree = "<group>"; };
 		9434D973458317F53AEB081C /* Pods-SalesforceReactTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SalesforceReactTests.release.xcconfig"; path = "Target Support Files/Pods-SalesforceReactTests/Pods-SalesforceReactTests.release.xcconfig"; sourceTree = "<group>"; };
-		FA75D6DECF2567FEC4F39B08 /* Pods_SalesforceReactTestApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SalesforceReactTestApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,7 +60,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B9776D7D5546B7C402F33B9F /* Pods_SalesforceReactTestApp.framework in Frameworks */,
+				DA761EA3C40EE22F63A783B7 /* libPods-SalesforceReactTestApp.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -68,7 +68,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F313E20869463B5E07B41574 /* Pods_SalesforceReactTests.framework in Frameworks */,
+				85C2AA0DE1DC28C432817F39 /* libPods-SalesforceReactTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -144,8 +144,8 @@
 		F5BE60D311B128CF34C86462 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				FA75D6DECF2567FEC4F39B08 /* Pods_SalesforceReactTestApp.framework */,
-				233817178B07E6B93C7677AD /* Pods_SalesforceReactTests.framework */,
+				2EE7D400CC7A2A8A22F695E4 /* libPods-SalesforceReactTestApp.a */,
+				05CDD6BB6CC32D2274D01623 /* libPods-SalesforceReactTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -180,6 +180,7 @@
 				4FFF1F302166E11D00C050EF /* Resources */,
 				A34CE17122BD40C30033A467 /* ShellScript */,
 				BCFB3D87EA044E099C7B1EDA /* [CP] Embed Pods Frameworks */,
+				84721EE1A9CD37AE5AF1C914 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -284,6 +285,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		84721EE1A9CD37AE5AF1C914 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SalesforceReactTests/Pods-SalesforceReactTests-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SalesforceReactTests/Pods-SalesforceReactTests-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SalesforceReactTests/Pods-SalesforceReactTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		A34CE17122BD40C30033A467 /* ShellScript */ = {
@@ -393,7 +411,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -455,7 +473,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
