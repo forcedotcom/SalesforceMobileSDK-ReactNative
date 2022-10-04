@@ -1,39 +1,45 @@
+#  Xcode version announcments can be found here: https://discuss.circleci.com/c/announcements/
+#  Each post contains a full image manifest, including iOS runtimes, devices, CocoaPods version, etc.
+#  NOTE: When updaing Xcode check the manifest for compatible chruby versions.
 anchors:
-  - &latest-xcode "13.2.1"
-  - &latest-ios   "15.2"
+  - &latest-xcode "13.4.1"
+  - &latest-ios   "15.5"
   - &min-ios      "14.5"
+  - &chruby       "3.1.2"
+  - &device       "iPhone 12"
+  - &invalid      ""
 
 executors:
   mac:
-    working_directory: ~/SalesforceMobileSDK-ReactNative
     macos:
       xcode: *latest-xcode
-    shell: /bin/bash --login -eo pipefail
-    environment:
-      BASH_ENV: ~/.bashr
-      FASTLANE_SKIP_UPDATE_CHECK: "true"
 
 version: 2.1
 jobs:
   test-ios:
     parameters:
-      device:
+      xcode:
         type: string
-        default: "iPhone 12"
+        default: *latest-xcode
       ios:
         type: string
         default: *latest-ios
-      nightly-test:
-        type: boolean
-        default: false
-      env: 
-        type: executor
-        default: "mac"
-    executor: << parameters.env >> 
+      chruby:
+        type: string
+        default: *chruby
+      device:
+        type: string
+        default: *device
+    macos:
+      xcode: << parameters.xcode >>
+    working_directory: ~/SalesforceMobileSDK-ReactNative
+    shell: /bin/bash --login -eo pipefail
     environment:
       DEVICE: << parameters.device >>
       IOS_VERSION: << parameters.ios >>
-      NIGHTLY_TEST: << parameters.nightly-test >>
+      BASH_ENV: ~/.bashrc
+      FASTLANE_SKIP_UPDATE_CHECK: "true"
+      CHRUBY_VER: << parameters.chruby >>
     steps:
       - checkout
       - run:
@@ -67,28 +73,62 @@ jobs:
           path: /Users/distiller/SalesforceMobileSDK-ReactNative/iosTests/ios/clangReport/
           destination: Static-Analysis
 
+#  Potential parameters that can come from the project GUI Triggers
+parameters:
+  xcode:
+    type: string
+    default: *invalid
+  ios:
+    type: string
+    default: *invalid
+  chruby:
+    type: string
+    default: *chruby
+  device:
+    type: string
+    default: *device
+
 workflows:
   version: 2
 
   pr-run-tests:
+    when: 
+      equal: [ "webhook", << pipeline.trigger_source >> ]
     jobs:
-      - test-ios
-
-  # Cron are on a timezone 8 hours ahead of PST
-  # Build everything at ~11:30pm Sunday/Wednesday Nights
-  run-tests:
-    triggers:
-      - schedule:
-          cron: "30 7 * * 1,4"
+      - test-ios:
           filters:
             branches:
               only:
-                - dev
+                - /pull.*/
+
+  # Scheduled Trigger at 10 PM PST Sunday
+  run-tests:
+    when:
+      and:
+        - not: << pipeline.parameters.xcode >>
+        - not:  
+            equal: [ "webhook", << pipeline.trigger_source >> ]
     jobs:
       - test-ios:
           name: test ReactNative iOS << matrix.ios >>
           matrix:
             parameters:
-              nightly-test: [true]
               ios: [*min-ios, *latest-ios]
-              device: ["iPhone 12"]
+
+  # Scheduled Trigger (when beta exists) at 11 PM PST Sunday
+  run-tests-beta:
+    when:
+      and:
+        - << pipeline.parameters.xcode >>
+        - << pipeline.parameters.ios >>
+        - not:  
+            equal: [ "webhook", << pipeline.trigger_source >> ]
+    jobs:
+      - test-ios:
+          name: test ReactNative iOS << pipeline.parameters.ios >>
+          matrix:
+            parameters:
+              xcode: [<< pipeline.parameters.xcode >>]
+              ios: [<< pipeline.parameters.ios >>]
+              chruby: [<< pipeline.parameters.chruby >>]
+              device: [<< pipeline.parameters.device >>]
