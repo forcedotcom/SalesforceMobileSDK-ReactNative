@@ -2,11 +2,12 @@
 #  Each post contains a full image manifest, including iOS runtimes, devices, CocoaPods version, etc.
 #  NOTE: When updaing Xcode check the manifest for compatible chruby versions.
 anchors:
-  - &latest-xcode "13.4.1"
-  - &latest-ios   "15.5"
+  - &latest-xcode "14.3.1"
+  - &latest-ios   "16.4"
   - &min-ios      "14.5"
   - &chruby       "3.1.2"
   - &device       "iPhone 12"
+  - &res-class    "macos.x86.medium.gen2"
   - &invalid      ""
 
 executors:
@@ -21,6 +22,7 @@ jobs:
       xcode:
         type: string
         default: *latest-xcode
+      resource_class: *res-class	 
       ios:
         type: string
         default: *latest-ios
