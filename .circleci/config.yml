@@ -7,7 +7,6 @@ anchors:
   - &min-ios      "14.5"
   - &chruby       "3.1.2"
   - &device       "iPhone 12"
-  - &res-class    "macos.x86.medium.gen2"
   - &invalid      ""
 
 executors:
@@ -33,7 +32,7 @@ jobs:
         default: *device
     macos:
       xcode: << parameters.xcode >>
-      resource_class: *res-class	 
+      resource_class: "macos.x86.medium.gen2"
     working_directory: ~/SalesforceMobileSDK-ReactNative
     shell: /bin/bash --login -eo pipefail
     environment:
