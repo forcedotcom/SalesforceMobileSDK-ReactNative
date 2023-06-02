@@ -62,19 +62,6 @@ export class StoreConfig {
 }
 
 /**
- * SoupSpec class
- */
-export class SoupSpec {
-  public name: string;
-  public features: { [key: string]: any };
-
-  constructor(soupName: string, features: { [key: string]: any }) {
-    this.name = soupName;
-    this.features = features;
-  }
-}
-
-/**
  * SoupIndexSpec class
  */
 export class SoupIndexSpec {
@@ -341,23 +328,6 @@ export const registerSoup = (
   });
 };
 
-export const registerSoupWithSpec = (
-  storeConfig: StoreConfig | boolean,
-  soupSpec: QuerySpec,
-  indexSpecs: SoupIndexSpec[],
-  successCB: ExecSuccessCallback<string>,
-  errorCB: ExecErrorCallback,
-): void => {
-  storeConfig = checkFirstArg(storeConfig);
-
-  exec(successCB, errorCB, "registerSoup", {
-    soupSpec,
-    indexes: indexSpecs,
-    isGlobalStore: storeConfig.isGlobalStore,
-    storeName: storeConfig.storeName,
-  });
-};
-
 export const removeSoup = (
   storeConfig: StoreConfig | boolean,
   soupName: string,
@@ -388,21 +358,6 @@ export const getSoupIndexSpecs = (
   });
 };
 
-export const getSoupSpec = (
-  storeConfig: StoreConfig | boolean,
-  soupName: string,
-  successCB: ExecSuccessCallback<SoupSpec>,
-  errorCB: ExecErrorCallback,
-): void => {
-  storeConfig = checkFirstArg(storeConfig);
-
-  exec(successCB, errorCB, "getSoupSpec", {
-    soupName,
-    isGlobalStore: storeConfig.isGlobalStore,
-    storeName: storeConfig.storeName,
-  });
-};
-
 export const alterSoup = (
   storeConfig: StoreConfig | boolean,
   soupName: string,
@@ -415,27 +370,6 @@ export const alterSoup = (
 
   exec(successCB, errorCB, "alterSoup", {
     soupName,
-    indexes: indexSpecs,
-    reIndexData,
-    isGlobalStore: storeConfig.isGlobalStore,
-    storeName: storeConfig.storeName,
-  });
-};
-
-export const alterSoupWithSpec = (
-  storeConfig: StoreConfig | boolean,
-  soupName: string,
-  soupSpec: SoupSpec,
-  indexSpecs: SoupIndexSpec[],
-  reIndexData: boolean,
-  successCB: ExecSuccessCallback<string>,
-  errorCB: ExecErrorCallback,
-): void => {
-  storeConfig = checkFirstArg(storeConfig);
-
-  exec(successCB, errorCB, "alterSoup", {
-    soupName,
-    soupSpec,
     indexes: indexSpecs,
     reIndexData,
     isGlobalStore: storeConfig.isGlobalStore,
