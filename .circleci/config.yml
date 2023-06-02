@@ -22,7 +22,6 @@ jobs:
       xcode:
         type: string
         default: *latest-xcode
-      resource_class: *res-class	 
       ios:
         type: string
         default: *latest-ios
@@ -34,6 +33,7 @@ jobs:
         default: *device
     macos:
       xcode: << parameters.xcode >>
+      resource_class: *res-class	 
     working_directory: ~/SalesforceMobileSDK-ReactNative
     shell: /bin/bash --login -eo pipefail
     environment:
