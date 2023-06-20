@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.removeAllStores = exports.removeAllGlobalStores = exports.removeStore = exports.getAllGlobalStores = exports.getAllStores = exports.closeCursor = exports.moveCursorToPreviousPage = exports.moveCursorToNextPage = exports.moveCursorToPageIndex = exports.removeFromSoup = exports.upsertSoupEntriesWithExternalId = exports.upsertSoupEntries = exports.retrieveSoupEntries = exports.runSmartQuery = exports.querySoup = exports.soupExists = exports.clearSoup = exports.reIndexSoup = exports.alterSoupWithSpec = exports.alterSoup = exports.getSoupSpec = exports.getSoupIndexSpecs = exports.removeSoup = exports.registerSoupWithSpec = exports.registerSoup = exports.getDatabaseSize = exports.buildSmartQuerySpec = exports.buildMatchQuerySpec = exports.buildLikeQuerySpec = exports.buildRangeQuerySpec = exports.buildExactQuerySpec = exports.buildAllQuerySpec = exports.StoreCursor = exports.QuerySpec = exports.SoupIndexSpec = exports.SoupSpec = exports.StoreConfig = void 0;
+exports.removeAllStores = exports.removeAllGlobalStores = exports.removeStore = exports.getAllGlobalStores = exports.getAllStores = exports.closeCursor = exports.moveCursorToPreviousPage = exports.moveCursorToNextPage = exports.moveCursorToPageIndex = exports.removeFromSoup = exports.upsertSoupEntriesWithExternalId = exports.upsertSoupEntries = exports.retrieveSoupEntries = exports.runSmartQuery = exports.querySoup = exports.soupExists = exports.clearSoup = exports.reIndexSoup = exports.alterSoup = exports.getSoupIndexSpecs = exports.removeSoup = exports.registerSoup = exports.getDatabaseSize = exports.buildSmartQuerySpec = exports.buildMatchQuerySpec = exports.buildLikeQuerySpec = exports.buildRangeQuerySpec = exports.buildExactQuerySpec = exports.buildAllQuerySpec = exports.StoreCursor = exports.QuerySpec = exports.SoupIndexSpec = exports.StoreConfig = void 0;
 const react_native_1 = require("react-native");
 const react_force_common_1 = require("./react.force.common");
 const { SmartStoreReactBridge, SFSmartStoreReactBridge } = react_native_1.NativeModules;
@@ -14,13 +14,6 @@ class StoreConfig {
     }
 }
 exports.StoreConfig = StoreConfig;
-class SoupSpec {
-    constructor(soupName, features) {
-        this.name = soupName;
-        this.features = features;
-    }
-}
-exports.SoupSpec = SoupSpec;
 class SoupIndexSpec {
     constructor(path, type) {
         this.path = path;
@@ -170,16 +163,6 @@ const registerSoup = (storeConfig, soupName, indexSpecs, successCB, errorCB) => 
     });
 };
 exports.registerSoup = registerSoup;
-const registerSoupWithSpec = (storeConfig, soupSpec, indexSpecs, successCB, errorCB) => {
-    storeConfig = checkFirstArg(storeConfig);
-    exec(successCB, errorCB, "registerSoup", {
-        soupSpec,
-        indexes: indexSpecs,
-        isGlobalStore: storeConfig.isGlobalStore,
-        storeName: storeConfig.storeName,
-    });
-};
-exports.registerSoupWithSpec = registerSoupWithSpec;
 const removeSoup = (storeConfig, soupName, successCB, errorCB) => {
     storeConfig = checkFirstArg(storeConfig);
     exec(successCB, errorCB, "removeSoup", {
@@ -198,15 +181,6 @@ const getSoupIndexSpecs = (storeConfig, soupName, successCB, errorCB) => {
     });
 };
 exports.getSoupIndexSpecs = getSoupIndexSpecs;
-const getSoupSpec = (storeConfig, soupName, successCB, errorCB) => {
-    storeConfig = checkFirstArg(storeConfig);
-    exec(successCB, errorCB, "getSoupSpec", {
-        soupName,
-        isGlobalStore: storeConfig.isGlobalStore,
-        storeName: storeConfig.storeName,
-    });
-};
-exports.getSoupSpec = getSoupSpec;
 const alterSoup = (storeConfig, soupName, indexSpecs, reIndexData, successCB, errorCB) => {
     storeConfig = checkFirstArg(storeConfig);
     exec(successCB, errorCB, "alterSoup", {
@@ -218,18 +192,6 @@ const alterSoup = (storeConfig, soupName, indexSpecs, reIndexData, successCB, er
     });
 };
 exports.alterSoup = alterSoup;
-const alterSoupWithSpec = (storeConfig, soupName, soupSpec, indexSpecs, reIndexData, successCB, errorCB) => {
-    storeConfig = checkFirstArg(storeConfig);
-    exec(successCB, errorCB, "alterSoup", {
-        soupName,
-        soupSpec,
-        indexes: indexSpecs,
-        reIndexData,
-        isGlobalStore: storeConfig.isGlobalStore,
-        storeName: storeConfig.storeName,
-    });
-};
-exports.alterSoupWithSpec = alterSoupWithSpec;
 const reIndexSoup = (storeConfig, soupName, paths, successCB, errorCB) => {
     storeConfig = checkFirstArg(storeConfig);
     exec(successCB, errorCB, "reIndexSoup", {
