@@ -10,7 +10,7 @@ export declare const metadata: <T>(objtype: string, successCB: ExecSuccessCallba
 export declare const describe: <T>(objtype: string, successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback) => void;
 export declare const describeLayout: <T>(objtype: string, recordTypeId: string, successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback) => void;
 export declare const create: <T>(objtype: string, fields: Record<string, unknown>, successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback) => void;
-declare type RetrieveOverload = {
+type RetrieveOverload = {
     <T>(objtype: string, id: string, fieldlist: string[], successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback): void;
     <T>(objtype: string, id: string, successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback): void;
 };
