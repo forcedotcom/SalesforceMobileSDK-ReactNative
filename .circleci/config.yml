@@ -2,7 +2,7 @@
 #  Each post contains a full image manifest, including iOS runtimes, devices, CocoaPods version, etc.
 #  NOTE: When updaing Xcode check the manifest for compatible chruby versions.
 anchors:
-  - &latest-xcode "14.1.0"
+  - &latest-xcode "14.3.1"
   - &latest-ios   "16.4"
   - &min-ios      "15.5"
   - &chruby       "3.1.2"
