@@ -34,7 +34,6 @@ getDatabaseSize = promiser(smartstore.getDatabaseSize);
 registerSoup = promiser(smartstore.registerSoup);
 soupExists = promiser(smartstore.soupExists);
 removeSoup = promiser(smartstore.removeSoup);
-getSoupSpec = promiser(smartstore.getSoupSpec);
 getSoupIndexSpecs = promiser(smartstore.getSoupIndexSpecs);
 upsertSoupEntries = promiser(smartstore.upsertSoupEntries);
 retrieveSoupEntries = promiser(smartstore.retrieveSoupEntries);
@@ -79,21 +78,6 @@ testRegisterExistsRemoveExists = () => {
         })
         .then((result) => {
             assert.isFalse(result, 'Soup should no longer exist');
-            testDone();
-        });
-};
-
-testGetSoupSpec = () => {
-    const uniq = Math.floor(Math.random() * 1000000);
-    const soupName = 'soup_' + uniq;
-    const indexSpecs = [{path:'Name', type:'string'}, {path:'Id', type:'string'}];
-    registerSoup(storeConfig, soupName, indexSpecs)
-        .then((result) => {
-            assert.equal(result, soupName, 'Expected soupName');
-            return getSoupSpec(storeConfig, soupName);
-        })
-        .then((result) => {
-            assert.deepEqual(result, {'name':soupName,'features':[]}, 'Wrong soup spec');
             testDone();
         });
 };
@@ -343,7 +327,6 @@ testGetRemoveGlobalStores = () => {
 
 registerTest(testGetDatabaseSize);
 registerTest(testRegisterExistsRemoveExists);
-registerTest(testGetSoupSpec);
 registerTest(testGetSoupIndexSpecs);
 registerTest(testUpsertRetrieve);
 registerTest(testQuerySoup);
