@@ -4,7 +4,7 @@ anchors:
   - &latest-xcode "14.3.1"
   - &latest-ios   "16.4"
   - &min-ios      "15.5"
-  - &device       "iPhone 13"
+  - &device       "iPhone SE (3rd generation)"
   - &invalid      ""
 
 executors:
