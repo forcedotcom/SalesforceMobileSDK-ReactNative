@@ -1,4 +1,4 @@
-$device = ENV.has_key?('DEVICE') ? ENV['DEVICE'] : 'iPhone 12'
+$device = ENV.has_key?('DEVICE') ? ENV['DEVICE'] : 'iPhone SE (3rd generation)'
 $ios = ENV.has_key?('IOS_VERSION') ? ENV['IOS_VERSION'] : '15.5'
 
 lane :build do
