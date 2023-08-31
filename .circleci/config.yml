@@ -1,12 +1,10 @@
 #  Xcode version announcments can be found here: https://discuss.circleci.com/c/announcements/
 #  Each post contains a full image manifest, including iOS runtimes, devices, CocoaPods version, etc.
-#  NOTE: When updaing Xcode check the manifest for compatible chruby versions.
 anchors:
-  - &latest-xcode "13.4.1"
-  - &latest-ios   "15.5"
-  - &min-ios      "14.5"
-  - &chruby       "3.1.2"
-  - &device       "iPhone 12"
+  - &latest-xcode "14.3.1"
+  - &latest-ios   "16.4"
+  - &min-ios      "15.5"
+  - &device       "iPhone SE (3rd generation)"
   - &invalid      ""
 
 executors:
@@ -24,22 +22,17 @@ jobs:
       ios:
         type: string
         default: *latest-ios
-      chruby:
-        type: string
-        default: *chruby
       device:
         type: string
         default: *device
     macos:
       xcode: << parameters.xcode >>
+    resource_class: macos.x86.medium.gen2
     working_directory: ~/SalesforceMobileSDK-ReactNative
-    shell: /bin/bash --login -eo pipefail
     environment:
       DEVICE: << parameters.device >>
       IOS_VERSION: << parameters.ios >>
-      BASH_ENV: ~/.bashrc
       FASTLANE_SKIP_UPDATE_CHECK: "true"
-      CHRUBY_VER: << parameters.chruby >>
     steps:
       - checkout
       - run:
@@ -81,9 +74,6 @@ parameters:
   ios:
     type: string
     default: *invalid
-  chruby:
-    type: string
-    default: *chruby
   device:
     type: string
     default: *device
@@ -96,6 +86,7 @@ workflows:
       equal: [ "webhook", << pipeline.trigger_source >> ]
     jobs:
       - test-ios:
+          context: iOS Unit Tests
           filters:
             branches:
               only:
@@ -111,6 +102,7 @@ workflows:
     jobs:
       - test-ios:
           name: test ReactNative iOS << matrix.ios >>
+          context: iOS Unit Tests
           matrix:
             parameters:
               ios: [*min-ios, *latest-ios]
@@ -126,9 +118,9 @@ workflows:
     jobs:
       - test-ios:
           name: test ReactNative iOS << pipeline.parameters.ios >>
+          context: iOS Unit Tests
           matrix:
             parameters:
               xcode: [<< pipeline.parameters.xcode >>]
               ios: [<< pipeline.parameters.ios >>]
-              chruby: [<< pipeline.parameters.chruby >>]
               device: [<< pipeline.parameters.device >>]
