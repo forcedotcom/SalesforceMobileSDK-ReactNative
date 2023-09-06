@@ -6,7 +6,7 @@ anchors:
   - &min-ios      "15.5"
   - &device       "iPhone-SE-3rd-generation"
   - &invalid      ""
-f
+
 executors:
   mac:
     macos:
