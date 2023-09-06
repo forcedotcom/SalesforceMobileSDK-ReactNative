@@ -1,4 +1,4 @@
-$device = ENV.has_key?('DEVICE') ? ENV['DEVICE'] : 'iPhone SE (3rd generation)'
+$device = ENV.has_key?('DEVICE') ? ENV['DEVICE'] : 'iPhone-SE-3rd-generation'
 $ios = ENV.has_key?('IOS_VERSION') ? ENV['IOS_VERSION'] : '15.5'
 
 lane :build do
@@ -10,20 +10,15 @@ lane :test do
 end
 
 def test_scheme(scheme)
-    $device.gsub!(' ', '-')
-    $ios.gsub!('.', '-')
-    system('xcrun simctl delete test_device') or true
-    sim_id = `xcrun simctl create test_device com.apple.CoreSimulator.SimDeviceType.#{$device} com.apple.CoreSimulator.SimRuntime.iOS-#{$ios}`.delete("\n")
-    destination = "test_device (" + `instruments -s devices | grep test_device | awk -F"[()]" '{print $2}'`.delete("\n") + ")"
-    
     scan(
         workspace: '../iosTests/ios/SalesforceReactTestApp.xcworkspace',
         scheme: scheme,
-        device: destination,
+        device:  ENV['DEVICE'] + ' (' + ENV['IOS_VERSION'] + ')',
         output_directory: './test_output',
         output_types: 'html,junit',
         code_coverage: true,
-        skip_build: true
+        skip_build: true,
+        ensure_devices_found: true
     )
 end
 
