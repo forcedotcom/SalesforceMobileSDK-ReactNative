@@ -24,7 +24,7 @@ def test_scheme(scheme)
         workspace: '../iosTests/ios/SalesforceReactTestApp.xcworkspace',
         scheme: scheme,
         device: "test_device (#{ios_version})",
-        output_directory: './test_output',
+        output_directory: '../iosTests/ios/test_output',
         output_types: 'html,junit',
         code_coverage: true,
         skip_build: true
