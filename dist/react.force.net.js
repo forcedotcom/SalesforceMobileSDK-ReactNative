@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.collectionDelete = exports.collectionRetrieve = exports.collectionUpsert = exports.collectionUpdate = exports.collectionCreate = exports.getAttachment = exports.search = exports.queryMore = exports.query = exports.del = exports.update = exports.upsert = exports.retrieve = exports.create = exports.describeLayout = exports.describe = exports.metadata = exports.describeGlobal = exports.resources = exports.versions = exports.sendRequest = exports.getApiVersion = exports.setApiVersion = void 0;
 const react_native_1 = require("react-native");
 const react_force_common_1 = require("./react.force.common");
-const react_force_log_1 = require("./react.force.log");
 const { SalesforceNetReactBridge, SFNetReactBridge } = react_native_1.NativeModules;
 var apiVersion = 'v55.0';
 const setApiVersion = (version) => {
@@ -76,13 +75,7 @@ exports.del = del;
 const query = (soql, successCB, errorCB) => (0, exports.sendRequest)("/services/data", `/${apiVersion}/query`, successCB, errorCB, "GET", { q: soql });
 exports.query = query;
 const queryMore = (url, successCB, errorCB) => {
-    const pathFromUrl = url.match(/https:\/\/[^/]*(.*)/);
-    if (pathFromUrl && pathFromUrl.length === 2) {
-        return (0, exports.sendRequest)("", pathFromUrl[1], successCB, errorCB);
-    }
-    else {
-        react_force_log_1.sdkConsole.error(`queryMore failed: url must be a valid`);
-    }
+    return (0, exports.sendRequest)("", url, successCB, errorCB);
 };
 exports.queryMore = queryMore;
 const search = (sosl, successCB, errorCB) => (0, exports.sendRequest)("/services/data", `/${apiVersion}/search`, successCB, errorCB, "GET", { q: sosl });

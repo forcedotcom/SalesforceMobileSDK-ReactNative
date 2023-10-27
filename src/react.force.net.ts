@@ -26,7 +26,6 @@
 
 import { NativeModules } from "react-native";
 import { exec as forceExec, ExecErrorCallback, ExecSuccessCallback } from "./react.force.common";
-import { sdkConsole } from "./react.force.log";
 import { HttpMethod } from "./typings";
 const { SalesforceNetReactBridge, SFNetReactBridge } = NativeModules;
 
@@ -302,12 +301,7 @@ export const query = <T>(soql: string, successCB: ExecSuccessCallback<T>, errorC
  * @param [error=null] function called in case of error
  */
 export const queryMore = <T>(url: string, successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback): void => {
-  const pathFromUrl = url.match(/https:\/\/[^/]*(.*)/);
-  if (pathFromUrl && pathFromUrl.length === 2) {
-    return sendRequest("", pathFromUrl[1], successCB, errorCB);
-  } else {
-    sdkConsole.error(`queryMore failed: url must be a valid`);
-  }
+  return sendRequest("", url, successCB, errorCB);
 };
 
 /**
