@@ -301,7 +301,12 @@ export const query = <T>(soql: string, successCB: ExecSuccessCallback<T>, errorC
  * @param [error=null] function called in case of error
  */
 export const queryMore = <T>(url: string, successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback): void => {
-  return sendRequest("", url, successCB, errorCB);
+  const pathFromUrl = url.match(/https:\/\/[^/]*(.*)/);
+  if (pathFromUrl && pathFromUrl.length === 2) {
+    return sendRequest("", pathFromUrl[1], successCB, errorCB);
+  } else {
+    return sendRequest("", url, successCB, errorCB);
+  }
 };
 
 /**

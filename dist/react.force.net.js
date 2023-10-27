@@ -75,7 +75,13 @@ exports.del = del;
 const query = (soql, successCB, errorCB) => (0, exports.sendRequest)("/services/data", `/${apiVersion}/query`, successCB, errorCB, "GET", { q: soql });
 exports.query = query;
 const queryMore = (url, successCB, errorCB) => {
-    return (0, exports.sendRequest)("", url, successCB, errorCB);
+    const pathFromUrl = url.match(/https:\/\/[^/]*(.*)/);
+    if (pathFromUrl && pathFromUrl.length === 2) {
+        return (0, exports.sendRequest)("", pathFromUrl[1], successCB, errorCB);
+    }
+    else {
+        return (0, exports.sendRequest)("", url, successCB, errorCB);
+    }
 };
 exports.queryMore = queryMore;
 const search = (sosl, successCB, errorCB) => (0, exports.sendRequest)("/services/data", `/${apiVersion}/search`, successCB, errorCB, "GET", { q: sosl });
