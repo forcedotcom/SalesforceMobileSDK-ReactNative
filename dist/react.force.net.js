@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.collectionDelete = exports.collectionRetrieve = exports.collectionUpsert = exports.collectionUpdate = exports.collectionCreate = exports.getAttachment = exports.search = exports.queryMore = exports.query = exports.del = exports.update = exports.upsert = exports.retrieve = exports.create = exports.describeLayout = exports.describe = exports.metadata = exports.describeGlobal = exports.resources = exports.versions = exports.sendRequest = exports.getApiVersion = exports.setApiVersion = void 0;
 const react_native_1 = require("react-native");
 const react_force_common_1 = require("./react.force.common");
-const react_force_log_1 = require("./react.force.log");
 const { SalesforceNetReactBridge, SFNetReactBridge } = react_native_1.NativeModules;
 var apiVersion = 'v55.0';
 const setApiVersion = (version) => {
@@ -81,7 +80,7 @@ const queryMore = (url, successCB, errorCB) => {
         return (0, exports.sendRequest)("", pathFromUrl[1], successCB, errorCB);
     }
     else {
-        react_force_log_1.sdkConsole.error(`queryMore failed: url must be a valid`);
+        return (0, exports.sendRequest)("", url, successCB, errorCB);
     }
 };
 exports.queryMore = queryMore;
