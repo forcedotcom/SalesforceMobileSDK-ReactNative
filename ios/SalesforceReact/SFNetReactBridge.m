@@ -1,6 +1,6 @@
 /*
  Copyright (c) 2015-present, salesforce.com, inc. All rights reserved.
- 
+
  Redistribution and use of this software in source and binary forms, with or without modification,
  are permitted provided that the following conditions are met:
  * Redistributions of source code must retain the above copyright notice, this list of conditions
@@ -11,7 +11,7 @@
  * Neither the name of salesforce.com, inc. nor the names of its contributors may be used to
  endorse or promote products derived from this software without specific prior written
  permission of salesforce.com, inc.
- 
+
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
  FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
@@ -54,18 +54,18 @@ RCT_EXPORT_MODULE();
 
 RCT_EXPORT_METHOD(sendRequest:(NSDictionary *)argsDict callback:(RCTResponseSenderBlock)callback)
 {
-    SFRestMethod method = [SFRestRequest sfRestMethodFromHTTPMethod:[argsDict nonNullObjectForKey:kMethodArg]];
-    NSString* endPoint = [argsDict nonNullObjectForKey:kEndPointArg];
-    NSString* path = [argsDict nonNullObjectForKey:kPathArg];
-    NSDictionary* queryParams = [argsDict nonNullObjectForKey:kQueryParams];
-    NSMutableDictionary* headerParams = [argsDict nonNullObjectForKey:kHeaderParams];
-    NSDictionary* fileParams = [argsDict nonNullObjectForKey:kfileParams];
-    
+    SFRestMethod method = [SFRestRequest sfRestMethodFromHTTPMethod:[argsDict sfsdk_nonNullObjectForKey:kMethodArg]];
+    NSString* endPoint = [argsDict sfsdk_nonNullObjectForKey:kEndPointArg];
+    NSString* path = [argsDict sfsdk_nonNullObjectForKey:kPathArg];
+    NSDictionary* queryParams = [argsDict sfsdk_nonNullObjectForKey:kQueryParams];
+    NSMutableDictionary* headerParams = [argsDict sfsdk_nonNullObjectForKey:kHeaderParams];
+    NSDictionary* fileParams = [argsDict sfsdk_nonNullObjectForKey:kfileParams];
+
     //Set to true if boolean is absent.
-    BOOL doesNotRequireAuthentication = [argsDict nonNullObjectForKey:kDoesNotRequireAuthentication] != nil && [[argsDict nonNullObjectForKey:kDoesNotRequireAuthentication] boolValue];
-    BOOL returnBinary = [argsDict nonNullObjectForKey:kReturnBinary] != nil && [[argsDict nonNullObjectForKey:kReturnBinary] boolValue];
+    BOOL doesNotRequireAuthentication = [argsDict sfsdk_nonNullObjectForKey:kDoesNotRequireAuthentication] != nil && [[argsDict sfsdk_nonNullObjectForKey:kDoesNotRequireAuthentication] boolValue];
+    BOOL returnBinary = [argsDict sfsdk_nonNullObjectForKey:kReturnBinary] != nil && [[argsDict sfsdk_nonNullObjectForKey:kReturnBinary] boolValue];
     SFRestRequest* request = nil;
-    
+
     // Sets HTTP body explicitly for a POST, PATCH or PUT request.
     if (method == SFRestMethodPOST || method == SFRestMethodPATCH || method == SFRestMethodPUT) {
         request = [SFRestRequest requestWithMethod:method path:path queryParams:nil];
@@ -81,21 +81,21 @@ RCT_EXPORT_METHOD(sendRequest:(NSDictionary *)argsDict callback:(RCTResponseSend
     if (endPoint) {
         [request setEndpoint:endPoint];
     }
-    
+
     // Files post
     if (fileParams) {
         // File params expected to be of the form:
         // {<fileParamNameInPost>: {fileMimeType:<someMimeType>, fileUrl:<fileUrl>, fileName:<fileNameForPost>}}
         for (NSString* fileParamName in fileParams) {
             NSDictionary* fileParam = fileParams[fileParamName];
-            NSString* fileMimeType = [fileParam nonNullObjectForKey:kFileMimeType];
-            NSString* fileUrl = [fileParam nonNullObjectForKey:kFileUrl];
-            NSString* fileName = [fileParam nonNullObjectForKey:kFileName];
+            NSString* fileMimeType = [fileParam sfsdk_nonNullObjectForKey:kFileMimeType];
+            NSString* fileUrl = [fileParam sfsdk_nonNullObjectForKey:kFileUrl];
+            NSString* fileName = [fileParam sfsdk_nonNullObjectForKey:kFileName];
             NSData* fileData = [NSData dataWithContentsOfURL:[NSURL URLWithString:fileUrl]];
             [request addPostFileData:fileData paramName:fileParamName fileName:fileName mimeType:fileMimeType params:queryParams];
         }
     }
-    
+
     // Disable parsing for binary request
     if (returnBinary) {
         request.parseResponse = NO;
@@ -106,7 +106,7 @@ RCT_EXPORT_METHOD(sendRequest:(NSDictionary *)argsDict callback:(RCTResponseSend
     [restApiInstance sendRequest:request
                                       failureBlock:^(id response, NSError *e, NSURLResponse *rawResponse) {
                                           __strong typeof(self) strongSelf = weakSelf;
-                                          NSMutableDictionary *responseDictionary = [[rawResponse asDictionary] mutableCopy];
+                                          NSMutableDictionary *responseDictionary = [[rawResponse sfsdk_asDictionary] mutableCopy];
                                           responseDictionary[@"body"] = [strongSelf serializableResponse:response rawResponse:rawResponse];
                                           NSMutableDictionary *errorDictionary = [NSMutableDictionary new];
                                           errorDictionary[@"error"] = e.localizedDescription;
@@ -115,7 +115,7 @@ RCT_EXPORT_METHOD(sendRequest:(NSDictionary *)argsDict callback:(RCTResponseSend
                                       }
                                   successBlock:^(id response, NSURLResponse *rawResponse) {
                                       id result;
-                                      
+
                                       // Binary response
                                       if (returnBinary) {
                                           result = @{
