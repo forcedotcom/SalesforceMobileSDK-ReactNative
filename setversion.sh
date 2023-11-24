@@ -58,6 +58,5 @@ echo "*** Updating podspecs ***"
 update_podspec "./SalesforceReact.podspec" "${OPT_VERSION}"
 
 echo "*** Updating dist ***"
-npm install
 npm run build
 

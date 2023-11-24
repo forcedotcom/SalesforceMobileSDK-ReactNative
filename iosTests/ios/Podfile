@@ -2,8 +2,9 @@ require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 require_relative '../mobile_sdk/SalesforceMobileSDK-iOS/mobilesdk_pods'
 
+platform :ios, '13.0'
 
-platform :ios, '15.0'
+use_frameworks!
 
 project 'SalesforceReactTestApp.xcodeproj'
 target 'SalesforceReactTestApp' do
@@ -12,50 +13,8 @@ end
 target 'SalesforceReactTests' do
   source 'https://cdn.cocoapods.org/'
   config = use_native_modules!
-
-  # Flags change depending on the env values.
-  flags = get_default_flags()
-
-  use_react_native!(
-    :path => config[:reactNativePath],
-    :hermes_enabled => true,
-    :fabric_enabled => flags[:fabric_enabled],
-    :flipper_configuration => FlipperConfiguration.disabled,
-    :app_path => "#{Pod::Config.instance.installation_root}/.."
-  )
+  use_react_native!(:path => config["reactNativePath"])
   pod 'React-RCTTest', :path => '../RCTTest'
   use_mobile_sdk!(:path => '../mobile_sdk/SalesforceMobileSDK-iOS')
-  pod 'SalesforceReact', :path => '../node_modules/react-native-force'
-end
-
-pre_install do |installer|
-  # Mobile SDK pre install
-  mobile_sdk_pre_install(installer)  
-end
-
-
-post_install do |installer|
-  # Comment the following if you do not want the SDK to emit signpost events for instrumentation. Signposts are  enabled for non release version of the app.
-  signposts_post_install(installer)
-
-  # React native post install
-  react_native_post_install(
-      installer,
-      # Set `mac_catalyst_enabled` to `true` in order to apply patches
-      # necessary for Mac Catalyst builds
-      :mac_catalyst_enabled => false
-  )
-  
-  # Cocoapods workaround for M1 machines
-  __apply_Xcode_12_5_M1_post_install_workaround(installer)
-
-  # Needed with XCdoe 14.3
-  installer.pods_project.targets.each do |target|
-    if target.name == "React-Codegen" 
-      change_deployment_target(target, '12.0')
-    end
-  end
-  
-  # Mobile SDK post install
-  mobile_sdk_post_install(installer)
+  pod 'SalesforceReact', :path => '../..'
 end

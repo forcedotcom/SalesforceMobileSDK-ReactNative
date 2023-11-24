@@ -5,6 +5,15 @@ export declare class StoreConfig {
     isGlobalStore?: boolean;
     constructor(storeName: string, isGlobalStore: boolean);
 }
+export declare class SoupSpec {
+    name: string;
+    features: {
+        [key: string]: any;
+    };
+    constructor(soupName: string, features: {
+        [key: string]: any;
+    });
+}
 export declare class SoupIndexSpec {
     path: string;
     type: string;
@@ -33,17 +42,20 @@ export declare class StoreCursor<T> {
     currentPageOrderedEntries: T[];
     constructor();
 }
-export declare const buildAllQuerySpec: (path: string, order: StoreOrder, pageSize: number, selectPaths?: string[]) => QuerySpec;
-export declare const buildExactQuerySpec: (path: string, matchKey: string, pageSize: number, order: StoreOrder, orderPath?: string, selectPaths?: string[]) => QuerySpec;
-export declare const buildRangeQuerySpec: (path: string, beginKey: string, endKey: string, order: StoreOrder, pageSize: number, orderPath?: string, selectPaths?: string[]) => QuerySpec;
-export declare const buildLikeQuerySpec: (path: string, likeKey: string, order: StoreOrder, pageSize: number, orderPath?: string, selectPaths?: string[]) => QuerySpec;
-export declare const buildMatchQuerySpec: (path: string, matchKey: string, order: StoreOrder, pageSize: number, orderPath?: string, selectPaths?: string[]) => QuerySpec;
+export declare const buildAllQuerySpec: (path: string, order: StoreOrder, pageSize: number, selectPaths?: string[] | undefined) => QuerySpec;
+export declare const buildExactQuerySpec: (path: string, matchKey: string, pageSize: number, order: StoreOrder, orderPath?: string | undefined, selectPaths?: string[] | undefined) => QuerySpec;
+export declare const buildRangeQuerySpec: (path: string, beginKey: string, endKey: string, order: StoreOrder, pageSize: number, orderPath?: string | undefined, selectPaths?: string[] | undefined) => QuerySpec;
+export declare const buildLikeQuerySpec: (path: string, likeKey: string, order: StoreOrder, pageSize: number, orderPath?: string | undefined, selectPaths?: string[] | undefined) => QuerySpec;
+export declare const buildMatchQuerySpec: (path: string, matchKey: string, order: StoreOrder, pageSize: number, orderPath?: string | undefined, selectPaths?: string[] | undefined) => QuerySpec;
 export declare const buildSmartQuerySpec: (smartSql: string, pageSize: number) => QuerySpec;
 export declare const getDatabaseSize: (storeConfig: StoreConfig | boolean, successCB: ExecSuccessCallback<number>, errorCB: ExecErrorCallback) => void;
 export declare const registerSoup: (storeConfig: StoreConfig | boolean, soupName: string, indexSpecs: SoupIndexSpec[], successCB: ExecSuccessCallback<string>, errorCB: ExecErrorCallback) => void;
+export declare const registerSoupWithSpec: (storeConfig: StoreConfig | boolean, soupSpec: QuerySpec, indexSpecs: SoupIndexSpec[], successCB: ExecSuccessCallback<string>, errorCB: ExecErrorCallback) => void;
 export declare const removeSoup: (storeConfig: StoreConfig | boolean, soupName: string, successCB: ExecSuccessCallback<"OK">, errorCB: ExecErrorCallback) => void;
 export declare const getSoupIndexSpecs: (storeConfig: StoreConfig | boolean, soupName: string, successCB: ExecSuccessCallback<SoupIndexSpec[]>, errorCB: ExecErrorCallback) => void;
+export declare const getSoupSpec: (storeConfig: StoreConfig | boolean, soupName: string, successCB: ExecSuccessCallback<SoupSpec>, errorCB: ExecErrorCallback) => void;
 export declare const alterSoup: (storeConfig: StoreConfig | boolean, soupName: string, indexSpecs: SoupIndexSpec[], reIndexData: boolean, successCB: ExecSuccessCallback<string>, errorCB: ExecErrorCallback) => void;
+export declare const alterSoupWithSpec: (storeConfig: StoreConfig | boolean, soupName: string, soupSpec: SoupSpec, indexSpecs: SoupIndexSpec[], reIndexData: boolean, successCB: ExecSuccessCallback<string>, errorCB: ExecErrorCallback) => void;
 export declare const reIndexSoup: (storeConfig: StoreConfig | boolean, soupName: string, paths: string, successCB: ExecSuccessCallback<string>, errorCB: ExecErrorCallback) => void;
 export declare const clearSoup: <T>(storeConfig: StoreConfig | boolean, soupName: string, successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback) => void;
 export declare const soupExists: (storeConfig: StoreConfig | boolean, soupName: string, successCB: ExecSuccessCallback<boolean>, errorCB: ExecErrorCallback) => void;

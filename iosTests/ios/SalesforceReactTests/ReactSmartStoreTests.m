@@ -54,6 +54,7 @@
 
 RCT_TEST(GetDatabaseSize)
 RCT_TEST(RegisterExistsRemoveExists)
+RCT_TEST(GetSoupSpec)
 RCT_TEST(GetSoupIndexSpecs)
 RCT_TEST(UpsertRetrieve)
 RCT_TEST(QuerySoup)

@@ -28,5 +28,5 @@ const setLogLevel = (level) => {
     exports.sdkConsole.log = console.log.bind(console);
 };
 exports.setLogLevel = setLogLevel;
-(0, exports.setLogLevel)("info");
+exports.setLogLevel("info");
 //# sourceMappingURL=react.force.log.js.map
