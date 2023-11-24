@@ -87,6 +87,10 @@ export const getAuthCredentials = (successCB: ExecSuccessCallback<UserAccount>, 
   exec(successCB, errorCB, "getAuthCredentials", {});
 };
 
+export const updateAccessToken = (successCB: ExecSuccessCallback<UserAccount>, errorCB: ExecErrorCallback): void => {
+  exec(successCB, errorCB, "updateAccessToken", {});
+};
+
 /**
  * Logout the current authenticated user. This removes any current valid session token
  * as well as any OAuth refresh token.  

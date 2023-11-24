@@ -125,4 +125,74 @@ RCT_EXPORT_METHOD(authenticate:(NSDictionary *)args callback:(RCTResponseSenderB
         [self sendNotAuthenticatedError:callback];
     }
 }
+
+
+RCT_EXPORT_METHOD(updateAccessToken:(NSDictionary *)argsDict callback:(RCTResponseSenderBlock)callback)
+{
+    SFOAuthCredentials *creds = [SFUserAccountManager sharedInstance].currentUser.credentials;
+    if (nil != creds) {
+   
+            // Define your Salesforce API endpoint, client ID, and client secret.
+            NSString *salesforceEndpoint = creds.instanceUrl.absoluteString;
+            NSString *clientId = creds.clientId;
+            NSString *clientSecret = @"81C0282B921F3361FC78D4A765332C670AC04CEF04D79EE25B51225DEC768284";
+
+            // Get the refresh token from secure storage.
+            NSString *refreshToken = creds.refreshToken;
+            // Create a request to obtain a new access token.
+            NSURL *tokenRefreshURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@/services/oauth2/token", salesforceEndpoint]];
+            NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:tokenRefreshURL];
+            request.HTTPMethod = @"POST";
+            // Define the request parameters.
+            NSString *postString = [NSString stringWithFormat:@"grant_type=refresh_token&client_id=%@&client_secret=%@&refresh_token=%@", clientId, clientSecret, refreshToken];
+            request.HTTPBody = [postString dataUsingEncoding:NSUTF8StringEncoding];
+            // Send the request and handle the response.
+            NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+                if (error) {
+                    NSLog(@"Error refreshing access token: %@", [error localizedDescription]);
+                } else if (data) {
+                    NSError *jsonError;
+                    NSDictionary *responseJSON = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
+                    if (jsonError) {
+                        NSLog(@"Error parsing JSON response: %@", [jsonError localizedDescription]);
+                    } else {
+                        // Extract the new access token and update it in your app's secure storage.
+                        NSString *accessToken = responseJSON[@"access_token"];
+                        NSString *instanceUrl = responseJSON[@"instance_url"];
+                        if (accessToken) {
+                          
+                  
+                            NSDictionary* credentialsDict = @{@"access_token": accessToken,
+                                                                      @"instance_url": instanceUrl};
+                          
+                            [creds updateCredentials: credentialsDict];
+              
+                            SFOAuthCredentials *creds1 = [SFUserAccountManager sharedInstance].currentUser.credentials;
+                     
+                            NSString *loginUrl = [NSString stringWithFormat:@"%@://%@", creds.protocol, creds.domain];
+                            NSString *uaString = [SalesforceSDKManager sharedManager].userAgentString(@"");
+                            NSDictionary* credDict = @{kAccessTokenCredentialsDictKey: accessToken,
+                                                              kRefreshTokenCredentialsDictKey: creds.refreshToken,
+                                                              kClientIdCredentialsDictKey: creds.clientId,
+                                                              kUserIdCredentialsDictKey: creds.userId,
+                                                              kOrgIdCredentialsDictKey: creds.organizationId,
+                                                              kCommunityIdCredentialsDictKey: creds.communityId ?: [NSNull null],
+                                                              kCommunityUrlCredentialsDictKey: creds.communityUrl ?: [NSNull null],
+                                                              kLoginUrlCredentialsDictKey: loginUrl,
+                                                              kInstanceUrlCredentialsDictKey: instanceUrl,
+                                                              kUserAgentCredentialsDictKey: uaString};
+                            callback(@[[NSNull null], credDict]);
+                            
+                            // Update your app's access token.
+                        }
+                    }
+                }
+            }];
+            [task resume];
+        
+  
+    } else {
+        [self sendNotAuthenticatedError:callback];
+    }
+}
 @end
