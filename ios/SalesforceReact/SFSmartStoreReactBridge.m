@@ -31,10 +31,12 @@
 #import <SmartStore/SFSmartStore.h>
 #import <SmartStore/SFQuerySpec.h>
 #import <SmartStore/SFSoupIndex.h>
+#import <SmartStore/SFSoupSpec.h>
 #import <SmartStore/SFSmartStoreInspectorViewController.h>
 
 // Private constants
 NSString * const kSoupNameArg         = @"soupName";
+NSString * const kSoupSpecArg         = @"soupSpec";
 NSString * const kEntryIdsArg         = @"entryIds";
 NSString * const kCursorIdArg         = @"cursorId";
 NSString * const kIndexArg            = @"index";
@@ -88,14 +90,21 @@ RCT_EXPORT_METHOD(soupExists:(NSDictionary *)argsDict callback:(RCTResponseSende
 RCT_EXPORT_METHOD(registerSoup:(NSDictionary *)argsDict callback:(RCTResponseSenderBlock)callback)
 {
     SFSmartStore *smartStore = [self getStoreInst:argsDict];
-    NSString* soupName = [argsDict nonNullObjectForKey:kSoupNameArg];
+    NSDictionary *soupSpecDict = [argsDict nonNullObjectForKey:kSoupSpecArg];
+    SFSoupSpec *soupSpec = nil;
+    if (soupSpecDict) {
+        soupSpec = [SFSoupSpec newSoupSpecWithDictionary:soupSpecDict];
+    } else {
+        NSString* soupName = [argsDict nonNullObjectForKey:kSoupNameArg];
+        soupSpec = [SFSoupSpec newSoupSpec:soupName withFeatures:nil];
+    }
     NSArray *indexSpecs = [SFSoupIndex asArraySoupIndexes:[argsDict nonNullObjectForKey:kIndexesArg]];
-    [SFSDKReactLogger d:[self class] format:@"registerSoup with name: %@, indexSpecs: %@", soupName, indexSpecs];
+    [SFSDKReactLogger d:[self class] format:@"registerSoup with name: %@, soup features: %@, indexSpecs: %@", soupSpec.soupName, soupSpec.features, indexSpecs];
     if (smartStore) {
         NSError *error = nil;
-        BOOL result = [smartStore registerSoup:soupName withIndexSpecs:indexSpecs error:&error];
+        BOOL result = [smartStore registerSoupWithSpec:soupSpec withIndexSpecs:indexSpecs error:&error];
         if (result) {
-            callback(@[[NSNull null], soupName]);
+            callback(@[[NSNull null], soupSpec.soupName]);
         } else {
             callback(@[RCTMakeError(@"registerSoup failed", error, nil)]);
         }
@@ -224,10 +233,17 @@ RCT_EXPORT_METHOD(getDatabaseSize:(NSDictionary *)argsDict callback:(RCTResponse
 RCT_EXPORT_METHOD(alterSoup:(NSDictionary *)argsDict callback:(RCTResponseSenderBlock)callback)
 {
     NSString* soupName = [argsDict nonNullObjectForKey:kSoupNameArg];
+    NSDictionary *soupSpecDict = [argsDict nonNullObjectForKey:kSoupSpecArg];
+    SFSoupSpec *soupSpec = nil;
+    if (soupSpecDict) {
+        soupSpec = [SFSoupSpec newSoupSpecWithDictionary:soupSpecDict];
+    } else {
+        soupSpec = [SFSoupSpec newSoupSpec:soupName withFeatures:nil];
+    }
     NSArray *indexSpecs = [SFSoupIndex asArraySoupIndexes:[argsDict nonNullObjectForKey:kIndexesArg]];
     BOOL reIndexData = [[argsDict nonNullObjectForKey:kReIndexDataArg] boolValue];
-    [SFSDKReactLogger d:[self class] format:@"alterSoup with name: %@, indexSpecs: %@, reIndexData: %@", soupName, indexSpecs, reIndexData ? @"true" : @"false"];
-    BOOL alterOk = [[self getStoreInst:argsDict] alterSoup:soupName withIndexSpecs:indexSpecs reIndexData:reIndexData];
+    [SFSDKReactLogger d:[self class] format:@"alterSoup with name: %@, soup features: %@, indexSpecs: %@, reIndexData: %@", soupName, soupSpec.features, indexSpecs, reIndexData ? @"true" : @"false"];
+    BOOL alterOk = [[self getStoreInst:argsDict] alterSoup:soupName withSoupSpec:soupSpec withIndexSpecs:indexSpecs reIndexData:reIndexData];
     if (alterOk) {
         callback(@[[NSNull null], soupName]);
     } else {
@@ -257,6 +273,19 @@ RCT_EXPORT_METHOD(getSoupIndexSpecs:(NSDictionary *)argsDict callback:(RCTRespon
         callback(@[[NSNull null], indexSpecsAsDicts]);
     } else {
         callback(@[RCTMakeError(@"getSoupIndexSpecs failed", nil, nil)]);
+    }
+}
+
+RCT_EXPORT_METHOD(getSoupSpec:(NSDictionary *)argsDict callback:(RCTResponseSenderBlock)callback)
+{
+    NSString *soupName = [argsDict nonNullObjectForKey:kSoupNameArg];
+    [SFSDKReactLogger d:[self class] format:@"getSoupSpec with soup name: %@", soupName];
+    SFSmartStore *store = [self getStoreInst:argsDict];
+    SFSoupSpec *soupSpec = [store attributesForSoup:soupName];
+    if (soupSpec) {
+        callback(@[[NSNull null], [soupSpec asDictionary]]);
+    } else {
+        callback(@[RCTMakeError(@"getSoupSpec failed", nil, nil)]);
     }
 }
 

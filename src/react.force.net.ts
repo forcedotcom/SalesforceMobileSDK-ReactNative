@@ -26,10 +26,11 @@
 
 import { NativeModules } from "react-native";
 import { exec as forceExec, ExecErrorCallback, ExecSuccessCallback } from "./react.force.common";
+import { sdkConsole } from "./react.force.log";
 import { HttpMethod } from "./typings";
 const { SalesforceNetReactBridge, SFNetReactBridge } = NativeModules;
 
-var  apiVersion = 'v55.0';
+var  apiVersion = 'v49.0';
 
 /**
  * Set apiVersion to be used
@@ -172,7 +173,6 @@ export const create = <T>(
   errorCB: ExecErrorCallback,
 ): void => sendRequest("/services/data", `/${apiVersion}/sobjects/${objtype}/`, successCB, errorCB, "POST", fields);
 
-
 type RetrieveOverload = {
   <T>(
     objtype: string,
@@ -188,7 +188,7 @@ type RetrieveOverload = {
  * Retrieves field values for a record of the given type.
  * @param objtype object type; e.g. "Account"
  * @param id the record's object ID
- * @param [fields=null] list of fields for which
+ * @param [fields=null] optional comma-separated list of fields for which
  *               to return values; e.g. Name,Industry,TickerSymbol
  * @param callback function to which response will be passed
  * @param [error=null] function called in case of error
@@ -305,7 +305,7 @@ export const queryMore = <T>(url: string, successCB: ExecSuccessCallback<T>, err
   if (pathFromUrl && pathFromUrl.length === 2) {
     return sendRequest("", pathFromUrl[1], successCB, errorCB);
   } else {
-    return sendRequest("", url, successCB, errorCB);
+    sdkConsole.error(`queryMore failed: url must be a valid`);
   }
 };
 
@@ -342,80 +342,3 @@ export const getAttachment = <T>(
     null,
     true /* return binary */,
   );
-
-/**
- * Creates up to 2000 new records in one roundtrip to the server.
- * @param allOrNone indicates whether to roll back the entire request when one record fails
- * @param records array of objects containing field names and values as well as a "attributes" property with the object type e.g. {type: "Account"}
- * @param callback function to which response will be passed
- * @param [error=null] function called in case of error
- */
-export const collectionCreate = <T>(
-  allOrNone: boolean,
-  records: Array<Record<string, unknown>>,
-  successCB: ExecSuccessCallback<T>,
-  errorCB: ExecErrorCallback,
-): void => sendRequest("/services/data", `/${apiVersion}/composite/sobjects`, successCB, errorCB, "POST", {allOrNone: allOrNone, records: records});
-
-/**
- * Updates up to 200 records in one roundtrip to the server.
- * @param allOrNone indicates whether to roll back the entire request when one record fails
- * @param records array of objects containing field names and values as well as a "attributes" property with the object type e.g. {type: "Account"}
- * @param callback function to which response will be passed
- * @param [error=null] function called in case of error
- */
-export const collectionUpdate= <T>(
-  allOrNone: boolean,
-  records: Array<Record<string, unknown>>,
-  successCB: ExecSuccessCallback<T>,
-  errorCB: ExecErrorCallback,
-): void => sendRequest("/services/data", `/${apiVersion}/composite/sobjects`, successCB, errorCB, "PATCH", {allOrNone: allOrNone, records: records});
-
-/**
- * Upserts up to 200 records in one roundtrip to the server.
- * @param allOrNone indicates whether to roll back the entire request when one record fails
- * @param objectType object type; e.g. "Account"
- * @param externalIdField  name of ID field in source data
- * @param records array of objects containing field names and values as well as a "attributes" property with the object type e.g. {type: "Account"}
- * @param callback function to which response will be passed
- * @param [error=null] function called in case of error
- */
-export const collectionUpsert = <T>(
-  allOrNone: boolean,
-  objectType: string,
-  externalIdField: string,
-  records: Array<Record<string, unknown>>,
-  successCB: ExecSuccessCallback<T>,
-  errorCB: ExecErrorCallback,
-): void => sendRequest("/services/data", `/${apiVersion}/composite/sobjects/${objectType}/${externalIdField}`, successCB, errorCB, "PATCH", {allOrNone: allOrNone, records: records});
-
-/**
- * Retrieves up to 2000 records in one roundtrip to the server.
- * @param objectType object type; e.g. "Account"
- * @param ids the ids of records to retrieve
- * @param fields list of fields for which to return values; e.g. ["Name", "Industry"]
- * @param callback function to which response will be passed
- * @param [error=null] function called in case of error
- */
-export const collectionRetrieve = <T>(
-  objectType: string,
-  ids: Array<string>,
-  fields: Array<string>,
-  successCB: ExecSuccessCallback<T>,
-  errorCB: ExecErrorCallback,
-): void => sendRequest("/services/data", `/${apiVersion}/composite/sobjects/${objectType}`, successCB, errorCB, "POST", {ids: ids, fields: fields});
-
-/**
- * Delete up to 200 records in one roundtrip to the server.
- * @param allOrNone indicates whether to roll back the entire request when one record fails
- * @param ids the ids of records to delete
- * @param callback function to which response will be passed
- * @param [error=null] function called in case of error
- */
-export const collectionDelete = <T>(
-  allOrNone: boolean,
-  ids: Array<string>,
-  successCB: ExecSuccessCallback<T>,
-  errorCB: ExecErrorCallback,
-): void => sendRequest("/services/data", `/${apiVersion}/composite/sobjects?allOrNone=${allOrNone}&ids=${ids.join(',')}`, successCB, errorCB, "DELETE");
-

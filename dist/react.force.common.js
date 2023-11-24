@@ -25,12 +25,12 @@ const exec = (moduleIOSName, moduleAndroidName, moduleIOS, moduleAndroid, succes
         moduleAndroid[methodName](args, (result) => {
             react_force_log_1.sdkConsole.debug(`${func} succeeded`);
             if (successCB) {
-                successCB((0, exports.safeJSONparse)(result));
+                successCB(exports.safeJSONparse(result));
             }
         }, (error) => {
             react_force_log_1.sdkConsole.error(`${func} failed: ${JSON.stringify(error)}`);
             if (errorCB)
-                errorCB((0, exports.safeJSONparse)(error));
+                errorCB(exports.safeJSONparse(error));
         });
     }
 };

@@ -50,7 +50,7 @@ export const promiser = (func: Function): (() => Promise<unknown>) => {
           resolve.apply(null, arguments as any);
         } catch (err) {
           sdkConsole.error("Error when calling successCB for " + func.name);
-          sdkConsole.error((err as Error).stack);
+          sdkConsole.error(err.stack);
         }
       });
       args.push(function () {
@@ -58,7 +58,7 @@ export const promiser = (func: Function): (() => Promise<unknown>) => {
           reject.apply(null, arguments as any);
         } catch (err) {
           sdkConsole.error("Error when calling errorCB for " + func.name);
-          sdkConsole.error((err as Error).stack);
+          sdkConsole.error(err.stack);
         }
       });
       sdkConsole.debug("Calling " + func.name);
@@ -80,7 +80,7 @@ export const promiserNoRejection = (func: Function): (() => Promise<unknown>) =>
           resolve.apply(null, arguments as any);
         } catch (err) {
           sdkConsole.error("Error when calling callback for " + func.name);
-          sdkConsole.error((err as Error).stack);
+          sdkConsole.error(err.stack);
         }
       };
       args.push(callback);

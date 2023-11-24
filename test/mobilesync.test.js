@@ -171,7 +171,7 @@ testReSync = () => {
         })
         .then((result) => {
             syncId = result._soupEntryId;
-            assert.equal(result.totalSize, 2, 'Total size should be 2');
+            assert.equal(result.totalSize, 2, 'Total size should be 1');
             assert.equal(result.status, 'DONE', 'Status should be done');
             querySpec = {queryType:'smart', smartSql:'select {' + soupName + ':FirstName} from {' + soupName + '} where {' + soupName + ':Id} in ("' + contactId + '","' + otherContactId + '") order by {' + soupName + ':FirstName}', pageSize:32};
             return runSmartQuery(storeConfig, querySpec);
