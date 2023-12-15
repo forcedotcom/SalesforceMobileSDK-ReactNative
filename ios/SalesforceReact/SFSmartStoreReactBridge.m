@@ -1,6 +1,6 @@
 /*
   Copyright (c) 2015-present, salesforce.com, inc. All rights reserved.
- 
+
   Redistribution and use of this software in source and binary forms, with or without modification,
   are permitted provided that the following conditions are met:
   * Redistributions of source code must retain the above copyright notice, this list of conditions
@@ -11,7 +11,7 @@
   * Neither the name of salesforce.com, inc. nor the names of its contributors may be used to
   endorse or promote products derived from this software without specific prior written
   permission of salesforce.com, inc.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
   FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
@@ -62,7 +62,7 @@ NSString * const kStoreName           = @"storeName";
     if( self ) {
         _dispatchQueue = dispatch_queue_create([@"SFSmartStoreReactBridge CursorCache Queue" UTF8String], DISPATCH_QUEUE_SERIAL);
     }
-  
+
     //Fix moveCursorToPageIndex getting nil as cursor bug
     self.cursorCache = [[NSMutableDictionary alloc] init];
     return self;
@@ -79,7 +79,7 @@ RCT_EXPORT_MODULE();
 
 RCT_EXPORT_METHOD(soupExists:(NSDictionary *)argsDict callback:(RCTResponseSenderBlock)callback)
 {
-    NSString *soupName = [argsDict nonNullObjectForKey:kSoupNameArg];
+    NSString *soupName = [argsDict sfsdk_nonNullObjectForKey:kSoupNameArg];
     [SFSDKReactLogger d:[self class] format:@"soupExists with soup name '%@'.", soupName];
     BOOL exists = [[self getStoreInst:argsDict] soupExists:soupName];
     callback(@[[NSNull null],  exists ? @YES : @NO]);
@@ -88,8 +88,8 @@ RCT_EXPORT_METHOD(soupExists:(NSDictionary *)argsDict callback:(RCTResponseSende
 RCT_EXPORT_METHOD(registerSoup:(NSDictionary *)argsDict callback:(RCTResponseSenderBlock)callback)
 {
     SFSmartStore *smartStore = [self getStoreInst:argsDict];
-    NSString* soupName = [argsDict nonNullObjectForKey:kSoupNameArg];
-    NSArray *indexSpecs = [SFSoupIndex asArraySoupIndexes:[argsDict nonNullObjectForKey:kIndexesArg]];
+    NSString* soupName = [argsDict sfsdk_nonNullObjectForKey:kSoupNameArg];
+    NSArray *indexSpecs = [SFSoupIndex asArraySoupIndexes:[argsDict sfsdk_nonNullObjectForKey:kIndexesArg]];
     [SFSDKReactLogger d:[self class] format:@"registerSoup with name: %@, indexSpecs: %@", soupName, indexSpecs];
     if (smartStore) {
         NSError *error = nil;
@@ -106,7 +106,7 @@ RCT_EXPORT_METHOD(registerSoup:(NSDictionary *)argsDict callback:(RCTResponseSen
 
 RCT_EXPORT_METHOD(removeSoup:(NSDictionary *)argsDict callback:(RCTResponseSenderBlock)callback)
 {
-    NSString *soupName = [argsDict nonNullObjectForKey:kSoupNameArg];
+    NSString *soupName = [argsDict sfsdk_nonNullObjectForKey:kSoupNameArg];
     [SFSDKReactLogger d:[self class] format:@"removeSoup with name: %@", soupName];
     [[self getStoreInst:argsDict] removeSoup:soupName];
     callback(@[[NSNull null], @"OK"]);
@@ -115,7 +115,7 @@ RCT_EXPORT_METHOD(removeSoup:(NSDictionary *)argsDict callback:(RCTResponseSende
 RCT_EXPORT_METHOD(querySoup:(NSDictionary *)argsDict callback:(RCTResponseSenderBlock)callback)
 {
     NSString *soupName = argsDict[kSoupNameArg];
-    NSDictionary *querySpecDict = [argsDict nonNullObjectForKey:kQuerySpecArg];
+    NSDictionary *querySpecDict = [argsDict sfsdk_nonNullObjectForKey:kQuerySpecArg];
     SFQuerySpec* querySpec = [[SFQuerySpec alloc] initWithDictionary:querySpecDict withSoupName:soupName];
     [SFSDKReactLogger d:[self class] format:@"querySoup with name: %@, querySpec: %@", soupName, querySpecDict];
     SFSmartStore* store = [self getStoreInst:argsDict];
@@ -141,8 +141,8 @@ RCT_EXPORT_METHOD(runSmartQuery:(NSDictionary *)argsDict callback:(RCTResponseSe
 
 RCT_EXPORT_METHOD(retrieveSoupEntries:(NSDictionary *)argsDict callback:(RCTResponseSenderBlock)callback)
 {
-    NSString *soupName = [argsDict nonNullObjectForKey:kSoupNameArg];
-    NSArray *rawIds = [argsDict nonNullObjectForKey:kEntryIdsArg];
+    NSString *soupName = [argsDict sfsdk_nonNullObjectForKey:kSoupNameArg];
+    NSArray *rawIds = [argsDict sfsdk_nonNullObjectForKey:kEntryIdsArg];
     [SFSDKReactLogger d:[self class] format:@"retrieveSoupEntries with soup name: %@", soupName];
     NSArray *entries = [[self getStoreInst:argsDict] retrieveEntries:rawIds fromSoup:soupName];
     callback(@[[NSNull null], entries]);
@@ -150,9 +150,9 @@ RCT_EXPORT_METHOD(retrieveSoupEntries:(NSDictionary *)argsDict callback:(RCTResp
 
 RCT_EXPORT_METHOD(upsertSoupEntries:(NSDictionary *)argsDict callback:(RCTResponseSenderBlock)callback)
 {
-    NSString *soupName = [argsDict nonNullObjectForKey:kSoupNameArg];
-    NSArray *entries = [argsDict nonNullObjectForKey:kEntriesArg];
-    NSString *externalIdPath = [argsDict nonNullObjectForKey:kExternalIdPathArg];
+    NSString *soupName = [argsDict sfsdk_nonNullObjectForKey:kSoupNameArg];
+    NSArray *entries = [argsDict sfsdk_nonNullObjectForKey:kEntriesArg];
+    NSString *externalIdPath = [argsDict sfsdk_nonNullObjectForKey:kExternalIdPathArg];
     [SFSDKReactLogger d:[self class] format:@"upsertSoupEntries with soup name: %@, external ID path: %@", soupName, externalIdPath];
     NSError *error = nil;
     NSArray *resultEntries = [[self getStoreInst:argsDict] upsertEntries:entries toSoup:soupName withExternalIdPath:externalIdPath error:&error];
@@ -165,9 +165,9 @@ RCT_EXPORT_METHOD(upsertSoupEntries:(NSDictionary *)argsDict callback:(RCTRespon
 
 RCT_EXPORT_METHOD(removeFromSoup:(NSDictionary *)argsDict callback:(RCTResponseSenderBlock)callback)
 {
-    NSString *soupName = [argsDict nonNullObjectForKey:kSoupNameArg];
-    NSArray *entryIds = [argsDict nonNullObjectForKey:kEntryIdsArg];
-    NSDictionary *querySpecDict = [argsDict nonNullObjectForKey:kQuerySpecArg];
+    NSString *soupName = [argsDict sfsdk_nonNullObjectForKey:kSoupNameArg];
+    NSArray *entryIds = [argsDict sfsdk_nonNullObjectForKey:kEntryIdsArg];
+    NSDictionary *querySpecDict = [argsDict sfsdk_nonNullObjectForKey:kQuerySpecArg];
     [SFSDKReactLogger d:[self class] format:@"removeFromSoup with soup name: %@", soupName];
     NSError* error = nil;
     if (entryIds) {
@@ -185,15 +185,15 @@ RCT_EXPORT_METHOD(removeFromSoup:(NSDictionary *)argsDict callback:(RCTResponseS
 
 RCT_EXPORT_METHOD(closeCursor:(NSDictionary *)argsDict callback:(RCTResponseSenderBlock)callback)
 {
-    NSString *cursorId = [argsDict nonNullObjectForKey:kCursorIdArg];
+    NSString *cursorId = [argsDict sfsdk_nonNullObjectForKey:kCursorIdArg];
     [SFSDKReactLogger d:[self class] format:@"closeCursor with cursor ID: %@", cursorId];
     [self closeCursorWithId:cursorId andArgs:argsDict];
     callback(@[[NSNull null], @"OK"]);}
 
 RCT_EXPORT_METHOD(moveCursorToPageIndex:(NSDictionary *)argsDict callback:(RCTResponseSenderBlock)callback)
 {
-    NSString *cursorId = [argsDict nonNullObjectForKey:kCursorIdArg];
-    NSNumber *newPageIndex = [argsDict nonNullObjectForKey:kIndexArg];
+    NSString *cursorId = [argsDict sfsdk_nonNullObjectForKey:kCursorIdArg];
+    NSNumber *newPageIndex = [argsDict sfsdk_nonNullObjectForKey:kIndexArg];
     [SFSDKReactLogger d:[self class] format:@"moveCursorToPageIndex with cursor ID: %@, page index: %@", cursorId, newPageIndex];
     SFSmartStore* store = [self getStoreInst:argsDict];
     NSError* error = nil;
@@ -209,7 +209,7 @@ RCT_EXPORT_METHOD(moveCursorToPageIndex:(NSDictionary *)argsDict callback:(RCTRe
 
 RCT_EXPORT_METHOD(clearSoup:(NSDictionary *)argsDict callback:(RCTResponseSenderBlock)callback)
 {
-    NSString *soupName = [argsDict nonNullObjectForKey:kSoupNameArg];
+    NSString *soupName = [argsDict sfsdk_nonNullObjectForKey:kSoupNameArg];
     [SFSDKReactLogger d:[self class] format:@"clearSoup with name: %@", soupName];
     [[self getStoreInst:argsDict] clearSoup:soupName];
     callback(@[[NSNull null], @"OK"]);
@@ -223,9 +223,9 @@ RCT_EXPORT_METHOD(getDatabaseSize:(NSDictionary *)argsDict callback:(RCTResponse
 
 RCT_EXPORT_METHOD(alterSoup:(NSDictionary *)argsDict callback:(RCTResponseSenderBlock)callback)
 {
-    NSString* soupName = [argsDict nonNullObjectForKey:kSoupNameArg];
-    NSArray *indexSpecs = [SFSoupIndex asArraySoupIndexes:[argsDict nonNullObjectForKey:kIndexesArg]];
-    BOOL reIndexData = [[argsDict nonNullObjectForKey:kReIndexDataArg] boolValue];
+    NSString* soupName = [argsDict sfsdk_nonNullObjectForKey:kSoupNameArg];
+    NSArray *indexSpecs = [SFSoupIndex asArraySoupIndexes:[argsDict sfsdk_nonNullObjectForKey:kIndexesArg]];
+    BOOL reIndexData = [[argsDict sfsdk_nonNullObjectForKey:kReIndexDataArg] boolValue];
     [SFSDKReactLogger d:[self class] format:@"alterSoup with name: %@, indexSpecs: %@, reIndexData: %@", soupName, indexSpecs, reIndexData ? @"true" : @"false"];
     BOOL alterOk = [[self getStoreInst:argsDict] alterSoup:soupName withIndexSpecs:indexSpecs reIndexData:reIndexData];
     if (alterOk) {
@@ -237,8 +237,8 @@ RCT_EXPORT_METHOD(alterSoup:(NSDictionary *)argsDict callback:(RCTResponseSender
 
 RCT_EXPORT_METHOD(reIndexSoup:(NSDictionary *)argsDict callback:(RCTResponseSenderBlock)callback)
 {
-    NSString *soupName = [argsDict nonNullObjectForKey:kSoupNameArg];
-    NSArray *indexPaths = [argsDict nonNullObjectForKey:kPathsArg];
+    NSString *soupName = [argsDict sfsdk_nonNullObjectForKey:kSoupNameArg];
+    NSArray *indexPaths = [argsDict sfsdk_nonNullObjectForKey:kPathsArg];
     [SFSDKReactLogger d:[self class] format:@"reIndexSoup with soup name: %@, indexPaths: %@", soupName, indexPaths];
     BOOL regOk = [[self getStoreInst:argsDict] reIndexSoup:soupName withIndexPaths:indexPaths];
     if (regOk) {
@@ -250,7 +250,7 @@ RCT_EXPORT_METHOD(reIndexSoup:(NSDictionary *)argsDict callback:(RCTResponseSend
 
 RCT_EXPORT_METHOD(getSoupIndexSpecs:(NSDictionary *)argsDict callback:(RCTResponseSenderBlock)callback)
 {
-    NSString *soupName = [argsDict nonNullObjectForKey:kSoupNameArg];
+    NSString *soupName = [argsDict sfsdk_nonNullObjectForKey:kSoupNameArg];
     [SFSDKReactLogger d:[self class] format:@"getSoupIndexSpecs with soup name: %@", soupName];
     NSArray *indexSpecsAsDicts = [SFSoupIndex asArrayOfDictionaries:[[self getStoreInst:argsDict] indicesForSoup:soupName] withColumnName:NO];
     if ([indexSpecsAsDicts count] > 0) {
@@ -369,7 +369,7 @@ RCT_EXPORT_METHOD(removeAllStores:(NSDictionary *)argsDict callback:(RCTResponse
 
 - (NSString *)storeName:(NSDictionary *)args
 {
-    NSString *storeName = [args nonNullObjectForKey:kStoreName];
+    NSString *storeName = [args sfsdk_nonNullObjectForKey:kStoreName];
     if(storeName==nil) {
         storeName = kDefaultSmartStoreName;
     }

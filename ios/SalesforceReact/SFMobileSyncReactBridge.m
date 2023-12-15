@@ -1,6 +1,6 @@
 /*
  Copyright (c) 2015-present, salesforce.com, inc. All rights reserved.
- 
+
  Redistribution and use of this software in source and binary forms, with or without modification,
  are permitted provided that the following conditions are met:
  * Redistributions of source code must retain the above copyright notice, this list of conditions
@@ -11,7 +11,7 @@
  * Neither the name of salesforce.com, inc. nor the names of its contributors may be used to
  endorse or promote products derived from this software without specific prior written
  permission of salesforce.com, inc.
- 
+
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
  FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
@@ -50,8 +50,8 @@ RCT_EXPORT_MODULE();
 
 RCT_EXPORT_METHOD(getSyncStatus:(NSDictionary *)args callback:(RCTResponseSenderBlock)callback)
 {
-    NSNumber *syncId = (NSNumber *) [args nonNullObjectForKey:kSyncIdArg];
-    NSString *syncName = (NSString *) [args nonNullObjectForKey:kSyncNameArg];
+    NSNumber *syncId = (NSNumber *) [args sfsdk_nonNullObjectForKey:kSyncIdArg];
+    NSString *syncName = (NSString *) [args sfsdk_nonNullObjectForKey:kSyncNameArg];
 
     SFSyncState *sync;
     if (syncId) {
@@ -70,8 +70,8 @@ RCT_EXPORT_METHOD(getSyncStatus:(NSDictionary *)args callback:(RCTResponseSender
 
 RCT_EXPORT_METHOD(deleteSync:(NSDictionary *)args callback:(RCTResponseSenderBlock)callback)
 {
-    NSNumber *syncId = (NSNumber *) [args nonNullObjectForKey:kSyncIdArg];
-    NSString *syncName = (NSString *) [args nonNullObjectForKey:kSyncNameArg];
+    NSNumber *syncId = (NSNumber *) [args sfsdk_nonNullObjectForKey:kSyncIdArg];
+    NSString *syncName = (NSString *) [args sfsdk_nonNullObjectForKey:kSyncNameArg];
 
     if (syncId) {
         [SFSDKReactLogger d:[self class] format:@"deleteSync with sync id: %@", syncId];
@@ -89,10 +89,10 @@ RCT_EXPORT_METHOD(deleteSync:(NSDictionary *)args callback:(RCTResponseSenderBlo
 
 RCT_EXPORT_METHOD(syncDown:(NSDictionary *)args callback:(RCTResponseSenderBlock)callback)
 {
-    NSString *syncName = [args nonNullObjectForKey:kSyncNameArg];
-    NSString *soupName = [args nonNullObjectForKey:kSyncSoupNameArg];
-    SFSyncOptions *options = [SFSyncOptions newFromDict:[args nonNullObjectForKey:kSyncOptionsArg]];
-    SFSyncDownTarget *target = [SFSyncDownTarget newFromDict:[args nonNullObjectForKey:kSyncTargetArg]];
+    NSString *syncName = [args sfsdk_nonNullObjectForKey:kSyncNameArg];
+    NSString *soupName = [args sfsdk_nonNullObjectForKey:kSyncSoupNameArg];
+    SFSyncOptions *options = [SFSyncOptions newFromDict:[args sfsdk_nonNullObjectForKey:kSyncOptionsArg]];
+    SFSyncDownTarget *target = [SFSyncDownTarget newFromDict:[args sfsdk_nonNullObjectForKey:kSyncTargetArg]];
     __weak typeof(self) weakSelf = self;
     NSError* error = nil;
     SFSyncState* sync = [[self getSyncManagerInst:args] syncDownWithTarget:target options:options soupName:soupName syncName:syncName updateBlock:^(SFSyncState* sync) {
@@ -108,8 +108,8 @@ RCT_EXPORT_METHOD(syncDown:(NSDictionary *)args callback:(RCTResponseSenderBlock
 }
 
 RCT_EXPORT_METHOD(reSync:(NSDictionary *)args callback:(RCTResponseSenderBlock)callback) {
-    NSString *syncName = [args nonNullObjectForKey:kSyncNameArg];
-    NSNumber *syncId = (NSNumber *) [args nonNullObjectForKey:kSyncIdArg];
+    NSString *syncName = [args sfsdk_nonNullObjectForKey:kSyncNameArg];
+    NSNumber *syncId = (NSNumber *) [args sfsdk_nonNullObjectForKey:kSyncIdArg];
     SFSyncState* sync;
     NSError* error = nil;
     if (syncId) {
@@ -138,14 +138,14 @@ RCT_EXPORT_METHOD(reSync:(NSDictionary *)args callback:(RCTResponseSenderBlock)c
 
 RCT_EXPORT_METHOD(cleanResyncGhosts:(NSDictionary *)args callback:(RCTResponseSenderBlock)callback)
 {
-    NSNumber* syncId = (NSNumber*) [args nonNullObjectForKey:kSyncIdArg];
+    NSNumber* syncId = (NSNumber*) [args sfsdk_nonNullObjectForKey:kSyncIdArg];
     [SFSDKReactLogger d:[self class] format:@"cleanResyncGhosts with sync id: %@", syncId];
     __weak typeof(self) weakSelf = self;
     NSError* error = nil;
     [[self getSyncManagerInst:args] cleanResyncGhosts:syncId completionStatusBlock:^void(SFSyncStateStatus syncStatus, NSUInteger numRecords){
         [weakSelf handleCleanReSyncGhosts:syncStatus numRecords:numRecords callback:callback];
     } error:&error];
-    
+
     if (error) {
         NSString *errorMessage = [NSString stringWithFormat:@"cleanResyncGhosts failed, error: %@, `args`: %@.", error, args];
         callback(@[RCTMakeError(errorMessage, nil, nil)]);
@@ -154,10 +154,10 @@ RCT_EXPORT_METHOD(cleanResyncGhosts:(NSDictionary *)args callback:(RCTResponseSe
 
 RCT_EXPORT_METHOD(syncUp:(NSDictionary *)args callback:(RCTResponseSenderBlock)callback)
 {
-    NSString *syncName = [args nonNullObjectForKey:kSyncNameArg];
-    NSString *soupName = [args nonNullObjectForKey:kSyncSoupNameArg];
-    SFSyncOptions *options = [SFSyncOptions newFromDict:[args nonNullObjectForKey:kSyncOptionsArg]];
-    SFSyncUpTarget *target = [SFSyncUpTarget newFromDict:[args nonNullObjectForKey:kSyncTargetArg]];
+    NSString *syncName = [args sfsdk_nonNullObjectForKey:kSyncNameArg];
+    NSString *soupName = [args sfsdk_nonNullObjectForKey:kSyncSoupNameArg];
+    SFSyncOptions *options = [SFSyncOptions newFromDict:[args sfsdk_nonNullObjectForKey:kSyncOptionsArg]];
+    SFSyncUpTarget *target = [SFSyncUpTarget newFromDict:[args sfsdk_nonNullObjectForKey:kSyncTargetArg]];
     __weak typeof(self) weakSelf = self;
     NSError* error = nil;
     SFSyncState* sync = [[self getSyncManagerInst:args] syncUpWithTarget:target options:options soupName:soupName syncName:syncName updateBlock:^(SFSyncState* sync) {
@@ -227,7 +227,7 @@ RCT_EXPORT_METHOD(syncUp:(NSDictionary *)args callback:(RCTResponseSenderBlock)c
 
 - (NSString *)storeName:(NSDictionary *)args
 {
-    NSString *storeName = [args nonNullObjectForKey:kSyncStoreName];
+    NSString *storeName = [args sfsdk_nonNullObjectForKey:kSyncStoreName];
     if(storeName==nil) {
         storeName = kDefaultSmartStoreName;
     }
