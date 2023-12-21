@@ -29,7 +29,7 @@ import { exec as forceExec, ExecErrorCallback, ExecSuccessCallback } from "./rea
 import { HttpMethod } from "./typings";
 const { SalesforceNetReactBridge, SFNetReactBridge } = NativeModules;
 
-var  apiVersion = 'v55.0';
+var  apiVersion = 'v59.0';
 
 /**
  * Set apiVersion to be used

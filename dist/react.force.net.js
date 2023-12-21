@@ -4,7 +4,7 @@ exports.collectionDelete = exports.collectionRetrieve = exports.collectionUpsert
 const react_native_1 = require("react-native");
 const react_force_common_1 = require("./react.force.common");
 const { SalesforceNetReactBridge, SFNetReactBridge } = react_native_1.NativeModules;
-var apiVersion = 'v55.0';
+var apiVersion = 'v59.0';
 const setApiVersion = (version) => {
     apiVersion = version;
 };
