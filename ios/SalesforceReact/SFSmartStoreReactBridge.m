@@ -100,7 +100,7 @@ RCT_EXPORT_METHOD(registerSoup:(NSDictionary *)argsDict callback:(RCTResponseSen
             callback(@[RCTMakeError(@"registerSoup failed", error, nil)]);
         }
     } else {
-        callback(@[RCTMakeError(@"registerSoup failed", nil, nil)]);
+        callback(@[RCTMakeError(@"registerSoup failed: no store found", nil, nil)]);
     }
 }
 
@@ -114,23 +114,27 @@ RCT_EXPORT_METHOD(removeSoup:(NSDictionary *)argsDict callback:(RCTResponseSende
 
 RCT_EXPORT_METHOD(querySoup:(NSDictionary *)argsDict callback:(RCTResponseSenderBlock)callback)
 {
+    SFSmartStore *store = [self getStoreInst:argsDict];
     NSString *soupName = argsDict[kSoupNameArg];
     NSDictionary *querySpecDict = [argsDict sfsdk_nonNullObjectForKey:kQuerySpecArg];
     SFQuerySpec* querySpec = [[SFQuerySpec alloc] initWithDictionary:querySpecDict withSoupName:soupName];
     [SFSDKReactLogger d:[self class] format:@"querySoup with name: %@, querySpec: %@", soupName, querySpecDict];
-    SFSmartStore* store = [self getStoreInst:argsDict];
-    NSError* error = nil;
-    SFStoreCursor* cursor = [[SFStoreCursor alloc] initWithStore:store querySpec:querySpec];
-    NSString* cursorSerialized = [cursor getDataSerialized:store error:&error];
-    if (error == nil) {
-        NSString *internalCursorId = [self internalCursorId:cursor.cursorId withArgs:argsDict];
-        dispatch_sync(self->_dispatchQueue, ^{
-            self.cursorCache[internalCursorId] = cursor;
-        });
-        callback(@[[NSNull null], cursorSerialized]);
+    if (store) {
+        NSError* error = nil;
+        SFStoreCursor* cursor = [[SFStoreCursor alloc] initWithStore:store querySpec:querySpec];
+        NSString* cursorSerialized = [cursor getDataSerialized:store error:&error];
+        if (error == nil) {
+            NSString *internalCursorId = [self internalCursorId:cursor.cursorId withArgs:argsDict];
+            dispatch_sync(self->_dispatchQueue, ^{
+                self.cursorCache[internalCursorId] = cursor;
+            });
+            callback(@[[NSNull null], cursorSerialized]);
+        } else {
+            [SFSDKReactLogger e:[self class] format:@"No cursor for query: %@", querySpec];
+            callback(@[RCTMakeError(@"No cursor for query", error, nil)]);
+        }
     } else {
-        [SFSDKReactLogger e:[self class] format:@"No cursor for query: %@", querySpec];
-        callback(@[RCTMakeError(@"No cursor for query", error, nil)]);
+        callback(@[RCTMakeError(@"querySoup failed: no store found", nil, nil)]);
     }
 }
 
@@ -141,45 +145,60 @@ RCT_EXPORT_METHOD(runSmartQuery:(NSDictionary *)argsDict callback:(RCTResponseSe
 
 RCT_EXPORT_METHOD(retrieveSoupEntries:(NSDictionary *)argsDict callback:(RCTResponseSenderBlock)callback)
 {
+    SFSmartStore *store = [self getStoreInst:argsDict];
     NSString *soupName = [argsDict sfsdk_nonNullObjectForKey:kSoupNameArg];
     NSArray *rawIds = [argsDict sfsdk_nonNullObjectForKey:kEntryIdsArg];
     [SFSDKReactLogger d:[self class] format:@"retrieveSoupEntries with soup name: %@", soupName];
-    NSArray *entries = [[self getStoreInst:argsDict] retrieveEntries:rawIds fromSoup:soupName];
-    callback(@[[NSNull null], entries]);
+    if (store) {
+        NSArray *entries = [store retrieveEntries:rawIds fromSoup:soupName];
+        callback(@[[NSNull null], entries]);
+    } else {
+        callback(@[RCTMakeError(@"retrieveSoupEntries failed: no store found", nil, nil)]);
+    }
 }
 
 RCT_EXPORT_METHOD(upsertSoupEntries:(NSDictionary *)argsDict callback:(RCTResponseSenderBlock)callback)
 {
+    SFSmartStore *store = [self getStoreInst:argsDict];
     NSString *soupName = [argsDict sfsdk_nonNullObjectForKey:kSoupNameArg];
     NSArray *entries = [argsDict sfsdk_nonNullObjectForKey:kEntriesArg];
     NSString *externalIdPath = [argsDict sfsdk_nonNullObjectForKey:kExternalIdPathArg];
     [SFSDKReactLogger d:[self class] format:@"upsertSoupEntries with soup name: %@, external ID path: %@", soupName, externalIdPath];
-    NSError *error = nil;
-    NSArray *resultEntries = [[self getStoreInst:argsDict] upsertEntries:entries toSoup:soupName withExternalIdPath:externalIdPath error:&error];
-    if (nil != resultEntries) {
-        callback(@[[NSNull null],  resultEntries]);
+    if (store) {
+        NSError *error = nil;
+        NSArray *resultEntries = [store upsertEntries:entries toSoup:soupName withExternalIdPath:externalIdPath error:&error];
+        if (nil != resultEntries) {
+            callback(@[[NSNull null],  resultEntries]);
+        } else {
+            callback(@[RCTMakeError(@"upsertSoupEntries failed", error, nil)]);
+        }
     } else {
-        callback(@[RCTMakeError(@"upsertSoupEntries failed", error, nil)]);
+        callback(@[RCTMakeError(@"upsertSoupEntries failed: no store found", nil, nil)]);
     }
 }
 
 RCT_EXPORT_METHOD(removeFromSoup:(NSDictionary *)argsDict callback:(RCTResponseSenderBlock)callback)
 {
+    SFSmartStore *store = [self getStoreInst:argsDict];
     NSString *soupName = [argsDict sfsdk_nonNullObjectForKey:kSoupNameArg];
     NSArray *entryIds = [argsDict sfsdk_nonNullObjectForKey:kEntryIdsArg];
     NSDictionary *querySpecDict = [argsDict sfsdk_nonNullObjectForKey:kQuerySpecArg];
     [SFSDKReactLogger d:[self class] format:@"removeFromSoup with soup name: %@", soupName];
-    NSError* error = nil;
-    if (entryIds) {
-        [[self getStoreInst:argsDict] removeEntries:entryIds fromSoup:soupName error:&error];
+    if (store) {
+        NSError* error = nil;
+        if (entryIds) {
+            [store removeEntries:entryIds fromSoup:soupName error:&error];
+        } else {
+            SFQuerySpec* querySpec = [[SFQuerySpec alloc] initWithDictionary:querySpecDict withSoupName:soupName];
+            [store removeEntriesByQuery:querySpec fromSoup:soupName error:&error];
+        }
+        if (error == nil) {
+            callback(@[[NSNull null], @"OK"]);
+        } else {
+            callback(@[RCTMakeError(@"removeFromSoup failed", error, nil)]);
+        }
     } else {
-        SFQuerySpec* querySpec = [[SFQuerySpec alloc] initWithDictionary:querySpecDict withSoupName:soupName];
-        [[self getStoreInst:argsDict] removeEntriesByQuery:querySpec fromSoup:soupName error:&error];
-    }
-    if (error == nil) {
-        callback(@[[NSNull null], @"OK"]);
-    } else {
-        callback(@[RCTMakeError(@"removeFromSoup failed", error, nil)]);
+        callback(@[RCTMakeError(@"removeFromSoup failed: no store found", nil, nil)]);
     }
 }
 
@@ -192,18 +211,22 @@ RCT_EXPORT_METHOD(closeCursor:(NSDictionary *)argsDict callback:(RCTResponseSend
 
 RCT_EXPORT_METHOD(moveCursorToPageIndex:(NSDictionary *)argsDict callback:(RCTResponseSenderBlock)callback)
 {
+    SFSmartStore *store = [self getStoreInst:argsDict];
     NSString *cursorId = [argsDict sfsdk_nonNullObjectForKey:kCursorIdArg];
     NSNumber *newPageIndex = [argsDict sfsdk_nonNullObjectForKey:kIndexArg];
     [SFSDKReactLogger d:[self class] format:@"moveCursorToPageIndex with cursor ID: %@, page index: %@", cursorId, newPageIndex];
-    SFSmartStore* store = [self getStoreInst:argsDict];
-    NSError* error = nil;
-    SFStoreCursor *cursor = [self cursorByCursorId:cursorId andArgs:argsDict];
-    [cursor setCurrentPageIndex:newPageIndex];
-    NSString* cursorSerialized = [cursor getDataSerialized:store error:&error];
-    if (error == nil) {
-        callback(@[[NSNull null], cursorSerialized]);
+    if (store) {
+        NSError* error = nil;
+        SFStoreCursor *cursor = [self cursorByCursorId:cursorId andArgs:argsDict];
+        [cursor setCurrentPageIndex:newPageIndex];
+        NSString* cursorSerialized = [cursor getDataSerialized:store error:&error];
+        if (error == nil) {
+            callback(@[[NSNull null], cursorSerialized]);
+        } else {
+            callback(@[RCTMakeError(@"moveCursorToPageIndex failed", error, nil)]);
+        }
     } else {
-        callback(@[RCTMakeError(@"moveCursorToPageIndex failed", error, nil)]);
+        callback(@[RCTMakeError(@"moveCursorToPageIndex failed: no store found", nil, nil)]);
     }
 }
 
@@ -217,46 +240,66 @@ RCT_EXPORT_METHOD(clearSoup:(NSDictionary *)argsDict callback:(RCTResponseSender
 
 RCT_EXPORT_METHOD(getDatabaseSize:(NSDictionary *)argsDict callback:(RCTResponseSenderBlock)callback)
 {
-    unsigned long long databaseSize = [[self getStoreInst:argsDict] getDatabaseSize];
-    callback(@[[NSNull null],  [NSNumber numberWithLongLong:databaseSize]]);
+    SFSmartStore* store = [self getStoreInst:argsDict];
+    if (store) {
+        unsigned long long databaseSize = [store getDatabaseSize];
+        callback(@[[NSNull null],  [NSNumber numberWithLongLong:databaseSize]]);
+    } else {
+        callback(@[RCTMakeError(@"getDatabaseSize failed: no store found", nil, nil)]);
+    }
 }
 
 RCT_EXPORT_METHOD(alterSoup:(NSDictionary *)argsDict callback:(RCTResponseSenderBlock)callback)
 {
+    SFSmartStore* store = [self getStoreInst:argsDict];
     NSString* soupName = [argsDict sfsdk_nonNullObjectForKey:kSoupNameArg];
     NSArray *indexSpecs = [SFSoupIndex asArraySoupIndexes:[argsDict sfsdk_nonNullObjectForKey:kIndexesArg]];
     BOOL reIndexData = [[argsDict sfsdk_nonNullObjectForKey:kReIndexDataArg] boolValue];
     [SFSDKReactLogger d:[self class] format:@"alterSoup with name: %@, indexSpecs: %@, reIndexData: %@", soupName, indexSpecs, reIndexData ? @"true" : @"false"];
-    BOOL alterOk = [[self getStoreInst:argsDict] alterSoup:soupName withIndexSpecs:indexSpecs reIndexData:reIndexData];
-    if (alterOk) {
-        callback(@[[NSNull null], soupName]);
+    if (store) {
+        BOOL alterOk = [store alterSoup:soupName withIndexSpecs:indexSpecs reIndexData:reIndexData];
+        if (alterOk) {
+            callback(@[[NSNull null], soupName]);
+        } else {
+            callback(@[RCTMakeError(@"alterSoup failed", nil, nil)]);
+        }
     } else {
-        callback(@[RCTMakeError(@"alterSoup failed", nil, nil)]);
+        callback(@[RCTMakeError(@"alterSoup failed: no store found", nil, nil)]);
     }
 }
 
 RCT_EXPORT_METHOD(reIndexSoup:(NSDictionary *)argsDict callback:(RCTResponseSenderBlock)callback)
 {
+    SFSmartStore* store = [self getStoreInst:argsDict];
     NSString *soupName = [argsDict sfsdk_nonNullObjectForKey:kSoupNameArg];
     NSArray *indexPaths = [argsDict sfsdk_nonNullObjectForKey:kPathsArg];
     [SFSDKReactLogger d:[self class] format:@"reIndexSoup with soup name: %@, indexPaths: %@", soupName, indexPaths];
-    BOOL regOk = [[self getStoreInst:argsDict] reIndexSoup:soupName withIndexPaths:indexPaths];
-    if (regOk) {
-        callback(@[[NSNull null], soupName]);
+    if (store) {
+        BOOL regOk = [store reIndexSoup:soupName withIndexPaths:indexPaths];
+        if (regOk) {
+            callback(@[[NSNull null], soupName]);
+        } else {
+            callback(@[RCTMakeError(@"reIndexSoup failed", nil, nil)]);
+        }
     } else {
-        callback(@[RCTMakeError(@"reIndexSoup failed", nil, nil)]);
+        callback(@[RCTMakeError(@"reIndexSoup failed: no store found", nil, nil)]);
     }
 }
 
 RCT_EXPORT_METHOD(getSoupIndexSpecs:(NSDictionary *)argsDict callback:(RCTResponseSenderBlock)callback)
 {
+    SFSmartStore* store = [self getStoreInst:argsDict];
     NSString *soupName = [argsDict sfsdk_nonNullObjectForKey:kSoupNameArg];
     [SFSDKReactLogger d:[self class] format:@"getSoupIndexSpecs with soup name: %@", soupName];
-    NSArray *indexSpecsAsDicts = [SFSoupIndex asArrayOfDictionaries:[[self getStoreInst:argsDict] indicesForSoup:soupName] withColumnName:NO];
-    if ([indexSpecsAsDicts count] > 0) {
-        callback(@[[NSNull null], indexSpecsAsDicts]);
+    if (store) {
+        NSArray *indexSpecsAsDicts = [SFSoupIndex asArrayOfDictionaries:[store indicesForSoup:soupName] withColumnName:NO];
+        if ([indexSpecsAsDicts count] > 0) {
+            callback(@[[NSNull null], indexSpecsAsDicts]);
+        } else {
+            callback(@[RCTMakeError(@"getSoupIndexSpecs failed", nil, nil)]);
+        }
     } else {
-        callback(@[RCTMakeError(@"getSoupIndexSpecs failed", nil, nil)]);
+        callback(@[RCTMakeError(@"getSoupIndexSpecs failed: no store found", nil, nil)]);
     }
 }
 
