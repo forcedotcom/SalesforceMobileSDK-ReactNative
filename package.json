@@ -22,7 +22,7 @@
     "url": "https://github.com/forcedotcom/SalesforceMobileSDK-ReactNative.git"
   },
   "engines": {
-    "node": ">=4"
+    "node": ">=18"
   },
   "author": {
     "name": "Ivan Bogdanov",
