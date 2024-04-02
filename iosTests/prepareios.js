@@ -22,6 +22,7 @@ console.log('=== Installing sdk dependencies');
 execSync('node ./updatesdk.js', {stdio: [0,1,2]});
 
 console.log('=== Installing pod dependencies');
+execSync('rm .xcode.env.local', {stdio:[0,1,2], cwd:'ios'});
 execSync('pod update', {stdio:[0,1,2], cwd:'ios'});
 
 console.log('=== Creating test_credentials.json');
