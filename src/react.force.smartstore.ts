@@ -530,13 +530,27 @@ export const removeFromSoup = (
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
 
-  const execArgs = {
+  var execArgs = {
     soupName,
     isGlobalStore: storeConfig.isGlobalStore,
     storeName: storeConfig.storeName,
+  } as {
+      soupName: string;
+      isGlobalStore: boolean;
+      storeName: string | undefined;
+      entryIds?: string[];
+      querySpec?: any;
   };
-  execArgs[entryIdsOrQuerySpec instanceof Array ? "entryIds" : "querySpec"] = entryIdsOrQuerySpec;
-  execArgs[entryIdsOrQuerySpec instanceof Array ? "querySpec" : "entryIds"] = null;
+
+
+  if (entryIdsOrQuerySpec instanceof Array) {
+    execArgs.entryIds = entryIdsOrQuerySpec;
+    execArgs.querySpec = undefined;
+  } else {
+    execArgs.querySpec = entryIdsOrQuerySpec;
+    execArgs.entryIds = undefined;
+  }    
+
   exec(successCB, errorCB, "removeFromSoup", execArgs);
 };
 
