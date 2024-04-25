@@ -49,7 +49,7 @@ netCollectionUpdate = promiser(net.collectionUpdate);
 netCollectionUpsert = promiser(net.collectionUpsert);
 netCollectionDelete = promiser(net.collectionDelete);
 
-const apiVersion = 'v55.0';
+const apiVersion = 'v60.0';
 
 const sendUnAuthenticatedNetRequest = (url, callback, error) => {
     return net.sendRequest(null, url, callback, error,"GET", null, null, null, false, true);
@@ -65,7 +65,7 @@ testGetApiVersion = () => {
 testVersions = () => {
     netVersions()
         .then((response) => {
-            assert.deepInclude(response, {'label':'Summer \'22','url':'/services/data/v55.0','version':'55.0'}, 'Wrong version response');
+            assert.deepInclude(response, {'label':'Spring \'24','url':'/services/data/v60.0','version':'60.0'}, 'Wrong version response');
             testDone();
         });
 };

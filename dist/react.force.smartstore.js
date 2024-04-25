@@ -282,13 +282,19 @@ let upsertSoupEntriesWithExternalId = (storeConfig, soupName, entries, externalI
 exports.upsertSoupEntriesWithExternalId = upsertSoupEntriesWithExternalId;
 const removeFromSoup = (storeConfig, soupName, entryIdsOrQuerySpec, successCB, errorCB) => {
     storeConfig = checkFirstArg(storeConfig);
-    const execArgs = {
+    var execArgs = {
         soupName,
         isGlobalStore: storeConfig.isGlobalStore,
         storeName: storeConfig.storeName,
     };
-    execArgs[entryIdsOrQuerySpec instanceof Array ? "entryIds" : "querySpec"] = entryIdsOrQuerySpec;
-    execArgs[entryIdsOrQuerySpec instanceof Array ? "querySpec" : "entryIds"] = null;
+    if (entryIdsOrQuerySpec instanceof Array) {
+        execArgs.entryIds = entryIdsOrQuerySpec;
+        execArgs.querySpec = undefined;
+    }
+    else {
+        execArgs.querySpec = entryIdsOrQuerySpec;
+        execArgs.entryIds = undefined;
+    }
     exec(successCB, errorCB, "removeFromSoup", execArgs);
 };
 exports.removeFromSoup = removeFromSoup;
