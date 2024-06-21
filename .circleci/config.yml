@@ -1,3 +1,6 @@
+orbs:
+  codecov: codecov/codecov@4.1.0
+
 #  Xcode version announcments can be found here: https://discuss.circleci.com/c/announcements/
 #  Each post contains a full image manifest, including iOS runtimes, devices, CocoaPods version, etc.
 anchors:
@@ -57,6 +60,7 @@ jobs:
           command:  |
             cd .circleci
             fastlane test
+      - codecov/upload
       - store_test_results:
           path: /Users/distiller/SalesforceMobileSDK-ReactNative/iosTests/ios/test_output
       - store_artifacts:
@@ -102,7 +106,9 @@ workflows:
     jobs:
       - test-ios:
           name: test ReactNative iOS << matrix.ios >>
-          context: iOS Unit Tests
+          context: 
+            - iOS Unit Tests
+            - iOS React Native
           matrix:
             parameters:
               ios: [*min-ios, *latest-ios]
@@ -118,7 +124,9 @@ workflows:
     jobs:
       - test-ios:
           name: test ReactNative iOS << pipeline.parameters.ios >>
-          context: iOS Unit Tests
+          context: 
+            - iOS Unit Tests
+            - iOS React Native
           matrix:
             parameters:
               xcode: [<< pipeline.parameters.xcode >>]
