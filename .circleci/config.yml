@@ -45,6 +45,7 @@ jobs:
             npm install -g typescript
             cd iosTests
             ./prepareios.js 
+            mkdir -p ~/.gnupg
       - run:
           name: Creating test_credentials.json
           command: |
