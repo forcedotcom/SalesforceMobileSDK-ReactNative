@@ -1,10 +1,4 @@
-export type SyncMethod =
-  | "cleanResyncGhosts"
-  | "deleteSync"
-  | "getSyncStatus"
-  | "reSync"
-  | "syncDown"
-  | "syncUp";
+export type SyncMethod = "cleanResyncGhosts" | "deleteSync" | "getSyncStatus" | "reSync" | "syncDown" | "syncUp";
 
 export interface SyncEvent {
   soupName: string;
@@ -34,6 +28,7 @@ export type SyncDownTarget = {
 
 export type SyncUpTarget = {
   createFieldlist?: string[];
+  maxBatchSize?: number;
   updateFieldlist?: string[];
 };
 

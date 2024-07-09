@@ -25,6 +25,7 @@ export type SyncDownTarget = {
 };
 export type SyncUpTarget = {
     createFieldlist?: string[];
+    maxBatchSize?: number;
     updateFieldlist?: string[];
 };
 export type SyncOptions = {
