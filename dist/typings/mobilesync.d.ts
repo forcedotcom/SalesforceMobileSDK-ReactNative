@@ -13,7 +13,7 @@ export interface SyncEvent {
     totalSize: number;
     storeName: string;
     startTime: number;
-    status: string;
+    status: "NEW" | "STOPPED" | "RUNNING" | "DONE" | "FAILED";
     name: string;
 }
 export type SyncDownTarget = {
@@ -42,7 +42,7 @@ export interface SyncStatus {
     progress: number;
     soupName: string;
     startTime: number;
-    status: string;
+    status: "NEW" | "STOPPED" | "RUNNING" | "DONE" | "FAILED";
     target: SyncDownTarget;
     totalSize: number;
     type: string;
