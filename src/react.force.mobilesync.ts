@@ -139,7 +139,7 @@ export const reSync = (
 export const cleanResyncGhosts = (
   storeConfig: StoreConfig | boolean,
   syncId: number,
-  successCB: ExecSuccessCallback<unknown>,
+  successCB: ExecSuccessCallback<number>,
   errorCB: ExecErrorCallback,
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
