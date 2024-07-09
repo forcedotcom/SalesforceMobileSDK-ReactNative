@@ -123,7 +123,7 @@ export const syncDown: SyncDownOverload = (
 
 export const reSync = (
   storeConfig: StoreConfig | boolean,
-  syncIdOrName: string,
+  syncIdOrName: string | number,
   successCB: ExecSuccessCallback<SyncEvent>,
   errorCB: ExecErrorCallback,
 ): void => {
@@ -138,7 +138,7 @@ export const reSync = (
 
 export const cleanResyncGhosts = (
   storeConfig: StoreConfig | boolean,
-  syncId: string,
+  syncId: number,
   successCB: ExecSuccessCallback<unknown>,
   errorCB: ExecErrorCallback,
 ): void => {
@@ -223,7 +223,7 @@ export const getSyncStatus = (
 
 export const deleteSync = (
   storeConfig: StoreConfig | boolean,
-  syncIdOrName: string,
+  syncIdOrName: string | number,
   successCB: ExecSuccessCallback<unknown>,
   errorCB: ExecErrorCallback,
 ): void => {
@@ -239,4 +239,4 @@ export const deleteSync = (
 export const MERGE_MODE = {
   OVERWRITE: "OVERWRITE",
   LEAVE_IF_CHANGED: "LEAVE_IF_CHANGED",
-};
+} as const;
