@@ -33,7 +33,7 @@ const { MobileSyncReactBridge, SFMobileSyncReactBridge } = NativeModules;
 // If param is a storeconfig return the same storeconfig
 // If param is a boolean, returns a storeconfig object  {'isGlobalStore': boolean}
 // Otherwise, returns a default storeconfig object
-const checkFirstArg = (arg: StoreConfig) => {
+const checkFirstArg = (arg: StoreConfig | boolean) => {
   // Turning arguments into array
   // If first argument is a store config
   if (typeof arg === "object" && Object.prototype.hasOwnProperty.call(arg, "isGlobalStore")) {
@@ -67,7 +67,7 @@ const exec = <T>(
 
 type SyncDownOverload = {
   (
-    storeConfig: StoreConfig,
+    storeConfig: StoreConfig | boolean,
     target: SyncDownTarget,
     soupName: string,
     options: SyncOptions,
@@ -76,7 +76,7 @@ type SyncDownOverload = {
     errorCB: ExecErrorCallback,
   ): void;
   (
-    storeConfig: StoreConfig,
+    storeConfig: StoreConfig | boolean,
     target: SyncDownTarget,
     soupName: string,
     options: SyncOptions,
@@ -86,7 +86,7 @@ type SyncDownOverload = {
 };
 
 export const syncDown: SyncDownOverload = (
-  storeConfig: StoreConfig,
+  storeConfig: StoreConfig | boolean,
   target: SyncDownTarget,
   soupName: string,
   options: SyncOptions,
@@ -122,7 +122,7 @@ export const syncDown: SyncDownOverload = (
 };
 
 export const reSync = (
-  storeConfig: StoreConfig,
+  storeConfig: StoreConfig | boolean,
   syncIdOrName: string,
   successCB: ExecSuccessCallback<SyncEvent>,
   errorCB: ExecErrorCallback,
@@ -137,7 +137,7 @@ export const reSync = (
 };
 
 export const cleanResyncGhosts = (
-  storeConfig: StoreConfig,
+  storeConfig: StoreConfig | boolean,
   syncId: string,
   successCB: ExecSuccessCallback<unknown>,
   errorCB: ExecErrorCallback,
@@ -152,7 +152,7 @@ export const cleanResyncGhosts = (
 
 type SyncUpOverload = {
   (
-    storeConfig: StoreConfig,
+    storeConfig: StoreConfig | boolean,
     target: SyncDownTarget,
     soupName: string,
     options: SyncOptions,
@@ -161,7 +161,7 @@ type SyncUpOverload = {
     errorCB: ExecErrorCallback,
   ): void;
   (
-    storeConfig: StoreConfig,
+    storeConfig: StoreConfig | boolean,
     target: SyncDownTarget,
     soupName: string,
     options: SyncOptions,
@@ -171,7 +171,7 @@ type SyncUpOverload = {
 };
 
 export const syncUp: SyncUpOverload = (
-  storeConfig: StoreConfig,
+  storeConfig: StoreConfig | boolean,
   target: SyncDownTarget,
   soupName: string,
   options: SyncOptions,
@@ -207,7 +207,7 @@ export const syncUp: SyncUpOverload = (
 };
 
 export const getSyncStatus = (
-  storeConfig: StoreConfig,
+  storeConfig: StoreConfig | boolean,
   syncIdOrName: string,
   successCB: ExecSuccessCallback<SyncStatus>,
   errorCB: ExecErrorCallback,
@@ -222,7 +222,7 @@ export const getSyncStatus = (
 };
 
 export const deleteSync = (
-  storeConfig: StoreConfig,
+  storeConfig: StoreConfig | boolean,
   syncIdOrName: string,
   successCB: ExecSuccessCallback<unknown>,
   errorCB: ExecErrorCallback,

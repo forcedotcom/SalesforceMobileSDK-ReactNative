@@ -56,7 +56,7 @@ export declare const upsertSoupEntries: <T>(storeConfig: StoreConfig | boolean, 
 export declare let upsertSoupEntriesWithExternalId: <T>(storeConfig: StoreConfig | boolean, soupName: string, entries: {
     [key: string]: any;
 }[], externalIdPath: string, successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback) => void;
-export declare const removeFromSoup: (storeConfig: StoreConfig | boolean, soupName: string, entryIdsOrQuerySpec: string[], successCB: ExecSuccessCallback<"OK">, errorCB: ExecErrorCallback) => void;
+export declare const removeFromSoup: (storeConfig: StoreConfig | boolean, soupName: string, entryIdsOrQuerySpec: string[] | QuerySpec, successCB: ExecSuccessCallback<"OK">, errorCB: ExecErrorCallback) => void;
 export declare const moveCursorToPageIndex: <T>(storeConfig: StoreConfig | boolean, cursor: StoreCursor<T>, newPageIndex: number, successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback) => void;
 export declare const moveCursorToNextPage: <T>(storeConfig: StoreConfig | boolean, cursor: StoreCursor<T>, successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback) => void;
 export declare const moveCursorToPreviousPage: <T>(storeConfig: StoreConfig | boolean, cursor: StoreCursor<T>, successCB: ExecSuccessCallback<T>, errorCB: ExecErrorCallback) => void;

@@ -524,7 +524,7 @@ export let upsertSoupEntriesWithExternalId = <T>(
 export const removeFromSoup = (
   storeConfig: StoreConfig | boolean,
   soupName: string,
-  entryIdsOrQuerySpec: string[],
+  entryIdsOrQuerySpec: string[] | QuerySpec,
   successCB: ExecSuccessCallback<"OK">,
   errorCB: ExecErrorCallback,
 ): void => {
@@ -535,13 +535,12 @@ export const removeFromSoup = (
     isGlobalStore: storeConfig.isGlobalStore,
     storeName: storeConfig.storeName,
   } as {
-      soupName: string;
-      isGlobalStore: boolean;
-      storeName: string | undefined;
-      entryIds?: string[];
-      querySpec?: any;
+    soupName: string;
+    isGlobalStore: boolean;
+    storeName: string | undefined;
+    entryIds?: string[];
+    querySpec?: any;
   };
-
 
   if (entryIdsOrQuerySpec instanceof Array) {
     execArgs.entryIds = entryIdsOrQuerySpec;
@@ -549,7 +548,7 @@ export const removeFromSoup = (
   } else {
     execArgs.querySpec = entryIdsOrQuerySpec;
     execArgs.entryIds = undefined;
-  }    
+  }
 
   exec(successCB, errorCB, "removeFromSoup", execArgs);
 };
