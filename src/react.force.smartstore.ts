@@ -558,7 +558,7 @@ export const moveCursorToPageIndex = <T>(
   storeConfig: StoreConfig | boolean,
   cursor: StoreCursor<T>,
   newPageIndex: number,
-  successCB: ExecSuccessCallback<T>,
+  successCB: ExecSuccessCallback<StoreCursor<T>>,
   errorCB: ExecErrorCallback,
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
@@ -567,7 +567,8 @@ export const moveCursorToPageIndex = <T>(
   let successCBdeserializing;
 
   if (successCB) {
-    successCBdeserializing = (result: T) => successCB(typeof result === "string" ? safeJSONparse(result) : result);
+    successCBdeserializing = (result: StoreCursor<T>) =>
+      successCB(typeof result === "string" ? safeJSONparse(result) : result);
   } else {
     successCBdeserializing = successCB;
   }
@@ -583,7 +584,7 @@ export const moveCursorToPageIndex = <T>(
 export const moveCursorToNextPage = <T>(
   storeConfig: StoreConfig | boolean,
   cursor: StoreCursor<T>,
-  successCB: ExecSuccessCallback<T>,
+  successCB: ExecSuccessCallback<StoreCursor<T>>,
   errorCB: ExecErrorCallback,
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
@@ -602,7 +603,7 @@ export const moveCursorToNextPage = <T>(
 export const moveCursorToPreviousPage = <T>(
   storeConfig: StoreConfig | boolean,
   cursor: StoreCursor<T>,
-  successCB: ExecSuccessCallback<T>,
+  successCB: ExecSuccessCallback<StoreCursor<T>>,
   errorCB: ExecErrorCallback,
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
