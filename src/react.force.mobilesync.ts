@@ -26,7 +26,7 @@
 import { NativeModules } from "react-native";
 import { exec as forceExec, ExecErrorCallback, ExecSuccessCallback } from "./react.force.common";
 import { StoreConfig } from "./react.force.smartstore";
-import { SyncDownTarget, SyncEvent, SyncMethod, SyncOptions, SyncStatus } from "./typings/mobilesync";
+import { SyncDownTarget, SyncEvent, SyncMethod, SyncOptions, SyncStatus, SyncUpTarget } from "./typings/mobilesync";
 
 const { MobileSyncReactBridge, SFMobileSyncReactBridge } = NativeModules;
 
@@ -153,7 +153,7 @@ export const cleanResyncGhosts = (
 type SyncUpOverload = {
   (
     storeConfig: StoreConfig | boolean,
-    target: SyncDownTarget,
+    target: SyncUpTarget,
     soupName: string,
     options: SyncOptions,
     syncName: string,
@@ -162,7 +162,7 @@ type SyncUpOverload = {
   ): void;
   (
     storeConfig: StoreConfig | boolean,
-    target: SyncDownTarget,
+    target: SyncUpTarget,
     soupName: string,
     options: SyncOptions,
     successCB: ExecSuccessCallback<SyncEvent>,
@@ -172,7 +172,7 @@ type SyncUpOverload = {
 
 export const syncUp: SyncUpOverload = (
   storeConfig: StoreConfig | boolean,
-  target: SyncDownTarget,
+  target: SyncUpTarget,
   soupName: string,
   options: SyncOptions,
   x: string | ExecSuccessCallback<SyncEvent>,
