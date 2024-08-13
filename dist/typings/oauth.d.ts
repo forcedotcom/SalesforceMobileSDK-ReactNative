@@ -1,5 +1,5 @@
-export type OAuthMethod = "authenticate" | "getAuthCredentials" | "logoutCurrentUser";
-export type UserAccount = {
+export declare type OAuthMethod = "authenticate" | "getAuthCredentials" | "logoutCurrentUser";
+export declare type UserAccount = {
     accessToken: string;
     clientId: string;
     instanceUrl: string;
