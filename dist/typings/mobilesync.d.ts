@@ -1,4 +1,4 @@
-export declare type SyncMethod = "cleanResyncGhosts" | "deleteSync" | "getSyncStatus" | "reSync" | "syncDown" | "syncUp";
+export type SyncMethod = "cleanResyncGhosts" | "deleteSync" | "getSyncStatus" | "reSync" | "syncDown" | "syncUp";
 export interface SyncEvent {
     soupName: string;
     options: SyncOptions;
@@ -16,19 +16,19 @@ export interface SyncEvent {
     status: "NEW" | "STOPPED" | "RUNNING" | "DONE" | "FAILED";
     name: string;
 }
-export declare type SyncDownTarget = {
+export type SyncDownTarget = {
     type: "soql" | "sosl" | "mru" | "custom";
     query: string;
     modificationDateFieldName?: string;
     iOSImpl?: string;
     idFieldName?: string;
 };
-export declare type SyncUpTarget = {
+export type SyncUpTarget = {
     createFieldlist?: string[];
     maxBatchSize?: number;
     updateFieldlist?: string[];
 };
-export declare type SyncOptions = {
+export type SyncOptions = {
     mergeMode?: "OVERWRITE" | "LEAVE_IF_CHANGED";
     fieldlist?: string[];
 };

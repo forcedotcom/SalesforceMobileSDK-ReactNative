@@ -1,14 +1,14 @@
 import { ExecErrorCallback, ExecSuccessCallback } from "./react.force.common";
 import { StoreConfig } from "./react.force.smartstore";
 import { SyncDownTarget, SyncEvent, SyncOptions, SyncStatus, SyncUpTarget } from "./typings/mobilesync";
-declare type SyncDownOverload = {
+type SyncDownOverload = {
     (storeConfig: StoreConfig | boolean, target: SyncDownTarget, soupName: string, options: SyncOptions, syncName: string, successCB: ExecSuccessCallback<SyncEvent>, errorCB: ExecErrorCallback): void;
     (storeConfig: StoreConfig | boolean, target: SyncDownTarget, soupName: string, options: SyncOptions, successCB: ExecSuccessCallback<SyncEvent>, errorCB: ExecErrorCallback): void;
 };
 export declare const syncDown: SyncDownOverload;
 export declare const reSync: (storeConfig: StoreConfig | boolean, syncIdOrName: string | number, successCB: ExecSuccessCallback<SyncEvent>, errorCB: ExecErrorCallback) => void;
 export declare const cleanResyncGhosts: (storeConfig: StoreConfig | boolean, syncId: number, successCB: ExecSuccessCallback<number>, errorCB: ExecErrorCallback) => void;
-declare type SyncUpOverload = {
+type SyncUpOverload = {
     (storeConfig: StoreConfig | boolean, target: SyncUpTarget, soupName: string, options: SyncOptions, syncName: string, successCB: ExecSuccessCallback<SyncEvent>, errorCB: ExecErrorCallback): void;
     (storeConfig: StoreConfig | boolean, target: SyncUpTarget, soupName: string, options: SyncOptions, successCB: ExecSuccessCallback<SyncEvent>, errorCB: ExecErrorCallback): void;
 };
