@@ -5,9 +5,9 @@ export interface SDKConsole {
     warn(message?: unknown, ...optionalParams: unknown[]): void;
     debug(message?: unknown, ...optionalParams: unknown[]): void;
 }
-export declare type ModuleIOSName = "SFOauthReactBridge" | "SFNetReactBridge" | "SFMobileSyncReactBridge" | "SFSmartStoreReactBridge";
-export declare type ModuleAndroidName = "SalesforceOauthReactBridge" | "SalesforceNetReactBridge" | "MobileSyncReactBridge" | "SmartStoreReactBridge";
-export declare type StoreOrder = "ascending" | "descending" | undefined;
-export declare type QuerySpecType = "exact" | "range" | "like" | "smart" | "match";
-export declare type LogLevel = "debug" | "info" | "warn" | "error";
-export declare type HttpMethod = "POST" | "GET" | "PUT" | "PATCH" | "DELETE";
+export type ModuleIOSName = "SFOauthReactBridge" | "SFNetReactBridge" | "SFMobileSyncReactBridge" | "SFSmartStoreReactBridge";
+export type ModuleAndroidName = "SalesforceOauthReactBridge" | "SalesforceNetReactBridge" | "MobileSyncReactBridge" | "SmartStoreReactBridge";
+export type StoreOrder = "ascending" | "descending" | undefined;
+export type QuerySpecType = "exact" | "range" | "like" | "smart" | "match";
+export type LogLevel = "debug" | "info" | "warn" | "error";
+export type HttpMethod = "POST" | "GET" | "PUT" | "PATCH" | "DELETE";
