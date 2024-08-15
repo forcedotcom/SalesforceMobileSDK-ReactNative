@@ -1,11 +1,12 @@
 orbs:
   codecov: codecov/codecov@4.1.0
+  macos: circleci/macos@2
 
 #  Xcode version announcments can be found here: https://discuss.circleci.com/c/announcements/
 #  Each post contains a full image manifest, including iOS runtimes, devices, CocoaPods version, etc.
 anchors:
-  - &latest-xcode    "15.3.0"
-  - &latest-ios      "17.4"
+  - &latest-xcode    "15.4.0"
+  - &latest-ios      "17.5"
   - &min-ios         "16.4"
   - &device          "iPhone-SE-3rd-generation"
   - &invalid         ""
@@ -38,18 +39,20 @@ jobs:
       FASTLANE_SKIP_UPDATE_CHECK: "true"
     steps:
       - checkout
+      - macos/switch-ruby:
+          version: "3.2.3"
       - run:
-          name: Installing Dependencies
+          name: Install Dependencies
           command: |
             brew install gnu-sed
             npm install -g typescript
-            cd iosTests
-            ./prepareios.js 
             mkdir -p ~/.gnupg
+            sudo gem install --no-document fastlane 
       - run:
           name: Creating test_credentials.json
           command: |
             cd iosTests
+            ./prepareios.js
             ./create_test_credentials_from_env.js
       - run:
           name: Compile
