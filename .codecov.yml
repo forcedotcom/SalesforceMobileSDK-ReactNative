@@ -1,0 +1,18 @@
+# Validate changes to this class with: curl -X POST --data-binary @.codecov.yml https://codecov.io/validate
+
+codecov:
+  branch: dev
+
+coverage:
+  precision: 2
+  round: down
+  range: "25...75"
+
+  status:
+    project:
+      default: true
+
+comment:
+  layout: "reach, diff"
+  behavior: default
+  require_changes: false
