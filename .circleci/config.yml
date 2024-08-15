@@ -47,7 +47,8 @@ jobs:
             brew install gnu-sed
             npm install -g typescript
             mkdir -p ~/.gnupg
-            sudo gem install --no-document fastlane 
+            sudo gem install --no-document fastlane
+            sudo gem install pod
       - run:
           name: Creating test_credentials.json
           command: |
