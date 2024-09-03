@@ -26,14 +26,14 @@
 import { NativeModules } from "react-native";
 import { exec as forceExec, ExecErrorCallback, ExecSuccessCallback } from "./react.force.common";
 import { StoreConfig } from "./react.force.smartstore";
-import { SyncDownTarget, SyncEvent, SyncMethod, SyncOptions, SyncStatus } from "./typings/mobilesync";
+import { SyncDownTarget, SyncEvent, SyncMethod, SyncOptions, SyncStatus, SyncUpTarget } from "./typings/mobilesync";
 
 const { MobileSyncReactBridge, SFMobileSyncReactBridge } = NativeModules;
 
 // If param is a storeconfig return the same storeconfig
 // If param is a boolean, returns a storeconfig object  {'isGlobalStore': boolean}
 // Otherwise, returns a default storeconfig object
-const checkFirstArg = (arg: StoreConfig) => {
+const checkFirstArg = (arg: StoreConfig | boolean) => {
   // Turning arguments into array
   // If first argument is a store config
   if (typeof arg === "object" && Object.prototype.hasOwnProperty.call(arg, "isGlobalStore")) {
@@ -67,7 +67,7 @@ const exec = <T>(
 
 type SyncDownOverload = {
   (
-    storeConfig: StoreConfig,
+    storeConfig: StoreConfig | boolean,
     target: SyncDownTarget,
     soupName: string,
     options: SyncOptions,
@@ -76,7 +76,7 @@ type SyncDownOverload = {
     errorCB: ExecErrorCallback,
   ): void;
   (
-    storeConfig: StoreConfig,
+    storeConfig: StoreConfig | boolean,
     target: SyncDownTarget,
     soupName: string,
     options: SyncOptions,
@@ -86,7 +86,7 @@ type SyncDownOverload = {
 };
 
 export const syncDown: SyncDownOverload = (
-  storeConfig: StoreConfig,
+  storeConfig: StoreConfig | boolean,
   target: SyncDownTarget,
   soupName: string,
   options: SyncOptions,
@@ -122,8 +122,8 @@ export const syncDown: SyncDownOverload = (
 };
 
 export const reSync = (
-  storeConfig: StoreConfig,
-  syncIdOrName: string,
+  storeConfig: StoreConfig | boolean,
+  syncIdOrName: string | number,
   successCB: ExecSuccessCallback<SyncEvent>,
   errorCB: ExecErrorCallback,
 ): void => {
@@ -137,9 +137,9 @@ export const reSync = (
 };
 
 export const cleanResyncGhosts = (
-  storeConfig: StoreConfig,
-  syncId: string,
-  successCB: ExecSuccessCallback<unknown>,
+  storeConfig: StoreConfig | boolean,
+  syncId: number,
+  successCB: ExecSuccessCallback<number>,
   errorCB: ExecErrorCallback,
 ): void => {
   storeConfig = checkFirstArg(storeConfig);
@@ -152,8 +152,8 @@ export const cleanResyncGhosts = (
 
 type SyncUpOverload = {
   (
-    storeConfig: StoreConfig,
-    target: SyncDownTarget,
+    storeConfig: StoreConfig | boolean,
+    target: SyncUpTarget,
     soupName: string,
     options: SyncOptions,
     syncName: string,
@@ -161,8 +161,8 @@ type SyncUpOverload = {
     errorCB: ExecErrorCallback,
   ): void;
   (
-    storeConfig: StoreConfig,
-    target: SyncDownTarget,
+    storeConfig: StoreConfig | boolean,
+    target: SyncUpTarget,
     soupName: string,
     options: SyncOptions,
     successCB: ExecSuccessCallback<SyncEvent>,
@@ -171,8 +171,8 @@ type SyncUpOverload = {
 };
 
 export const syncUp: SyncUpOverload = (
-  storeConfig: StoreConfig,
-  target: SyncDownTarget,
+  storeConfig: StoreConfig | boolean,
+  target: SyncUpTarget,
   soupName: string,
   options: SyncOptions,
   x: string | ExecSuccessCallback<SyncEvent>,
@@ -207,7 +207,7 @@ export const syncUp: SyncUpOverload = (
 };
 
 export const getSyncStatus = (
-  storeConfig: StoreConfig,
+  storeConfig: StoreConfig | boolean,
   syncIdOrName: string,
   successCB: ExecSuccessCallback<SyncStatus>,
   errorCB: ExecErrorCallback,
@@ -222,8 +222,8 @@ export const getSyncStatus = (
 };
 
 export const deleteSync = (
-  storeConfig: StoreConfig,
-  syncIdOrName: string,
+  storeConfig: StoreConfig | boolean,
+  syncIdOrName: string | number,
   successCB: ExecSuccessCallback<unknown>,
   errorCB: ExecErrorCallback,
 ): void => {
@@ -239,4 +239,4 @@ export const deleteSync = (
 export const MERGE_MODE = {
   OVERWRITE: "OVERWRITE",
   LEAVE_IF_CHANGED: "LEAVE_IF_CHANGED",
-};
+} as const;
