@@ -22,7 +22,8 @@ console.log('=== Installing sdk dependencies');
 execSync('node ./updatesdk.js', {stdio: [0,1,2]});
 
 console.log('=== Installing pod dependencies');
-execSync('rm .xcode.env.local', {stdio:[0,1,2], cwd:'ios'});
+const nodePath = execSync('command -v node', { encoding: 'utf-8' }).trim();
+execSync(`echo export NODE_BINARY=${nodePath} > .xcode.env`, {stdio:[0,1,2], cwd:'ios'});
 execSync('pod update', {stdio:[0,1,2], cwd:'ios'});
 
 console.log('=== Creating test_credentials.json');
