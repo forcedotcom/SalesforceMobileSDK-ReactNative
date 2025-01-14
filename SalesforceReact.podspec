@@ -5,7 +5,7 @@ Pod::Spec.new do |s|
   s.homepage     = "https://github.com/forcedotcom/SalesforceMobileSDK-ReactNative"
   s.license      = { :type => "Salesforce.com Mobile SDK License", :file => "LICENSE" }
   s.author       = { "Wolfgang Mathurin" => "wmathurin@salesforce.com" }
-  s.platform     = :ios, "16.0"
+  s.platform     = :ios, "17.0"
   s.source       = { :git => "https://github.com/forcedotcom/SalesforceMobileSDK-ReactNative.git",
                      :tag => "v#{s.version}",
                      :submodules => false }
