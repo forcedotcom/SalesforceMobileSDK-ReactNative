@@ -1,0 +1,39 @@
+name: Pull Request
+
+on:
+  pull_request_target:
+    branches: [dev, master]
+
+jobs:
+  permission-check:
+    runs-on: macos-15
+    env:
+      BUNDLE_GEMFILE: ${{ github.workspace }}/.github/DangerFiles/Gemfile
+    steps:
+      - name: Check Write Permission
+        uses: octokit/request-action@v2.x
+        id: check_permissions
+        with:
+          route: GET /repos/${{ github.repository }}/collaborators/${{ github.triggering_actor }}/permission
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Debug Permission Response
+        run: |
+          echo "Permission raw response: ${{ steps.check_permissions.outputs.data }}"
+      - name: Validate Write Permission
+        run: |
+          permission=$(echo "${{ fromJson(steps.check_permissions.outputs.data).permission }}")
+          echo "User ${{ github.triggering_actor }} has permission: $permission"
+          if [[ "$permission" != "write" && "$permission" != "admin" ]]; then
+            echo "User ${{ github.triggering_actor }} does not have sufficient permission (write or admin) to proceed. Someone from the team needs to rerun this workflow AFTER it has been deemed safe."
+            exit 1
+          fi
+
+  ios-pr:
+    needs: [permission-check]
+    strategy:
+      fail-fast: false
+    uses: ./.github/workflows/reusable-workflow.yaml
+    with:
+      is_pr: true
+    secrets: inherit
