@@ -33,6 +33,7 @@ jobs:
         env:
           TEST_CREDENTIALS: ${{ secrets.TEST_CREDENTIALS }}
         run: |
+          brew install gnu-sed
           npm install -g typescript
           cd iosTests
           ./prepareios.js
