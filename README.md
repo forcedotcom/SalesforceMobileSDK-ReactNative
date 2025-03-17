@@ -1,4 +1,4 @@
-![Build Status](https://forcedotcom.github.io/SalesforceMobileSDK-TestResults/ReactNative-results/dev/latest/buildstatus.svg)
+[![Tests](https://github.com/forcedotcom/SalesforceMobileSDK-ReactNative/actions/workflows/nightly.yaml/badge.svg)](https://github.com/forcedotcom/SalesforceMobileSDK-ReactNative/actions/workflows/nightly.yaml)
 
 # SalesforceMobileSDK-ReactNative
 
