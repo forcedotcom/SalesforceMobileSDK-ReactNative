@@ -6,11 +6,16 @@ codecov:
 coverage:
   precision: 2
   round: down
-  range: "25...75"
+  range: "60...80"
 
   status:
+    # Overall Libarary Requirements
     project:
       default: true
+      SalesforceReactSDK:
+        threshold: 0%
+        paths:
+          - "ios/"
 
 comment:
   layout: "reach, diff"
