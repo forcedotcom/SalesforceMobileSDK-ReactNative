@@ -31,8 +31,6 @@ jobs:
 
   ios-pr:
     needs: [permission-check]
-    strategy:
-      fail-fast: false
     uses: ./.github/workflows/reusable-workflow.yaml
     with:
       is_pr: true
