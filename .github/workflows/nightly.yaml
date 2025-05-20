@@ -11,7 +11,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        lib: [SalesforceFileLogger, SalesforceHybridSDK]
         ios: [^18, ^17]
         macos: [macos-15]
         include:
