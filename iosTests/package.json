@@ -6,13 +6,13 @@
     "start": "node node_modules/react-native/local-cli/cli.js start"
   },
   "sdkDependencies": {
-    "SalesforceMobileSDK-iOS": "https://github.com/forcedotcom/SalesforceMobileSDK-iOS.git#master"
+    "SalesforceMobileSDK-iOS": "https://github.com/forcedotcom/SalesforceMobileSDK-iOS.git#dev"
   },
   "dependencies": {
     "create-react-class": "^15.7.0",
     "react": "19.0.0",
     "react-native": "0.79.3",
-    "react-native-force": "git+https://github.com/forcedotcom/SalesforceMobileSDK-ReactNative.git#master"
+    "react-native-force": "git+https://github.com/forcedotcom/SalesforceMobileSDK-ReactNative.git#dev"
   },
   "devDependencies": {
     "chai": "4.4.1",
