@@ -11,13 +11,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ios: [^18, ^17]
         macos: [macos-15]
-        include:
-          - ios: ^18
-            xcode: ^16
-          - ios: ^17
-            xcode: ^15
+        ios: [^18]
+        xcode: [^16, ^26]
+        # Valid combinations that will run:
+        # - iOS ^18 + Xcode ^16
+        # - iOS ^18 + Xcode ^26
     uses: ./.github/workflows/reusable-workflow.yaml
     with:
       ios: ${{ matrix.ios }}
