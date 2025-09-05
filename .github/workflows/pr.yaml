@@ -31,7 +31,15 @@ jobs:
 
   ios-pr:
     needs: [permission-check]
+    strategy:
+      matrix:
+        macos: [macos-15]
+        ios: [^18]
+        xcode: [^16, ^26]
     uses: ./.github/workflows/reusable-workflow.yaml
     with:
       is_pr: true
+      macos: ${{ matrix.macos }}
+      ios: ${{ matrix.ios }}
+      xcode: ${{ matrix.xcode }}
     secrets: inherit
