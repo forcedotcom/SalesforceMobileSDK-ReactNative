@@ -11,12 +11,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ios: [^18, ^17]
-        macos: [macos-15]
         include:
-          - ios: ^18
+          - macos: macos-15
+            ios: ^18
             xcode: ^16
-          - ios: ^17
+          - macos: macos-15
+            ios: ^18
+            xcode: ^26
+          - macos: macos-15
+            ios: ^26
+            xcode: ^26
+          - macos: macos-14
+            ios: ^17
             xcode: ^15
     uses: ./.github/workflows/reusable-workflow.yaml
     with:
