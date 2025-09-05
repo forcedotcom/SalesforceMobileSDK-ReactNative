@@ -33,9 +33,13 @@ jobs:
     needs: [permission-check]
     strategy:
       matrix:
-        macos: [macos-15]
-        ios: [^18]
-        xcode: [^16, ^26]
+        include:
+          - macos: macos-15
+            ios: ^18
+            xcode: ^16
+          - macos: macos-15
+            ios: ^26
+            xcode: ^26
     uses: ./.github/workflows/reusable-workflow.yaml
     with:
       is_pr: true
