@@ -6,7 +6,7 @@ on:
 
 jobs:
   permission-check:
-    runs-on: macos-15
+    runs-on: macos-26
     env:
       BUNDLE_GEMFILE: ${{ github.workspace }}/.github/DangerFiles/Gemfile
     steps:
@@ -33,18 +33,15 @@ jobs:
     needs: [permission-check]
     strategy:
       matrix:
+        ios: [^26, ^18]
         include:
-          - macos: macos-15
-            ios: ^18
+          - ios: ^26
+            xcode: ^26
+          - ios: ^18
             xcode: ^16
-          # - macos: macos-15
-          #   ios: ^26
-          #   xcode: ^26
-          # Note: iOS 26 simulator is not yet available on GitHub runners
     uses: ./.github/workflows/reusable-workflow.yaml
     with:
       is_pr: true
-      macos: ${{ matrix.macos }}
-      ios: ${{ matrix.ios }}
-      xcode: ${{ matrix.xcode }}
+      ios: ${{ matrix.include.ios }}
+      xcode: ${{ matrix.include.xcode }}
     secrets: inherit
