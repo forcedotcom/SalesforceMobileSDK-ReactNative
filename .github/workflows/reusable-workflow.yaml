@@ -10,7 +10,7 @@ on:
         required: false
         type: string
       macos:
-        default: macos-15
+        default: macos-26
         required: false
         type: string
       is_pr:
@@ -38,6 +38,9 @@ jobs:
           cd iosTests
           ./prepareios.js
           ./create_test_credentials_from_env.js
+      - name: Install iOS 17 runtime if needed
+        if: ${{ inputs.ios == '^17' }}
+        run: xcodes runtimes install "iOS 17.5"
       - uses: mxcl/xcodebuild@v3
         with:
           xcode: ${{ inputs.xcode }}
@@ -54,7 +57,7 @@ jobs:
           show-code-coverage: false
           upload-bundles: false
           show-passed-tests: false
-        if: success() || failure()
+        if: success() || failure() && ${{ inputs.ios != '^26' }}
       - uses: codecov/codecov-action@v4
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
