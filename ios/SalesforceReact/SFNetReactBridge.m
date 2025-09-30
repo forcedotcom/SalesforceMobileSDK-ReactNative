@@ -24,9 +24,7 @@
 
 #import "SFNetReactBridge.h"
 #import <React/RCTUtils.h>
-#import <SalesforceSDKCore/NSDictionary+SFAdditions.h>
-#import <SalesforceSDKCore/NSURLResponse+SFAdditions.h>
-#import <SalesforceSDKCore/SFRestAPI+Blocks.h>
+@import SalesforceSDKCore;
 
 
 // Private constants

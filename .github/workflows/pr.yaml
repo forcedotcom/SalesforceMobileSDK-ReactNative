@@ -6,7 +6,7 @@ on:
 
 jobs:
   permission-check:
-    runs-on: macos-15
+    runs-on: macos-26
     env:
       BUNDLE_GEMFILE: ${{ github.workspace }}/.github/DangerFiles/Gemfile
     steps:
@@ -32,8 +32,16 @@ jobs:
   ios-pr:
     needs: [permission-check]
     strategy:
-      fail-fast: false
+      matrix:
+        ios: [^26, ^18]
+        include:
+          - ios: ^26
+            xcode: ^26
+          - ios: ^18
+            xcode: ^16
     uses: ./.github/workflows/reusable-workflow.yaml
     with:
       is_pr: true
+      ios: ${{ matrix.include.ios }}
+      xcode: ${{ matrix.include.xcode }}
     secrets: inherit
