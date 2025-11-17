@@ -1,5 +1,7 @@
+.idea/
+.xcode.env
 node_modules/
 package-lock.json
-yarn.lock
 Podfile.lock
-.xcode.env
+yarn.lock
+
