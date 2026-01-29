@@ -10,8 +10,9 @@ NC='\033[0m' # No Color
 usage ()
 {
     echo "Use this script to set Mobile SDK version number in source files"
-    echo "Usage: $0 -v <version>"
-    echo "  where: version is the version e.g. 8.0.0"
+    echo "Usage: $0 -v <version> [-d <isDev>]"
+    echo "  where: version is the version e.g. 7.1.0"
+    echo "         isDev is yes or no (default) to indicate whether it is a dev build"
 }
 
 parse_opts ()
@@ -20,6 +21,7 @@ parse_opts ()
     do
         case ${command_line_opt} in
             v)  OPT_VERSION=${OPTARG};;
+            d)  OPT_IS_DEV=${OPTARG};;	    
         esac
     done
 
@@ -36,7 +38,9 @@ update_package_json ()
 {
     local file=$1
     local version=$2
+    local sdkTag=$3
     gsed -i "s/\"version\":.*\"[^\"]*\"/\"version\": \"${version}\"/g" ${file}
+    gsed -i "s/\(SalesforceMobileSDK.*\)\#[^\"]*\"/\1\#${sdkTag}\"/g" ${file}
 }
 
 update_podspec ()
@@ -48,11 +52,19 @@ update_podspec ()
 
 parse_opts "$@"
 
-echo -e "${YELLOW}*** SETTING VERSION TO ${OPT_VERSION} ***${NC}"
+SDK_TAG=""
+if [ "$OPT_IS_DEV" == "yes" ]
+then
+    SDK_TAG="dev"
+else
+    SDK_TAG="v${OPT_VERSION}"
+fi
+
+echo -e "${YELLOW}*** POINTING TO SDK TAG ${SDK_TAG} ***${NC}"
 
 echo "*** Updating package.json ***"
-update_package_json "./package.json" "${OPT_VERSION}"
-update_package_json "./iosTests/package.json" "${OPT_VERSION}"
+update_package_json "./package.json" "${OPT_VERSION}" "${SDK_TAG}"
+update_package_json "./iosTests/package.json" "${OPT_VERSION}" "${SDK_TAG}"
 
 echo "*** Updating podspecs ***"
 update_podspec "./SalesforceReact.podspec" "${OPT_VERSION}"
@@ -60,4 +72,3 @@ update_podspec "./SalesforceReact.podspec" "${OPT_VERSION}"
 echo "*** Updating dist ***"
 npm install
 npm run build
-
