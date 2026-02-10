@@ -49,7 +49,7 @@ netCollectionUpdate = promiser(net.collectionUpdate);
 netCollectionUpsert = promiser(net.collectionUpsert);
 netCollectionDelete = promiser(net.collectionDelete);
 
-const apiVersion = 'v63.0';
+const apiVersion = 'v66.0';
 
 const sendUnAuthenticatedNetRequest = (url, callback, error) => {
     return net.sendRequest(null, url, callback, error,"GET", null, null, null, false, true);
