@@ -10,7 +10,7 @@ on:
         required: false
         type: string
       macos:
-        default: macos-26
+        default: macos-latest
         required: false
         type: string
       is_pr:
@@ -42,6 +42,7 @@ jobs:
         if: ${{ inputs.ios == '^17' }}
         run: xcodes runtimes install "iOS 17.5"
       - uses: mxcl/xcodebuild@v3
+        id: xcodebuild
         with:
           xcode: ${{ inputs.xcode }}
           platform: iOS
@@ -50,15 +51,31 @@ jobs:
           scheme: "SalesforceReactTestApp"
           code-coverage: true
           verbosity: xcbeautify
-      - uses: slidoapp/xcresulttool@v3.1.0
+      - name: Parse test results
+        if: success() || failure()
+        run: |
+          brew install xcresultparser
+          xcresultparser -o junit test.xcresult > test-results-ios${{ inputs.ios }}.xml
+      - name: Test Report
+        uses: mikepenz/action-junit-report@v6
+        if: success() || failure()
         with:
-          path: test.xcresult
-          title: "iOS ${{ inputs.ios }}"
-          show-code-coverage: false
-          upload-bundles: false
-          show-passed-tests: false
-        if: success() || failure() && ${{ inputs.ios != '^26' }}
+          check_name: iOS ${{ inputs.ios }} Test Results
+          job_name: iOS ${{ inputs.ios }} Test Results
+          require_tests: true
+          include_empty_in_summary: false
+          simplified_summary: true
+          detailed_summary: true
+          comment: true
+          job_summary: ${{ steps.xcodebuild.outcome == 'failure' }}
+          report_paths: 'test-results-ios${{ inputs.ios }}.xml'
       - uses: codecov/codecov-action@v4
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         if: success() || failure()
+      - name: Upload test results artifact
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-ios${{ inputs.ios }}
+          path: test-results-ios${{ inputs.ios }}.xml
