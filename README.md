@@ -87,7 +87,7 @@ This will generate a complete React Native application with:
 - iOS and Android native projects pre-configured
 - Salesforce Mobile SDK dependencies installed
 - Sample code demonstrating SDK usage
-- Connected App configuration template
+- External Client App configuration template
 
 ### Template Options
 

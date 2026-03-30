@@ -319,7 +319,7 @@ Understanding these concepts is essential:
 - **Native Bridge**: React Native's mechanism for calling native iOS/Android code from JavaScript via `NativeModules`
 - **Bridge Module**: A native class that exports methods to JavaScript (e.g., `SFOauthReactBridge`)
 - **Promise-based APIs**: Modern async pattern used throughout (replaces older callback pattern)
-- **Connected App**: Required Salesforce configuration for OAuth (defined in templates, not in this library)
+- **External Client App or Connected App (legacy)**: Required Salesforce OAuth configuration (defined in templates, not in this library)
 - **SmartStore Soup**: Encrypted on-device storage table (SQLCipher-backed)
 - **Sync Target**: MobileSync abstraction for defining what/how to sync
 - **Test Harness**: Custom bridge between JavaScript tests and native test frameworks
