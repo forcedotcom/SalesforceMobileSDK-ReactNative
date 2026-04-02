@@ -1,18 +1,18 @@
 {
   "name": "SalesforceReactTests",
-  "version": "13.2.0",
+  "version": "14.0.0",
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start"
   },
   "sdkDependencies": {
-    "SalesforceMobileSDK-iOS": "https://github.com/forcedotcom/SalesforceMobileSDK-iOS.git#v13.2.0"
+    "SalesforceMobileSDK-iOS": "https://github.com/forcedotcom/SalesforceMobileSDK-iOS.git#dev"
   },
   "dependencies": {
     "create-react-class": "^15.7.0",
     "react": "19.1.0",
     "react-native": "0.81.5",
-    "react-native-force": "git+https://github.com/forcedotcom/SalesforceMobileSDK-ReactNative.git#v13.2.0"
+    "react-native-force": "git+https://github.com/forcedotcom/SalesforceMobileSDK-ReactNative.git#dev"
   },
   "devDependencies": {
     "chai": "4.4.1",
