@@ -38,9 +38,6 @@ jobs:
           cd iosTests
           ./prepareios.js
           ./create_test_credentials_from_env.js
-      - name: Install iOS 17 runtime if needed
-        if: ${{ inputs.ios == '^17' }}
-        run: xcodes runtimes install "iOS 17.5"
       - uses: mxcl/xcodebuild@v3
         id: xcodebuild
         with:

@@ -347,6 +347,7 @@ The TypeScript definitions in `src/typings/` provide inline documentation for al
 
 | React Native SDK | React Native | iOS SDK | Android SDK | iOS Min | Android Min |
 |-----------------|--------------|---------|-------------|---------|-------------|
+| 14.0.0          | 0.81.5       | 14.0.0  | 14.0.0      | 18.0    | 28 (9.0)    |
 | 13.2.0          | 0.81.5       | 13.2.0  | 13.2.0      | 17.0    | 28 (9.0)    |
 | 13.1.0          | 0.76.5       | 13.1.0  | 13.1.0      | 16.0    | 26 (8.0)    |
 | 13.0.0          | 0.76.1       | 13.0.0  | 13.0.0      | 16.0    | 26 (8.0)    |
