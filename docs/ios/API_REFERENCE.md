@@ -51,19 +51,17 @@ RCT_EXPORT_METHOD(getAuthCredentials:(NSDictionary *)args
 - `callback`: Bridge callback with signature `(error, result)`
 
 **Returns**:
-- **Success**: `(nil, credentialsDict)` where credentialsDict contains:
+- **Success**: `(nil, credentialsDict)` where credentialsDict matches the `UserAccount` type defined in `src/typings/oauth.ts`:
   ```objective-c
   @{
       @"accessToken": NSString,
-      @"refreshToken": NSString,
       @"clientId": NSString,
-      @"userId": NSString,
-      @"orgId": NSString,
-      @"loginUrl": NSString,
       @"instanceUrl": NSString,
+      @"loginUrl": NSString,
+      @"orgId": NSString,
+      @"refreshToken": NSString,
       @"userAgent": NSString,
-      @"communityId": NSString or NSNull,
-      @"communityUrl": NSString or NSNull
+      @"userId": NSString
   }
   ```
 - **Error**: `(NSError, nil)` if no user is authenticated

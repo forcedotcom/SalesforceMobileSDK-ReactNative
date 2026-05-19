@@ -25,8 +25,10 @@ The SDK is organized into the following modules:
 
 5. **forceUtil** (`react.force.util`) - Promise wrappers and utilities
 6. **forceLog** (`react.force.log`) - Logging configuration
-7. **forceCommon** (`react.force.common`) - Internal bridge utilities
-8. **forceTest** (`react.force.test`) - Test harness utilities
+7. **forceTest** (`react.force.test`) - Test harness utilities (used by the SDK's own test suite)
+8. **forceClient** - Alias for `net` (kept for backward compatibility)
+
+> Note: `react.force.common` exists as an internal helper but is **not exported** from `react-native-force`. Application code should use the public modules listed above.
 
 ### Module Dependency Graph
 
@@ -38,21 +40,23 @@ graph TB
     A --> E[mobilesync]
     A --> F[forceUtil]
     
-    B --> G[forceCommon]
-    C --> G
-    D --> G
-    E --> G
-    
+    B -.uses internally.-> G[react.force.common - internal]
+    C -.uses internally.-> G
+    D -.uses internally.-> G
+    E -.uses internally.-> G
+
     G --> H[forceLog]
-    
+
     F --> B
     F --> C
     F --> D
     F --> E
-    
+
     E --> D
     C --> B
 ```
+
+(`react.force.common` is internal; not exported from the package.)
 
 ## Import Patterns
 

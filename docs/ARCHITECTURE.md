@@ -157,7 +157,7 @@ Objective-C modules that implement the React Native bridge protocol and call iOS
 
 **Location**: `SalesforceMobileSDK-Android/libs/SalesforceReact/`
 
-Kotlin modules that implement React Native's bridge interface and call Android SDK libraries.
+Java modules that implement React Native's bridge interface and call Android SDK libraries. (Per project standards new code should be Kotlin; existing bridge files are currently Java with a planned Kotlin migration.)
 
 **Note**: This code lives in the Android repository, NOT this repository.
 
@@ -245,32 +245,32 @@ RCT_EXPORT_METHOD(getAuthCredentials:(NSDictionary *)args
 
 ### Android Bridge Implementation
 
-```kotlin
-// Android side (OauthReactBridge.kt)
-class SalesforceOauthReactBridge(reactContext: ReactApplicationContext) 
-    : ReactContextBaseJavaModule(reactContext) {
-    
+```java
+// Android side (SalesforceOauthReactBridge.java)
+public class SalesforceOauthReactBridge extends ReactContextBaseJavaModule {
+
+    public SalesforceOauthReactBridge(ReactApplicationContext reactContext) {
+        super(reactContext);
+    }
+
     @ReactMethod
-    fun getAuthCredentials(
-        args: ReadableMap,
-        successCallback: Callback,
-        errorCallback: Callback
-    ) {
+    public void getAuthCredentials(ReadableMap args, Callback successCallback, Callback errorCallback) {
         try {
-            val account = UserAccountManager.getInstance().currentUser
-            val credentials = JSONObject().apply {
-                put("accessToken", account.authToken)
-                put("refreshToken", account.refreshToken)
-                put("userId", account.userId)
-                // ... more fields
-            }
-            successCallback.invoke(credentials.toString())
-        } catch (e: Exception) {
-            errorCallback.invoke(e.message)
+            UserAccount account = UserAccountManager.getInstance().getCurrentUser();
+            JSONObject credentials = new JSONObject();
+            credentials.put("accessToken", account.getAuthToken());
+            credentials.put("refreshToken", account.getRefreshToken());
+            credentials.put("userId", account.getUserId());
+            // ... more fields
+            successCallback.invoke(credentials.toString());
+        } catch (Exception e) {
+            errorCallback.invoke(e.getMessage());
         }
     }
 }
 ```
+
+(Code shown is illustrative; actual `SalesforceOauthReactBridge.java` is in the Android repo.)
 
 ## Module Architecture
 
@@ -427,9 +427,9 @@ callback(@[error, [NSNull null]]);  // error
 ```
 
 **Android**: Separate success and error callbacks
-```kotlin
-successCallback.invoke(result.toString())  // success
-errorCallback.invoke(error.message)        // error
+```java
+successCallback.invoke(result.toString());  // success
+errorCallback.invoke(error.getMessage());   // error
 ```
 
 ### Data Serialization
@@ -454,7 +454,7 @@ errorCallback.invoke(error.message)        // error
 **Android**:
 - Bridge methods run on React Native bridge thread
 - UI operations must post to main thread/UI thread
-- Background operations use coroutines or async tasks
+- Background operations use AsyncTask/ExecutorService (legacy Java code; coroutines used in newer Kotlin code per project standards)
 
 ## Dependency Graph
 
@@ -584,8 +584,8 @@ cd android
 
 **Process**:
 1. Gradle resolves `react-native-force` npm package
-2. Finds Android bridge in separate Android repo
-3. Compiles Kotlin bridge code
+2. Finds Android bridge in separate Android repo (currently Java; planned Kotlin migration)
+3. Compiles bridge code
 4. Links Android SDK libraries from Maven Central
 
 ## Module Registration
@@ -613,19 +613,18 @@ RCT_EXPORT_METHOD(getAuthCredentials:(NSDictionary *)args
 
 ### Android Module Registration
 
-Modules are registered via a `ReactPackage`:
+Modules are registered via a `ReactPackage` (currently Java in `SalesforceMobileSDK-Android/libs/SalesforceReact/`):
 
-```kotlin
-class SalesforceReactPackage : ReactPackage {
-    override fun createNativeModules(
-        reactContext: ReactApplicationContext
-    ): List<NativeModule> {
-        return listOf(
-            SalesforceOauthReactBridge(reactContext),
-            SalesforceNetReactBridge(reactContext),
-            SmartStoreReactBridge(reactContext),
-            MobileSyncReactBridge(reactContext)
-        )
+```java
+public class SalesforceReactPackage implements ReactPackage {
+    @Override
+    public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
+        return Arrays.asList(
+            new SalesforceOauthReactBridge(reactContext),
+            new SalesforceNetReactBridge(reactContext),
+            new SmartStoreReactBridge(reactContext),
+            new MobileSyncReactBridge(reactContext)
+        );
     }
 }
 ```

@@ -24,19 +24,19 @@ Authentication and user session management.
 
 #### UserAccount
 
+Defined in `src/typings/oauth.ts`:
+
 ```typescript
-interface UserAccount {
+type UserAccount = {
   accessToken: string;      // OAuth access token
-  refreshToken: string;     // OAuth refresh token
   clientId: string;         // Connected App client ID
-  userId: string;           // Salesforce user ID (18-char)
-  orgId: string;            // Salesforce org ID (18-char)
-  loginUrl: string;         // Login server URL (e.g., https://login.salesforce.com)
   instanceUrl: string;      // Instance URL (e.g., https://na1.salesforce.com)
+  loginUrl: string;         // Login server URL (e.g., https://login.salesforce.com)
+  orgId: string;            // Salesforce org ID (18-char)
+  refreshToken: string;     // OAuth refresh token
   userAgent: string;        // SDK user agent string
-  communityId?: string;     // Community ID (if using Experience Cloud)
-  communityUrl?: string;    // Community URL (if using Experience Cloud)
-}
+  userId: string;           // Salesforce user ID (18-char)
+};
 ```
 
 ### Methods
@@ -2426,58 +2426,11 @@ sdkConsole.log('Always logged');
 
 ---
 
-## ForceCommon Module
+## Internal: react.force.common
 
-**Import**: `import { forceCommon } from 'react-native-force'`
+`react.force.common` is **not exported from `react-native-force`**. It is an internal helper module used by the public modules (oauth, net, smartstore, etc.) to dispatch calls to the right native bridge module.
 
-Internal utilities for bridge communication. Typically not used directly by applications.
-
-### Types
-
-#### ExecSuccessCallback
-
-```typescript
-type ExecSuccessCallback<T> = (result: T) => void
-```
-
-#### ExecErrorCallback
-
-```typescript
-type ExecErrorCallback = (err: Error) => void
-```
-
-### Methods
-
-#### exec()
-
-Executes a native module method via the React Native bridge.
-
-**Signature**:
-```typescript
-function exec<T>(
-  moduleIOSName: ModuleIOSName,
-  moduleAndroidName: ModuleAndroidName,
-  moduleIOS: ModuleIOS<T>,
-  moduleAndroid: ModuleAndroid,
-  successCB: ExecSuccessCallback<T> | null,
-  errorCB: ExecErrorCallback | null,
-  methodName: string,
-  args: Record<string, unknown>
-): void
-```
-
-**Note**: This is used internally by all SDK modules. Application code should use the higher-level APIs.
-
-#### safeJSONparse()
-
-Safely parses a JSON string, returning the original string if parsing fails.
-
-**Signature**:
-```typescript
-function safeJSONparse<T>(str: string): T
-```
-
-**Use Case**: Android bridge returns JSON strings that need parsing.
+It exports `exec()`, `safeJSONparse()`, and the `ExecSuccessCallback<T>` / `ExecErrorCallback` types but applications should use the higher-level public modules instead.
 
 ---
 
