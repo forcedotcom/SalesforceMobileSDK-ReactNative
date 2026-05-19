@@ -129,11 +129,24 @@ cd iosTests
 ./prepareios.js
 ```
 
-**What it does**:
-1. Installs npm dependencies
-2. Installs CocoaPods
-3. Creates Xcode workspace
-4. Links test suite
+**What it does** (6 phases):
+1. **Phase 1**: Installs npm dependencies (React Native, SDK, build tools)
+2. **Phase 2**: Clones React Native repo and extracts RCTTest framework
+3. **Phase 3**: Clones iOS SDK from configured repository branch
+4. **Phase 4**: Creates Xcode configuration and runs pod install
+5. **Phase 5**: Creates test_credentials.json placeholder
+6. **Phase 6**: Bundles JavaScript tests into index.ios.bundle
+
+**For detailed explanation of each phase**, see [PREPAREIOS_DETAILED.md](./PREPAREIOS_DETAILED.md).
+
+**Key files created**:
+- `node_modules/` - npm dependencies
+- `RCTTest/` - React Native test framework (extracted from RN source)
+- `mobile_sdk/SalesforceMobileSDK-iOS/` - Cloned iOS SDK
+- `ios/Pods/` - CocoaPods dependencies
+- `ios/.xcode.env` - Node binary path for Xcode
+- `ios/index.ios.bundle` - Bundled JavaScript tests
+- `test_credentials.json` - Empty credentials file (must be populated)
 
 ### Step 2: Configure Test Credentials
 
