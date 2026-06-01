@@ -20,8 +20,15 @@ const nodePath = execSync('command -v node', { encoding: 'utf-8' }).trim();
 execSync(`echo export NODE_BINARY=${nodePath} > .xcode.env`, {stdio:[0,1,2], cwd:'ios'});
 execSync('pod update', {stdio:[0,1,2], cwd:'ios'});
 
-console.log('=== Creating test_credentials.json');
-execSync('touch test_credentials.json', {stdio:[0,1,2]});
+console.log('=== Copying test_credentials.json');
+var fs = require('fs');
+if (fs.existsSync('test_credentials.json')) {
+    fs.copyFileSync('test_credentials.json', 'ios/test_credentials.json');
+} else if (!fs.existsSync('ios/test_credentials.json')) {
+    console.warn('WARNING: test_credentials.json not found. Tests will fail at runtime.');
+    console.warn('         Place your test_credentials.json in iosTests/ and re-run.');
+    fs.writeFileSync('ios/test_credentials.json', '{}', 'utf8');
+}
 
 console.log('=== Creating index.ios.bundle');
 execSync('node ./updatebundle.js', {stdio: [0,1,2]});

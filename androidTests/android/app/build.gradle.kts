@@ -54,11 +54,19 @@ kotlin {
     jvmToolchain(17)
 }
 
+// Copy test_credentials.json from androidTests/ root into assets before each build
+tasks.register<Copy>("copyTestCredentials") {
+    from("${rootProject.projectDir}/../test_credentials.json")
+    into("src/main/assets")
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+tasks.matching { it.name.startsWith("merge") && it.name.contains("Assets") }.configureEach {
+    dependsOn("copyTestCredentials")
+}
+
 dependencies {
-    // SalesforceReact is provided by react-native-force autolinking
-    implementation("com.facebook.react:react-android:0.81.5")
-    implementation("com.facebook.react:react-android:0.81.5")
-    implementation("com.facebook.react:hermes-android:0.81.5")
+    implementation("com.facebook.react:react-android:0.82.1")
+    implementation("com.facebook.react:hermes-android:0.82.1")
 
     androidTestImplementation("androidx.test:runner:1.6.2")
     androidTestImplementation("androidx.test:rules:1.6.1")
