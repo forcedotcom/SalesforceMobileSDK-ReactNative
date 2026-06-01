@@ -22,6 +22,8 @@ var destCredentials = path.join(assetsDir, 'test_credentials.json');
 if (fs.existsSync(srcCredentials)) {
     fs.copyFileSync(srcCredentials, destCredentials);
 } else {
+    console.warn('WARNING: test_credentials.json not found. Tests will fail at runtime.');
+    console.warn('         Place your test_credentials.json in androidTests/ and re-run.');
     fs.writeFileSync(destCredentials, '{}', 'utf8');
 }
 
