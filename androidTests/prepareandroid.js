@@ -12,14 +12,17 @@ execSync('yarn install', {stdio:[0,1,2]});
 console.log('=== Installing sdk dependencies');
 execSync('node ./updatesdk.js', {stdio: [0,1,2]});
 
-console.log('=== Creating test_credentials.json');
+console.log('=== Copying test_credentials.json to assets');
 var assetsDir = path.join('android', 'app', 'src', 'main', 'assets');
 if (!fs.existsSync(assetsDir)) {
     fs.mkdirSync(assetsDir, {recursive: true});
 }
-var credentialsFile = path.join(assetsDir, 'test_credentials.json');
-if (!fs.existsSync(credentialsFile)) {
-    fs.writeFileSync(credentialsFile, '{}', 'utf8');
+var srcCredentials = 'test_credentials.json';
+var destCredentials = path.join(assetsDir, 'test_credentials.json');
+if (fs.existsSync(srcCredentials)) {
+    fs.copyFileSync(srcCredentials, destCredentials);
+} else {
+    fs.writeFileSync(destCredentials, '{}', 'utf8');
 }
 
 console.log('=== Creating index.android.bundle');
