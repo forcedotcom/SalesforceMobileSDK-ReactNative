@@ -11,19 +11,23 @@ iosTests/test_credentials.json
 iosTests/ios/test_credentials.json
 androidTests/test_credentials.json
 
-# Android test generated assets and credentials
+# iOS test generated files
+iosTests/ios/index.ios.bundle
+iosTests/mobile_sdk/
+
+# Android test generated files
 androidTests/android/app/src/main/assets/index.android.bundle
 androidTests/android/app/src/main/assets/test_credentials.json
 androidTests/android/app/src/main/assets/drawable-mdpi/
 androidTests/mobile_sdk/
 
-
 # Gradle build output
 androidTests/android/.gradle/
 androidTests/android/app/build/
-
+androidTests/android/build/
 androidTests/android/.kotlin/
 androidTests/android/app/.cxx/
+androidTests/android/local.properties
 
 # Android library build output
 android/.gradle/
