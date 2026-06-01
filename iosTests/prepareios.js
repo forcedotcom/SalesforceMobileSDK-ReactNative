@@ -25,6 +25,8 @@ var fs = require('fs');
 if (fs.existsSync('test_credentials.json')) {
     fs.copyFileSync('test_credentials.json', 'ios/test_credentials.json');
 } else if (!fs.existsSync('ios/test_credentials.json')) {
+    console.warn('WARNING: test_credentials.json not found. Tests will fail at runtime.');
+    console.warn('         Place your test_credentials.json in iosTests/ and re-run.');
     fs.writeFileSync('ios/test_credentials.json', '{}', 'utf8');
 }
 
