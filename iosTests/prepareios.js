@@ -9,14 +9,9 @@ execSync('rm -f yarn.lock', {stdio:[0,1,2]})
 execSync('yarn install', {stdio:[0,1,2]});
 var rimraf = require('rimraf');
 
-console.log('=== Getting react native git repo (for test runner classes)');
+// RCTTest directory is checked in with custom RCTTestRunner adapted for RN 0.82 bridgeless architecture.
+// Do NOT overwrite it from the upstream react-native repo.
 const rnVersion = require(path.join(__dirname, '..', 'package.json')).peerDependencies['react-native']
-execSync('git clone --branch v' + rnVersion + ' --single-branch --depth 1 https://github.com/facebook/react-native', {stdio:[0,1,2]});
-execSync('rm -rf RCTTest', {stdio:[0,1,2]});
-execSync('mv react-native/packages/rn-tester/RCTTest .');
-execSync("gsed -i 's/^package = .*$/package = {}/g' RCTTest/React-RCTTest.podspec");
-execSync(`gsed -i 's/^version = .*$/version = "${rnVersion}"/g' RCTTest/React-RCTTest.podspec `);
-execSync('rm -rf react-native', {stdio:[0,1,2]});
 
 console.log('=== Installing sdk dependencies');
 execSync('node ./updatesdk.js', {stdio: [0,1,2]});
