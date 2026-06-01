@@ -46,6 +46,7 @@ graph TB
     E -.uses internally.-> G
 
     G --> H[forceLog]
+    G -.TurboModuleRegistry.-> I[Native Bridges]
 
     F --> B
     F --> C
@@ -56,7 +57,7 @@ graph TB
     C --> B
 ```
 
-(`react.force.common` is internal; not exported from the package.)
+(`react.force.common` is internal; not exported from the package. It resolves native modules via `TurboModuleRegistry` using the codegen specs in `src/specs/`.)
 
 ## Import Patterns
 

@@ -16,7 +16,7 @@ Complete reference for all iOS bridge classes and their mapping to JavaScript AP
 ## SFOauthReactBridge
 
 **Header**: `ios/SalesforceReact/SFOauthReactBridge.h`  
-**Implementation**: `ios/SalesforceReact/SFOauthReactBridge.m`  
+**Implementation**: `ios/SalesforceReact/SFOauthReactBridge.mm`  
 **JavaScript Module**: `oauth` (`react.force.oauth`)
 
 ### Purpose
@@ -189,7 +189,7 @@ oauth.logout(success, error);
 ## SFNetReactBridge
 
 **Header**: `ios/SalesforceReact/SFNetReactBridge.h`  
-**Implementation**: `ios/SalesforceReact/SFNetReactBridge.m`  
+**Implementation**: `ios/SalesforceReact/SFNetReactBridge.mm`  
 **JavaScript Module**: `net` (`react.force.net`)
 
 ### Purpose
@@ -317,7 +317,7 @@ net.sendRequest(endPoint, path, success, error, method, payload, headerParams, f
 ## SFSmartStoreReactBridge
 
 **Header**: `ios/SalesforceReact/SFSmartStoreReactBridge.h`  
-**Implementation**: `ios/SalesforceReact/SFSmartStoreReactBridge.m`  
+**Implementation**: `ios/SalesforceReact/SFSmartStoreReactBridge.mm`  
 **JavaScript Module**: `smartstore` (`react.force.smartstore`)
 
 ### Purpose
@@ -621,7 +621,7 @@ All follow similar patterns. Key methods:
 ## SFMobileSyncReactBridge
 
 **Header**: `ios/SalesforceReact/SFMobileSyncReactBridge.h`  
-**Implementation**: `ios/SalesforceReact/SFMobileSyncReactBridge.m`  
+**Implementation**: `ios/SalesforceReact/SFMobileSyncReactBridge.mm`  
 **JavaScript Module**: `mobilesync` (`react.force.mobilesync`)
 
 ### Purpose
@@ -852,7 +852,7 @@ callback(@[[NSNull null], @(count)]);
 ## SFSDKReactLogger
 
 **Header**: `ios/SalesforceReact/SFSDKReactLogger.h`  
-**Implementation**: `ios/SalesforceReact/SFSDKReactLogger.m`
+**Implementation**: `ios/SalesforceReact/SFSDKReactLogger.m` (plain Objective-C)
 
 ### Purpose
 

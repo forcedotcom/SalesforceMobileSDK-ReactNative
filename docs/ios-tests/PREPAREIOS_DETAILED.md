@@ -32,7 +32,7 @@ graph TB
     B --> C[Phase 2: Extract RCTTest]
     C --> D[Phase 3: Clone iOS SDK]
     D --> E[Phase 4: pod install]
-    E --> F[Phase 5: test_credentials.json]
+    E --> F[Phase 5: Copy test_credentials.json]
     F --> G[Phase 6: Bundle JS tests]
     G --> H[Complete]
     
@@ -62,18 +62,18 @@ graph TB
 
 ### Key Dependencies Installed
 
-From `iosTests/package.json`:
+From `iosTests/package.json` (versions vary by release):
 ```json
 {
   "dependencies": {
-    "react": "18.3.1",
+    "react": "...",
     "react-native": "0.83.9",
     "react-native-force": "file:../"
   },
   "devDependencies": {
-    "@babel/core": "^7.22.0",
-    "@babel/preset-env": "^7.22.0",
-    "metro-react-native-babel-preset": "0.82.0"
+    "@babel/core": "...",
+    "@babel/preset-env": "...",
+    "metro-react-native-babel-preset": "..."
   }
 }
 ```
@@ -325,9 +325,9 @@ Analyzing dependencies
 Downloading dependencies
 Installing React-Core (0.83.9)
 Installing React-hermes (0.83.9)
-Installing SalesforceSDKCore (13.0.0)
-Installing SmartStore (13.0.0)
-Installing MobileSync (13.0.0)
+Installing SalesforceSDKCore (14.0.0)
+Installing SmartStore (14.0.0)
+Installing MobileSync (14.0.0)
 ... (40+ pods)
 Generating Pods project
 Integrating client project
@@ -336,33 +336,46 @@ Integrating client project
 Pod installation complete! There are 45 dependencies from the Podfile and 62 total pods installed.
 ```
 
-## Phase 5: Create Test Credentials Placeholder
+## Phase 5: Copy Test Credentials
 
 ### What It Does
 
-Creates an empty `test_credentials.json` file in `iosTests/` directory.
+Copies `shared/test/test_credentials.json` (at the repo root) into `iosTests/ios/test_credentials.json`. If the source file does not exist, an empty placeholder is created and a warning is printed.
 
 ### Why This Phase Is Needed
 
-The test app's AppDelegate tries to load this file. If it doesn't exist, the app still builds but authentication tests will fail.
+The test app's AppDelegate loads this file at launch to authenticate the test user. If it doesn't exist or is empty, the app still builds but authentication tests will fail.
 
-### Manual Population Required
+### Setting Up Credentials
 
-**After prepareios.js completes**, you must populate this file:
+A `.sample` template is checked into the repo at `shared/test/test_credentials.json.sample`. Copy it and fill in your values:
+
+```bash
+cp shared/test/test_credentials.json.sample shared/test/test_credentials.json
+# Edit with your Salesforce org credentials
+```
+
+The file format:
 
 ```json
 {
-  "test_client_id": "your-connected-app-consumer-key",
-  "test_login_domain": "login.salesforce.com",
-  "test_redirect_uri": "sfdc://success",
-  "test_username": "test@example.com",
-  "test_password": "yourpassword",
-  "test_security_token": "yourtoken"
+  "test_client_id": "__INSERT_CLIENT_ID_HERE__",
+  "test_login_domain": "https://login.salesforce.com",
+  "test_redirect_uri": "testsfdc:///mobilesdk/detect/oauth/done",
+  "refresh_token": "__INSERT_REFRESH_TOKEN_HERE__",
+  "instance_url": "__INSERT_INSTANCE_URL_HERE__",
+  "identity_url": "__INSERT_IDENTITY_URL_HERE__",
+  "organization_id": "__INSERT_ORG_ID_HERE__",
+  "username": "__INSERT_USERNAME_HERE__",
+  "user_id": "__INSERT_USER_ID_HERE__",
+  "display_name": "__INSERT_DISPLAY_NAME_HERE__",
+  "photo_url": "__INSERT_PHOTO_URL_HERE__"
 }
 ```
 
-**Alternative**: Use environment variables:
+**Alternative**: Use environment variables in CI:
 ```bash
+cd iosTests
 node create_test_credentials_from_env.js
 ```
 
@@ -375,15 +388,16 @@ Reads from:
 
 ### Security Note
 
-This file is in `.gitignore` and should never be committed:
+The credentials file is gitignored at multiple levels and should never be committed:
 ```gitignore
-test_credentials.json
+shared/test/test_credentials.json
+iosTests/ios/test_credentials.json
 ```
 
 ### Console Output Example
 
 ```
-=== Creating test_credentials.json
+=== Copying test_credentials.json
 ```
 
 ## Phase 6: Bundle JavaScript Tests
@@ -682,7 +696,7 @@ When running tests in CI:
 2. Extracts React Native's internal test framework
 3. Clones iOS SDK from configured repository
 4. Configures and installs CocoaPods dependencies
-5. Creates test credentials placeholder
+5. Copies test credentials from `shared/test/test_credentials.json`
 6. Bundles JavaScript tests for offline execution
 
 **Why so complex?**
