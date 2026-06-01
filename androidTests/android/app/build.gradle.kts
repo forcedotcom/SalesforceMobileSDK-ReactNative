@@ -65,10 +65,8 @@ tasks.matching { it.name.startsWith("merge") && it.name.contains("Assets") }.con
 }
 
 dependencies {
-    // SalesforceReact is provided by react-native-force autolinking
-    implementation("com.facebook.react:react-android:0.81.5")
-    implementation("com.facebook.react:react-android:0.81.5")
-    implementation("com.facebook.react:hermes-android:0.81.5")
+    implementation("com.facebook.react:react-android:0.83.9")
+    implementation("com.facebook.react:hermes-android:0.83.9")
 
     androidTestImplementation("androidx.test:runner:1.6.2")
     androidTestImplementation("androidx.test:rules:1.6.1")
