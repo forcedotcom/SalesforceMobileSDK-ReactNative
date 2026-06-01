@@ -54,9 +54,9 @@ kotlin {
     jvmToolchain(17)
 }
 
-// Copy test_credentials.json from androidTests/ root into assets before each build
+// Copy test_credentials.json from shared/test/ into assets before each build
 tasks.register<Copy>("copyTestCredentials") {
-    from("${rootProject.projectDir}/../test_credentials.json")
+    from("${rootProject.projectDir}/../../shared/test/test_credentials.json")
     into("src/main/assets")
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
