@@ -31,3 +31,4 @@ androidTests/android/local.properties
 # Android library build output
 android/.gradle/
 android/build/
+.xcode.env.local
