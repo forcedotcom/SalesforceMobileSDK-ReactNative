@@ -5,8 +5,14 @@ var execSync = require('child_process').execSync;
 
 console.log('=== Installing npm dependencies');
 execSync('rm -rf node_modules', {stdio:[0,1,2]})
+execSync("rm -rf ../androidTests/node_modules", {stdio:[0,1,2]});
 execSync('rm -f yarn.lock', {stdio:[0,1,2]})
 execSync('yarn install', {stdio:[0,1,2]});
+
+console.log("=== Removing nested node_modules from react-native-force (prevents duplicate React)");
+execSync("rm -rf node_modules/react-native-force/node_modules", {stdio:[0,1,2]});
+execSync("rm -rf ../androidTests/node_modules", {stdio:[0,1,2]});
+
 var rimraf = require('rimraf');
 
 // RCTTest/ is now tracked in the repo (customized for RN 0.82+ bridgeless mode).
