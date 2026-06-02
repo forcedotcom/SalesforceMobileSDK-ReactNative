@@ -76,10 +76,10 @@ export default function TestApp() {
                   {status === STATUS_RUNNING && <Text style={styles.running}>⋯</Text>}
                   {status === STATUS_PENDING && <Text style={styles.pending}>○</Text>}
                   <Text style={styles.testName}>{name}</Text>
+                  <TouchableOpacity testID={`run_${name}`} onPress={() => handleRunTest(suiteName, name)}>
+                    <Text style={styles.runButton}>Run</Text>
+                  </TouchableOpacity>
                 </View>
-                <TouchableOpacity testID={`run_${name}`} onPress={() => handleRunTest(suiteName, name)}>
-                  <Text style={styles.runButton}>Run</Text>
-                </TouchableOpacity>
                 {status === STATUS_FAIL && error && (
                   <Text testID={`error_${name}`} style={styles.errorText}>
                     {String(error.message || error)}
