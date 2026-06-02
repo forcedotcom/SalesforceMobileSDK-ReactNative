@@ -31,6 +31,7 @@ var fs = require('fs');
 var credsSrc = '../shared/test/test_credentials.json';
 if (fs.existsSync(credsSrc)) {
     fs.copyFileSync(credsSrc, 'ios/test_credentials.json');
+    fs.copyFileSync(credsSrc, "ios/SalesforceReactTests/test_credentials.json");
 } else if (!fs.existsSync('ios/test_credentials.json')) {
     console.warn('WARNING: shared/test/test_credentials.json not found. Tests will fail at runtime.');
     console.warn('         Copy shared/test/test_credentials.json.sample and fill in your credentials.');

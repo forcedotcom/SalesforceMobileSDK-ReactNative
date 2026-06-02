@@ -9,6 +9,7 @@ yarn.lock
 # Test credentials (contains real Salesforce org credentials)
 shared/test/test_credentials.json
 iosTests/ios/test_credentials.json
+iosTests/ios/SalesforceReactTests/test_credentials.json
 androidTests/android/app/src/main/assets/test_credentials.json
 
 # iOS test generated files
