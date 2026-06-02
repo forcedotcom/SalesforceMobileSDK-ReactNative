@@ -28,8 +28,12 @@ import { assert } from './assert';
 import * as net from '../src/react.force.net';
 import * as smartstore from '../src/react.force.smartstore';
 import * as mobilesync from '../src/react.force.mobilesync';
-import { registerTest, testDone } from '../src/react.force.test';
+import { registerSuite, registerTest, testDone } from './testRunner';
 import { promiser, timeoutPromiser } from '../src/react.force.util';
+
+registerSuite('MobileSync', {
+  setUp: () => promiser(smartstore.removeAllStores)(),
+});
 
 // Promised based bridge functions for more readable tests
 netCreate = promiser(net.create);
