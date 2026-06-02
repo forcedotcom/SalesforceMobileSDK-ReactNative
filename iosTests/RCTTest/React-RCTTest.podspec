@@ -6,7 +6,7 @@
 require "json"
 
 package = {}
-version = "0.83.9"
+version = "0.84.1"
 
 source = { :git => 'https://github.com/facebook/react-native.git' }
 if version == '1000.0.0'
