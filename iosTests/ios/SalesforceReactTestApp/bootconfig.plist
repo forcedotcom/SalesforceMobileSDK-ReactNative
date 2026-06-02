@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>remoteAccessConsumerKey</key>
-	<string>3MVG9H2sjXhorwC_Obi8SL7EU.SfZl1KKgEOJGl6Vza1ssDxuInaD1hOxpbpYND3JBEjefBfQtSM.CqtyUVn6</string>
+	<string>__INSERT_CONSUMER_KEY_HERE__</string>
 	<key>oauthRedirectURI</key>
-	<string>ecaadvancedjwt://success/done</string>
+	<string>__INSERT_CALLBACK_URL_HERE__</string>
 	<key>shouldAuthenticate</key>
 	<true/>
 </dict>
