@@ -52,13 +52,5 @@ class SalesforceReactTestApp : Application(), ReactApplication {
         EventBuilderHelper.enableDisable(false)
         SalesforceReactSDKManager.initReactNative(applicationContext, ReactTestActivity::class.java)
         TestCredentials.init(this)
-
-        // Debug: log packages from our host
-        val host = reactNativeHost as ReactNativeTestHost
-        val packages = host.debugGetPackages()
-        android.util.Log.i("TestApp", "Packages: ${packages.map { it.javaClass.simpleName }}")
-        packages.forEach { pkg ->
-            android.util.Log.i("TestApp", "  ${pkg.javaClass.simpleName} is BaseReactPackage: ${pkg is com.facebook.react.BaseReactPackage}")
-        }
     }
 }

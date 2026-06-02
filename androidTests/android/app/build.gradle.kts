@@ -54,9 +54,9 @@ kotlin {
     jvmToolchain(17)
 }
 
-// Copy test_credentials.json from androidTests/ root into assets before each build
+// Copy test_credentials.json from shared/test/ into assets before each build
 tasks.register<Copy>("copyTestCredentials") {
-    from("${rootProject.projectDir}/../test_credentials.json")
+    from("${rootProject.projectDir}/../../shared/test/test_credentials.json")
     into("src/main/assets")
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
@@ -65,8 +65,8 @@ tasks.matching { it.name.startsWith("merge") && it.name.contains("Assets") }.con
 }
 
 dependencies {
-    implementation("com.facebook.react:react-android:0.82.1")
-    implementation("com.facebook.react:hermes-android:0.82.1")
+    implementation("com.facebook.react:react-android:0.83.9")
+    implementation("com.facebook.react:hermes-android:0.83.9")
 
     androidTestImplementation("androidx.test:runner:1.6.2")
     androidTestImplementation("androidx.test:rules:1.6.1")

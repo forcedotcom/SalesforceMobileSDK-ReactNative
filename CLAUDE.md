@@ -52,7 +52,7 @@ SalesforceMobileSDK-ReactNative/
 │   ├── SFNetReactBridge.mm       # REST client bridge
 │   ├── SFSmartStoreReactBridge.mm # SmartStore bridge
 │   ├── SFMobileSyncReactBridge.mm # MobileSync bridge
-│   ├── SFSDKReactLogger.mm       # Logging bridge
+│   ├── SFSDKReactLogger.m        # Logging bridge
 │   └── SalesforceReactSDKManager.m # SDK manager
 ├── android/                      # Android bridge modules (Kotlin)
 │   ├── src/main/java/.../bridge/ # Bridge classes (SF*ReactBridge.kt)
@@ -142,6 +142,14 @@ npm run build
 # Prepare for publishing (runs build automatically)
 npm run prepublish
 ```
+
+### Test Credentials
+
+Both iOS and Android tests require Salesforce org credentials stored in a single file:
+- **Source**: `shared/test/test_credentials.json` (gitignored)
+- **Template**: `shared/test/test_credentials.json.sample` (checked in)
+- Copy the `.sample` file and fill in your credentials before running tests
+- The `prepareios.js` and `prepareandroid.js` scripts copy this file to the platform-specific locations at build time
 
 ### iOS Bridge Testing
 
@@ -334,7 +342,7 @@ When reviewing PRs:
 
 Understanding these concepts is essential:
 
-- **Native Bridge**: React Native's mechanism for calling native iOS/Android code from JavaScript via `NativeModules`
+- **Native Bridge**: React Native's mechanism for calling native iOS/Android code from JavaScript via TurboModules (New Architecture, bridgeless mode)
 - **Bridge Module**: A native class that exports methods to JavaScript (e.g., `SFOauthReactBridge`)
 - **Promise-based APIs**: Modern async pattern used throughout (replaces older callback pattern)
 - **External Client App or Connected App (legacy)**: Required Salesforce OAuth configuration (defined in templates, not in this library)

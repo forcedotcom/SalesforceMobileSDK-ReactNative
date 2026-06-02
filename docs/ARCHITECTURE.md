@@ -36,18 +36,18 @@ graph TB
         E[react.force.util.ts]
     end
     
-    subgraph "Layer 2: React Native Bridge"
-        F[NativeModules.SFOauthReactBridge]
-        G[NativeModules.SFNetReactBridge]
-        H[NativeModules.SFSmartStoreReactBridge]
-        I[NativeModules.SFMobileSyncReactBridge]
+    subgraph "Layer 2: React Native Bridge (TurboModules)"
+        F[SFOauthReactBridge]
+        G[SFNetReactBridge]
+        H[SFSmartStoreReactBridge]
+        I[SFMobileSyncReactBridge]
     end
     
     subgraph "Layer 3a: iOS Native (this repo)"
-        J[SFOauthReactBridge.m]
-        K[SFNetReactBridge.m]
-        L[SFSmartStoreReactBridge.m]
-        M[SFMobileSyncReactBridge.m]
+        J[SFOauthReactBridge.mm]
+        K[SFNetReactBridge.mm]
+        L[SFSmartStoreReactBridge.mm]
+        M[SFMobileSyncReactBridge.mm]
     end
     
     subgraph "Layer 3b: Android Native (this repo - android/)"
@@ -114,11 +114,11 @@ The public-facing API that React Native developers use. Written in TypeScript wi
 - `src/react.force.common.ts` - Bridge execution logic
 - `src/typings/` - TypeScript type definitions
 
-### Layer 2: React Native Bridge
+### Layer 2: React Native Bridge (TurboModules)
 
-**Location**: React Native's TurboModuleRegistry / `NativeModules` API
+**Location**: React Native's TurboModuleRegistry API
 
-The communication layer between JavaScript and native code. React Native provides this infrastructure. With the new architecture, modules are resolved via `TurboModuleRegistry.get()` with a `NativeModules` fallback.
+The communication layer between JavaScript and native code. React Native provides this infrastructure. The project uses the **New Architecture** with **bridgeless mode** and **TurboModules**. Modules are resolved via `TurboModuleRegistry.get()` (codegen specs live in `src/specs/`).
 
 **Responsibilities**:
 - Serialize JavaScript arguments to JSON
@@ -127,10 +127,10 @@ The communication layer between JavaScript and native code. React Native provide
 - Handle errors and exceptions
 
 **Key APIs** (unified module names on both platforms):
-- `NativeModules.SFOauthReactBridge`
-- `NativeModules.SFNetReactBridge`
-- `NativeModules.SFSmartStoreReactBridge`
-- `NativeModules.SFMobileSyncReactBridge`
+- `TurboModuleRegistry.get('SFOauthReactBridge')`
+- `TurboModuleRegistry.get('SFNetReactBridge')`
+- `TurboModuleRegistry.get('SFSmartStoreReactBridge')`
+- `TurboModuleRegistry.get('SFMobileSyncReactBridge')`
 
 Module registration is handled by React Native autolinking (no manual `PackageList` registration needed).
 
@@ -148,10 +148,10 @@ Objective-C modules that implement the React Native bridge protocol and call iOS
 - Return results via `RCTResponseSenderBlock` callbacks
 
 **Key Files**:
-- `ios/SalesforceReact/SFOauthReactBridge.{h,m}` - OAuth bridge
-- `ios/SalesforceReact/SFNetReactBridge.{h,m}` - REST API bridge
-- `ios/SalesforceReact/SFSmartStoreReactBridge.{h,m}` - SmartStore bridge
-- `ios/SalesforceReact/SFMobileSyncReactBridge.{h,m}` - MobileSync bridge
+- `ios/SalesforceReact/SFOauthReactBridge.{h,mm}` - OAuth bridge
+- `ios/SalesforceReact/SFNetReactBridge.{h,mm}` - REST API bridge
+- `ios/SalesforceReact/SFSmartStoreReactBridge.{h,mm}` - SmartStore bridge
+- `ios/SalesforceReact/SFMobileSyncReactBridge.{h,mm}` - MobileSync bridge
 - `ios/SalesforceReact/SFSDKReactLogger.{h,m}` - Logging utilities
 - `ios/SalesforceReact/SalesforceReactSDKManager.{h,m}` - SDK initialization
 
@@ -184,55 +184,43 @@ The core native SDKs that provide Salesforce functionality:
 
 ## Bridge Pattern
 
-### Callback-Based Execution
+### Unified Single-Callback Execution
 
-The bridge uses a callback pattern internally:
+Both iOS and Android use a unified single-callback pattern. The JavaScript `exec` function calls the native module with a single callback that receives `(error, result)`:
 
 ```typescript
 // JavaScript side (react.force.common.ts)
 export const exec = <T>(
   moduleIOSName: ModuleIOSName,
   moduleAndroidName: ModuleAndroidName,
-  moduleIOS: ModuleIOS<T>,
-  moduleAndroid: ModuleAndroid,
+  moduleIOS: NativeModule,
+  moduleAndroid: NativeModule,
   successCB: ExecSuccessCallback<T> | null,
   errorCB: ExecErrorCallback | null,
   methodName: string,
   args: Record<string, unknown>,
 ): void => {
-  if (moduleIOS) {
-    // iOS: Single callback with (error, result) signature
-    moduleIOS[methodName](args, (error: Error, result) => {
-      if (error) {
-        if (errorCB) errorCB(error);
-      } else {
-        if (successCB) successCB(result);
-      }
-    });
-  } else if (moduleAndroid) {
-    // Android: Separate success and error callbacks
-    moduleAndroid[methodName](
-      args,
-      (result) => {
-        if (successCB) successCB(safeJSONparse(result));
-      },
-      (error) => {
-        if (errorCB) errorCB(safeJSONparse(error));
-      }
-    );
-  }
+  const module = moduleIOS ?? moduleAndroid;
+
+  module[methodName](args, (error: any, result: any) => {
+    if (error) {
+      if (errorCB) errorCB(typeof error === "string" ? safeJSONparse(error) : error);
+    } else {
+      if (successCB) successCB(typeof result === "string" ? safeJSONparse(result) : result);
+    }
+  });
 };
 ```
 
 ### iOS Bridge Implementation
 
-```objective-c
-// iOS side (SFOauthReactBridge.m)
+```objective-c++
+// iOS side (SFOauthReactBridge.mm)
 @implementation SFOauthReactBridge
 
-RCT_EXPORT_MODULE();
+RCT_EXPORT_MODULE(SFOauthReactBridge);
 
-RCT_EXPORT_METHOD(getAuthCredentials:(NSDictionary *)args 
+RCT_EXPORT_METHOD(getAuthCredentials:(NSDictionary *)args
                   callback:(RCTResponseSenderBlock)callback)
 {
     SFOAuthCredentials *creds = [SFUserAccountManager sharedInstance].currentUser.credentials;
@@ -245,8 +233,7 @@ RCT_EXPORT_METHOD(getAuthCredentials:(NSDictionary *)args
         };
         callback(@[[NSNull null], credentialsDict]); // (error, result)
     } else {
-        NSError *error = [NSError errorWithDomain:@"OAuth" ...];
-        callback(@[error, [NSNull null]]);
+        callback(@[@"Not authenticated"]);           // (error)
     }
 }
 
@@ -255,32 +242,30 @@ RCT_EXPORT_METHOD(getAuthCredentials:(NSDictionary *)args
 
 ### Android Bridge Implementation
 
-```java
-// Android side (SalesforceOauthReactBridge.java)
-public class SalesforceOauthReactBridge extends ReactContextBaseJavaModule {
+```kotlin
+// Android side (SFOauthReactBridge.kt) — in this repo at android/
+class SFOauthReactBridge(reactContext: ReactApplicationContext)
+    : ReactContextBaseJavaModule(reactContext) {
 
-    public SalesforceOauthReactBridge(ReactApplicationContext reactContext) {
-        super(reactContext);
-    }
+    override fun getName() = "SFOauthReactBridge"
 
     @ReactMethod
-    public void getAuthCredentials(ReadableMap args, Callback successCallback, Callback errorCallback) {
+    fun getAuthCredentials(args: ReadableMap, callback: Callback) {
         try {
-            UserAccount account = UserAccountManager.getInstance().getCurrentUser();
-            JSONObject credentials = new JSONObject();
-            credentials.put("accessToken", account.getAuthToken());
-            credentials.put("refreshToken", account.getRefreshToken());
-            credentials.put("userId", account.getUserId());
-            // ... more fields
-            successCallback.invoke(credentials.toString());
-        } catch (Exception e) {
-            errorCallback.invoke(e.getMessage());
+            val client = (currentActivity as? SalesforceReactActivity)?.restClient
+            if (client != null) {
+                ReactBridgeHelper.invokeSuccess(callback, client.jsonCredentials)
+            } else {
+                ReactBridgeHelper.invokeError(callback, "Not authenticated")
+            }
+        } catch (e: Exception) {
+            ReactBridgeHelper.invokeError(callback, e.message)
         }
     }
 }
 ```
 
-(Code shown is illustrative; actual `SalesforceOauthReactBridge.java` is in the Android repo.)
+Both platforms use the same callback convention: `callback(null, result)` on success, `callback(error)` on error.
 
 ## Module Architecture
 
@@ -328,7 +313,7 @@ const exec = <T>(
 ```
 
 ```objective-c
-// 2. iOS Bridge (SFOauthReactBridge.m)
+// 2. iOS Bridge (SFOauthReactBridge.mm)
 RCT_EXPORT_METHOD(getAuthCredentials:(NSDictionary *)args 
                   callback:(RCTResponseSenderBlock)callback)
 {
@@ -355,7 +340,7 @@ sequenceDiagram
     
     App->>JS: oauth.getAuthCredentials(success, error)
     JS->>JS: exec("getAuthCredentials", {})
-    JS->>Bridge: NativeModules.SFOauthReactBridge(...)
+    JS->>Bridge: SFOauthReactBridge.getAuthCredentials(...)
     Bridge->>Native: getAuthCredentials callback
     Native->>SDK: [SFUserAccountManager sharedInstance]
     SDK->>Native: SFOAuthCredentials
@@ -376,7 +361,7 @@ sequenceDiagram
     participant SDK as Native SDK
     
     App->>JS: net.query(soql, success, error)
-    JS->>Bridge: NativeModules.SFNetReactBridge(...)
+    JS->>Bridge: SFNetReactBridge.sendRequest(...)
     Bridge->>Native: sendRequest callback
     Native->>SDK: [SFRestAPI performRequest]
     SDK->>Native: Error (401 Unauthorized)
@@ -537,7 +522,7 @@ Pod::Spec.new do |s|
   s.dependency 'SmartStore', "~>14.0.0"
   s.dependency 'MobileSync', "~>14.0.0"
   
-  s.source_files = 'ios/SalesforceReact/**/*.{h,m}'
+  s.source_files = 'ios/SalesforceReact/**/*.{h,m,mm}'
 end
 ```
 
@@ -548,11 +533,11 @@ end
   "name": "react-native-force",
   "version": "14.0.0",
   "peerDependencies": {
-    "react-native": "0.82.1"
+    "react-native": "0.83.9"
   },
   "dependencies": {
-    "react": "19.1.0",
-    "react-native": "0.82.1",
+    "react": "19.2.6",
+    "react-native": "0.83.9",
     "react-native-timer": "^1.3.6"
   }
 }
@@ -717,7 +702,7 @@ Test Results
 ```
 
 See [ios-tests/README.md](ios-tests/README.md) for iOS testing details.
-The `androidTests/` directory mirrors `iosTests/` for Android testing.
+See [android-tests/README.md](android-tests/README.md) for Android testing details.
 
 ## Further Reading
 

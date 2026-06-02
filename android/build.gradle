@@ -41,7 +41,7 @@ kotlin {
 
 dependencies {
     api 'com.salesforce.mobilesdk:MobileSync:14.0.0'
-    api 'com.facebook.react:react-android:0.82.1'
+    api 'com.facebook.react:react-android:0.83.9'
     implementation 'androidx.core:core-ktx:1.18.0'
 }
 

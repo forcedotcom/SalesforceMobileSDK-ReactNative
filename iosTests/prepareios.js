@@ -22,11 +22,12 @@ execSync('pod update', {stdio:[0,1,2], cwd:'ios'});
 
 console.log('=== Copying test_credentials.json');
 var fs = require('fs');
-if (fs.existsSync('test_credentials.json')) {
-    fs.copyFileSync('test_credentials.json', 'ios/test_credentials.json');
+var credsSrc = '../shared/test/test_credentials.json';
+if (fs.existsSync(credsSrc)) {
+    fs.copyFileSync(credsSrc, 'ios/test_credentials.json');
 } else if (!fs.existsSync('ios/test_credentials.json')) {
-    console.warn('WARNING: test_credentials.json not found. Tests will fail at runtime.');
-    console.warn('         Place your test_credentials.json in iosTests/ and re-run.');
+    console.warn('WARNING: shared/test/test_credentials.json not found. Tests will fail at runtime.');
+    console.warn('         Copy shared/test/test_credentials.json.sample and fill in your credentials.');
     fs.writeFileSync('ios/test_credentials.json', '{}', 'utf8');
 }
 

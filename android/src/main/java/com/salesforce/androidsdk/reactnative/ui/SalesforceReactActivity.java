@@ -54,6 +54,7 @@ public abstract class SalesforceReactActivity extends ReactActivity implements S
     private final SalesforceActivityDelegate delegate;
     private RestClient client;
     private ClientManager clientManager;
+    private boolean loginInProgress = false;
 
     /**
      * Pending callback for authentication requests from the React Native bridge.
@@ -115,6 +116,14 @@ public abstract class SalesforceReactActivity extends ReactActivity implements S
         else {
             SalesforceReactLogger.i(TAG, "onResume - already logged in");
 
+            // If we just completed login, recreate to get a fresh React surface
+            if (loginInProgress) {
+                loginInProgress = false;
+                SalesforceReactLogger.i(TAG, "onResume - login just completed, recreating for fresh surface");
+                recreate();
+                return;
+            }
+
             if (pendingAuthCallback != null) {
                 SalesforceReactLogger.i(TAG, "onResume - invoking pending auth callback");
                 getAuthCredentials(pendingAuthCallback);
@@ -127,6 +136,7 @@ public abstract class SalesforceReactActivity extends ReactActivity implements S
         if (shouldAuthenticate()) {
             if (SalesforceReactSDKManager.getInstance().hasNetwork()) {
                 SalesforceReactLogger.i(TAG, "onResumeNotLoggedIn - should authenticate/online - authenticating");
+                loginInProgress = true;
                 login();
             } else {
                 SalesforceReactLogger.w(TAG, "onResumeNotLoggedIn - should authenticate/offline - can not proceed");

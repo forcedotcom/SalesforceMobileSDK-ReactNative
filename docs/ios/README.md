@@ -22,8 +22,8 @@ All iOS bridge code lives in `ios/SalesforceReact/` directory within this reposi
 
 ### Technology Stack
 
-- **Language**: Objective-C (for React Native bridge compatibility)
-- **Framework**: React Native bridge (`RCTBridgeModule`)
+- **Language**: Objective-C++ (`.mm` files for bridge modules; uses TurboModules with the New Architecture)
+- **Framework**: React Native TurboModules (bridgeless mode)
 - **Dependencies**: Salesforce iOS SDK libraries (via CocoaPods)
 - **Build System**: Xcode, CocoaPods
 
@@ -32,18 +32,18 @@ All iOS bridge code lives in `ios/SalesforceReact/` directory within this reposi
 ```mermaid
 graph TB
     subgraph "React Native JavaScript"
-        A[NativeModules.SFOauthReactBridge]
+        A[TurboModuleRegistry.get SFOauthReactBridge]
     end
     
-    subgraph "React Native Bridge"
-        B[RCTBridge]
+    subgraph "React Native TurboModule Bridge"
+        B[Bridgeless Mode]
     end
     
     subgraph "iOS Bridge Classes (this repo)"
-        C[SFOauthReactBridge.m]
-        D[SFNetReactBridge.m]
-        E[SFSmartStoreReactBridge.m]
-        F[SFMobileSyncReactBridge.m]
+        C[SFOauthReactBridge.mm]
+        D[SFNetReactBridge.mm]
+        E[SFSmartStoreReactBridge.mm]
+        F[SFMobileSyncReactBridge.mm]
         G[SFSDKReactLogger.m]
         H[SalesforceReactSDKManager.m]
     end
@@ -85,7 +85,7 @@ graph TB
 
 ### SFOauthReactBridge
 
-**Location**: `ios/SalesforceReact/SFOauthReactBridge.{h,m}`
+**Location**: `ios/SalesforceReact/SFOauthReactBridge.{h,mm}`
 
 **Purpose**: OAuth authentication and user session management
 
@@ -137,7 +137,7 @@ RCT_EXPORT_METHOD(getAuthCredentials:(NSDictionary *)args
 
 ### SFNetReactBridge
 
-**Location**: `ios/SalesforceReact/SFNetReactBridge.{h,m}`
+**Location**: `ios/SalesforceReact/SFNetReactBridge.{h,mm}`
 
 **Purpose**: Salesforce REST API requests
 
@@ -191,7 +191,7 @@ RCT_EXPORT_METHOD(sendRequest:(NSDictionary *)argsDict
 
 ### SFSmartStoreReactBridge
 
-**Location**: `ios/SalesforceReact/SFSmartStoreReactBridge.{h,m}`
+**Location**: `ios/SalesforceReact/SFSmartStoreReactBridge.{h,mm}`
 
 **Purpose**: Encrypted SQLite database operations
 
@@ -248,7 +248,7 @@ RCT_EXPORT_METHOD(registerSoup:(NSDictionary *)argsDict
 
 ### SFMobileSyncReactBridge
 
-**Location**: `ios/SalesforceReact/SFMobileSyncReactBridge.{h,m}`
+**Location**: `ios/SalesforceReact/SFMobileSyncReactBridge.{h,mm}`
 
 **Purpose**: Bidirectional sync between SmartStore and Salesforce
 
@@ -389,7 +389,7 @@ Pod::Spec.new do |s|
   s.dependency 'MobileSync', "~>14.0.0"
   
   # Source files
-  s.source_files = 'ios/SalesforceReact/**/*.{h,m}'
+  s.source_files = 'ios/SalesforceReact/**/*.{h,m,mm}'
   
   # Public headers
   s.public_header_files = [
@@ -586,7 +586,7 @@ RCT_EXPORT_METHOD(someMethod:(NSDictionary *)args
 - **Xcode**: 15+
 - **CocoaPods**: 1.10+
 - **Node.js**: 20+
-- **React Native**: 0.82.1
+- **React Native**: 0.83.9
 
 ### Building Bridge Code
 
@@ -607,9 +607,9 @@ xcodebuild -workspace MyApp.xcworkspace -scheme MyApp
 @end
 ```
 
-2. **Implement in .m file**:
+2. **Implement in .mm file**:
 ```objective-c
-// SFOauthReactBridge.m
+// SFOauthReactBridge.mm
 RCT_EXPORT_METHOD(newMethod:(NSDictionary *)args 
                     callback:(RCTResponseSenderBlock)callback)
 {
@@ -648,7 +648,7 @@ registerTest(testNewMethod);
 
 **Xcode Debugging**:
 1. Open `.xcworkspace` in Xcode
-2. Set breakpoint in bridge .m file
+2. Set breakpoint in bridge .mm file
 3. Run app in Xcode
 4. Trigger JavaScript call
 5. Breakpoint hits in Objective-C code

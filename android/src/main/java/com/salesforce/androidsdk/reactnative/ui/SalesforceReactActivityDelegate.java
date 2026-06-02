@@ -30,7 +30,7 @@ import com.facebook.react.ReactActivityDelegate;
 
 /**
  * Delegate for SalesforceReactActivity.
- * In bridgeless mode (RN 0.82+), the ReactHost manages surface lifecycle
+ * In bridgeless mode (RN 0.83+), the ReactHost manages surface lifecycle
  * automatically — no gating of loadApp() is needed.
  */
 public class SalesforceReactActivityDelegate extends ReactActivityDelegate {

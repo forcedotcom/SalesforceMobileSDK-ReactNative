@@ -146,26 +146,21 @@ cd iosTests
 - `ios/Pods/` - CocoaPods dependencies
 - `ios/.xcode.env` - Node binary path for Xcode
 - `ios/index.ios.bundle` - Bundled JavaScript tests
-- `test_credentials.json` - Empty credentials file (must be populated)
+- `ios/test_credentials.json` - Copied from `shared/test/test_credentials.json` (must be populated)
 
 ### Step 2: Configure Test Credentials
 
-Create `ios/SalesforceReactTestApp/test_credentials.json`:
+Both iOS and Android tests share a single credentials source at `shared/test/test_credentials.json` (relative to the repo root). Copy the sample template and fill in your values:
 
-```json
-{
-  "test_client_id": "<your-connected-app-consumer-key>",
-  "test_login_domain": "login.salesforce.com",
-  "test_redirect_uri": "sfdc://success",
-  "test_username": "<test-user@example.com>",
-  "test_password": "<password>",
-  "test_security_token": "<security-token>"
-}
+```bash
+cp shared/test/test_credentials.json.sample shared/test/test_credentials.json
 ```
 
-**Note**: This file is gitignored for security.
+The `prepareios.js` script (Phase 5) copies this file into `iosTests/ios/test_credentials.json` automatically. See the [sample template](../../shared/test/test_credentials.json.sample) for the expected fields.
 
-**Alternative** (using environment variables):
+**Note**: Both `shared/test/test_credentials.json` and `iosTests/ios/test_credentials.json` are gitignored for security.
+
+**Alternative** (using environment variables in CI):
 
 ```bash
 cd iosTests
@@ -316,11 +311,11 @@ Note: there are no `testFailed`, `assertEqual`, `assertTrue`, etc. helpers in th
 
 **Location**: `test/<module>.test.js`
 
-Tests use Chai for assertions and the `registerTest`/`testDone` harness:
+Tests use a lightweight custom assert module (test/assert.js) and the `registerTest`/`testDone` harness:
 
 ```javascript
 // test/oauth.test.js (actual file)
-import { assert } from 'chai';
+import { assert } from './assert';
 import * as oauth from '../src/react.force.oauth';
 import { registerTest, testDone } from '../src/react.force.test';
 
@@ -358,7 +353,7 @@ Example mapping:
 **1. Add JavaScript test function** (`test/oauth.test.js`):
 
 ```javascript
-import { assert } from 'chai';
+import { assert } from './assert';
 import * as oauth from '../src/react.force.oauth';
 import { registerTest, testDone } from '../src/react.force.test';
 
@@ -388,7 +383,7 @@ RCT_TEST(GetUserInfo)  // generates - (void)testGetUserInfo
 
 ### Test Patterns
 
-Tests use Chai for assertions. Throw errors on failure; call `testDone()` on success.
+Tests use a lightweight custom assert module (test/assert.js). Throw errors on failure; call `testDone()` on success.
 
 #### Async Operations
 
@@ -449,10 +444,10 @@ testWithCleanup = () => {
 
 ### Assertions
 
-The test files use [Chai](https://www.chaijs.com/) for assertions:
+The test files use test/assert.js for assertions:
 
 ```javascript
-import { assert } from 'chai';
+import { assert } from './assert';
 
 // Equality
 assert.equal(actual, expected, 'Message');
@@ -477,7 +472,7 @@ assert.lengthOf(array, 5);
 
 ### Test Credentials Loading
 
-The `iosTests/test_credentials.json` file is loaded from the test bundle at runtime. It must be populated with valid Salesforce org credentials before running tests (see Step 2 above).
+The `iosTests/ios/test_credentials.json` file is loaded from the test bundle at runtime. It is copied from `shared/test/test_credentials.json` by `prepareios.js` and must be populated with valid Salesforce org credentials before running tests (see Step 2 above).
 
 ### Waiting for Async Operations
 

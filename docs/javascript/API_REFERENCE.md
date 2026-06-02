@@ -2428,9 +2428,9 @@ sdkConsole.log('Always logged');
 
 ## Internal: react.force.common
 
-`react.force.common` is **not exported from `react-native-force`**. It is an internal helper module used by the public modules (oauth, net, smartstore, etc.) to dispatch calls to the right native bridge module.
+`react.force.common` is **not exported from `react-native-force`**. It is an internal helper module used by the public modules (oauth, net, smartstore, etc.) to dispatch calls to the right native bridge module via TurboModuleRegistry (New Architecture / bridgeless mode).
 
-It exports `exec()`, `safeJSONparse()`, and the `ExecSuccessCallback<T>` / `ExecErrorCallback` types but applications should use the higher-level public modules instead.
+It provides `exec()`, `safeJSONparse()`, and the `ExecSuccessCallback<T>` / `ExecErrorCallback` types but applications should use the higher-level public modules instead.
 
 ---
 

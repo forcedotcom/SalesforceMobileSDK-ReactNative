@@ -17,13 +17,13 @@ var assetsDir = path.join('android', 'app', 'src', 'main', 'assets');
 if (!fs.existsSync(assetsDir)) {
     fs.mkdirSync(assetsDir, {recursive: true});
 }
-var srcCredentials = 'test_credentials.json';
+var credsSrc = path.join('..', 'shared', 'test', 'test_credentials.json');
 var destCredentials = path.join(assetsDir, 'test_credentials.json');
-if (fs.existsSync(srcCredentials)) {
-    fs.copyFileSync(srcCredentials, destCredentials);
+if (fs.existsSync(credsSrc)) {
+    fs.copyFileSync(credsSrc, destCredentials);
 } else {
-    console.warn('WARNING: test_credentials.json not found. Tests will fail at runtime.');
-    console.warn('         Place your test_credentials.json in androidTests/ and re-run.');
+    console.warn('WARNING: shared/test/test_credentials.json not found. Tests will fail at runtime.');
+    console.warn('         Copy shared/test/test_credentials.json.sample and fill in your credentials.');
     fs.writeFileSync(destCredentials, '{}', 'utf8');
 }
 

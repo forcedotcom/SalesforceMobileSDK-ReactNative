@@ -18,6 +18,7 @@ Welcome to the comprehensive documentation for the Salesforce Mobile SDK for Rea
 
 ### Testing
 - **[ios-tests/README.md](ios-tests/README.md)** - iOS test app structure and running tests
+- **[android-tests/README.md](android-tests/README.md)** - Android test app structure and running tests
 
 ## Quick Start
 
@@ -35,25 +36,25 @@ If you're contributing to the SDK itself:
 
 1. Read [ARCHITECTURE.md](ARCHITECTURE.md) to understand the three-layer architecture
 2. Review [ios/README.md](ios/README.md) for iOS bridge implementation details
-3. See [ios-tests/README.md](ios-tests/README.md) for testing guidelines
+3. See [ios-tests/README.md](ios-tests/README.md) and [android-tests/README.md](android-tests/README.md) for testing guidelines
 4. Check [../CLAUDE.md](../CLAUDE.md) for development standards and workflow
 
 ## Key Concepts
 
 ### React Native Bridge Pattern
 
-This SDK uses React Native's native module bridge to connect JavaScript code with native iOS and Android implementations:
+This SDK uses React Native's TurboModule system (New Architecture, bridgeless mode) to connect JavaScript code with native iOS and Android implementations:
 
 ```
 JavaScript/TypeScript API (src/)
         ↓
-React Native Bridge (NativeModules)
+TurboModuleRegistry (codegen specs in src/specs/)
         ↓
-iOS Bridge (ios/SalesforceReact/) ← YOU ARE HERE (this repo)
+iOS Bridge (ios/SalesforceReact/) ← this repo
         ↓
 iOS SDK Libraries (SalesforceSDKCore, SmartStore, MobileSync)
 
-Android Bridge (SalesforceMobileSDK-Android/libs/SalesforceReact/)
+Android Bridge (this repo: android/)
         ↓
 Android SDK Libraries (SalesforceSDK, SmartStore, MobileSync)
 ```
@@ -77,8 +78,8 @@ Here's how a typical API call flows through the system:
 import { net } from 'react-native-force';
 const result = await net.query('SELECT Id, Name FROM Account LIMIT 10');
 
-// 2. Bridge call via NativeModules
-NativeModules.SFNetReactBridge.sendRequest(...)
+// 2. Bridge call via TurboModuleRegistry
+SFNetReactBridge.sendRequest(...)
 
 // 3. iOS: SFNetReactBridge.m receives call
 // 4. iOS: Calls SFRestAPI from SalesforceSDKCore
@@ -112,13 +113,13 @@ The iOS bridge is distributed via CocoaPods. The `SalesforceReact.podspec` decla
 
 ### Android Integration
 
-The Android bridge lives in a separate repository (`SalesforceMobileSDK-Android`) at `libs/SalesforceReact/`. It follows the same pattern as iOS but is written in Kotlin and uses Gradle for dependency management.
+The Android bridge lives in this repository at `android/`. It follows the same pattern as iOS but is written in Kotlin and uses Gradle for dependency management.
 
 ## Version Compatibility
 
 | React Native SDK | React Native | iOS SDK | Android SDK | iOS Min | Android Min |
 |-----------------|--------------|---------|-------------|---------|-------------|
-| 14.0.0          | 0.82.1       | 14.0.0  | 14.0.0      | 18.0    | 28 (9.0)    |
+| 14.0.0          | 0.83.9       | 14.0.0  | 14.0.0      | 18.0    | 28 (9.0)    |
 
 See the [main README](../README.md) for the full version compatibility table.
 

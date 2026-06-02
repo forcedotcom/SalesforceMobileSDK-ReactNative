@@ -31,11 +31,10 @@ import android.app.Application;
 
 import androidx.annotation.NonNull;
 
+import com.facebook.react.PackageList;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.defaults.DefaultReactNativeHost;
-import com.facebook.react.shell.MainReactPackage;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -58,16 +57,10 @@ public class ReactNativeTestHost extends DefaultReactNativeHost {
     @NonNull
     @Override
     protected List<ReactPackage> getPackages() {
-        List<ReactPackage> packages = new ArrayList<>();
-        packages.add(new MainReactPackage());
+        List<ReactPackage> packages = new PackageList(this).getPackages();
         packages.add(new DebugSalesforceReactPackage());
         packages.add(new SalesforceReactTestPackage());
         return packages;
-    }
-
-    // Exposed for debugging
-    public List<ReactPackage> debugGetPackages() {
-        return getPackages();
     }
 
     @NonNull

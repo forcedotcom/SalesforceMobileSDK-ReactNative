@@ -7,9 +7,9 @@ yarn.lock
 .DS_Store
 
 # Test credentials (contains real Salesforce org credentials)
-iosTests/test_credentials.json
+shared/test/test_credentials.json
 iosTests/ios/test_credentials.json
-androidTests/test_credentials.json
+androidTests/android/app/src/main/assets/test_credentials.json
 
 # iOS test generated files
 iosTests/ios/index.ios.bundle
@@ -17,7 +17,6 @@ iosTests/mobile_sdk/
 
 # Android test generated files
 androidTests/android/app/src/main/assets/index.android.bundle
-androidTests/android/app/src/main/assets/test_credentials.json
 androidTests/android/app/src/main/assets/drawable-mdpi/
 androidTests/mobile_sdk/
 
