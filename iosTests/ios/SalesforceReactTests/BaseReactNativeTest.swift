@@ -6,6 +6,15 @@ class BaseReactNativeTest: XCTestCase {
     override func setUp() {
         super.setUp()
         continueAfterFailure = false
+
+        // Instant login: pass credentials from shared/test/test_credentials.json
+        let testBundle = Bundle(for: type(of: self))
+        if let credsURL = testBundle.url(forResource: "test_credentials", withExtension: "json"),
+           let credsData = try? Data(contentsOf: credsURL),
+           let credsString = String(data: credsData, encoding: .utf8) {
+            app.launchArguments = ["-creds", credsString]
+        }
+
         app.launch()
         XCTAssertTrue(app.otherElements["testList"].waitForExistence(timeout: 30),
                       "Test list did not appear")

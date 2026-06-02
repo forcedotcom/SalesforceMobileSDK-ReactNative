@@ -1,26 +1,39 @@
 package com.salesforce.androidsdk.reactnative
 
-import androidx.test.ext.junit.rules.ActivityScenarioRule
+import android.content.ComponentName
+import android.content.Intent
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiSelector
 import androidx.test.uiautomator.Until
-import com.salesforce.androidsdk.reactnative.util.MainActivity
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Before
-import org.junit.Rule
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
 abstract class BaseReactNativeTest {
-
-    @get:Rule
-    val activityRule = ActivityScenarioRule(MainActivity::class.java)
 
     private val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
 
     @Before
-    fun waitForTestList() {
+    fun launchWithInstantLogin() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val creds = loadTestCredentials()
+
+        // Launch TestAuthenticationActivity with credentials
+        val authIntent = Intent().apply {
+            component = ComponentName(
+                context.packageName,
+                "com.salesforce.androidsdk.util.test.TestAuthenticationActivity"
+            )
+            putExtra("creds", creds)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+        context.startActivity(authIntent)
+
+        // Wait for the test list to appear (TestAuthenticationActivity launches MainActivity)
         val found = device.wait(Until.hasObject(By.desc("testList")), 30_000)
         assertTrue("Test list did not appear", found != null && found)
     }
@@ -44,5 +57,12 @@ abstract class BaseReactNativeTest {
                 fail("Test $name did not complete in time")
             }
         }
+    }
+
+    private fun loadTestCredentials(): String {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val inputStream = context.assets.open("test_credentials.json")
+        val reader = BufferedReader(InputStreamReader(inputStream))
+        return reader.readText().also { reader.close() }
     }
 }
