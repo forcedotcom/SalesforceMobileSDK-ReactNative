@@ -12,19 +12,24 @@ class BaseReactNativeTest: XCTestCase {
     }
 
     func runTest(_ name: String) {
-        let button = app.buttons["run_\(name)"]
-        XCTAssertTrue(button.waitForExistence(timeout: 10), "Button not found: run_\(name)")
-        button.tap()
+        let runId = "run_\(name)"
+        let element = app.descendants(matching: .any).matching(identifier: runId).firstMatch
+        XCTAssertTrue(element.waitForExistence(timeout: 10), "Button not found: \(runId)")
+        element.tap()
 
-        let pass = app.staticTexts["result_\(name)_pass"]
-        let fail = app.staticTexts["result_\(name)_fail"]
-        let passed = pass.waitForExistence(timeout: 120)
+        let passId = "result_\(name)_pass"
+        let failId = "result_\(name)_fail"
+        let passElement = app.descendants(matching: .any).matching(identifier: passId).firstMatch
+        let failElement = app.descendants(matching: .any).matching(identifier: failId).firstMatch
+
+        let passed = passElement.waitForExistence(timeout: 120)
 
         if !passed {
-            let failed = fail.waitForExistence(timeout: 5)
+            let failed = failElement.waitForExistence(timeout: 5)
             if failed {
-                let errorText = app.staticTexts["error_\(name)"]
-                let message = errorText.exists ? errorText.label : "unknown error"
+                let errorId = "error_\(name)"
+                let errorElement = app.descendants(matching: .any).matching(identifier: errorId).firstMatch
+                let message = errorElement.exists ? errorElement.label : "unknown error"
                 XCTFail("Test \(name) failed: \(message)")
             } else {
                 XCTFail("Test \(name) did not complete in time")
