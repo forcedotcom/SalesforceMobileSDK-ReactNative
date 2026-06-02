@@ -61,6 +61,17 @@
                ReferencedContainer = "container:SalesforceReactTestApp.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "4F45C3392FCF8381009CC22E"
+               BuildableName = "SalesforceReactTests.xctest"
+               BlueprintName = "SalesforceReactTests"
+               ReferencedContainer = "container:SalesforceReactTestApp.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

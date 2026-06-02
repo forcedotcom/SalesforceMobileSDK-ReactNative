@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -16,12 +16,23 @@
 		D32109E02DFA158700A206F1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D32109DF2DFA158700A206F1 /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		4F45C3402FCF8381009CC22E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 13B07F861A680F5B00A75B9A;
+			remoteInfo = SalesforceReactTestApp;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		070C882A5C716392B7B11A01 /* Pods_SalesforceReactTestApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SalesforceReactTestApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0D8CDE8158AC70656CC3EE20 /* Pods-SalesforceReactTestApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SalesforceReactTestApp.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SalesforceReactTestApp/Pods-SalesforceReactTestApp.debug.xcconfig"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* SalesforceReactTestApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SalesforceReactTestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = SalesforceReactTestApp/Info.plist; sourceTree = "<group>"; };
 		4F45C2F32FCF755F009CC22E /* index.ios.bundle */ = {isa = PBXFileReference; lastKnownFileType = text; path = index.ios.bundle; sourceTree = "<group>"; };
+		4F45C33A2FCF8381009CC22E /* SalesforceReactTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SalesforceReactTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4FF12F8E1DCA93E2004D9EF9 /* SalesforceReactTestApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = SalesforceReactTestApp.entitlements; path = SalesforceReactTestApp/SalesforceReactTestApp.entitlements; sourceTree = "<group>"; };
 		69BE96182AD5359B002E3F6C /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = SalesforceReactTestApp/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		AE79D28E6E57F5B77FA24716 /* Pods-SalesforceReactTestApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SalesforceReactTestApp.release.xcconfig"; path = "Pods/Target Support Files/Pods-SalesforceReactTestApp/Pods-SalesforceReactTestApp.release.xcconfig"; sourceTree = "<group>"; };
@@ -31,12 +42,23 @@
 		D32109DF2DFA158700A206F1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = SalesforceReactTestApp/AppDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		4F45C33B2FCF8381009CC22E /* SalesforceReactTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = SalesforceReactTests; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		13B07F8C1A680F5B00A75B9A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				C955C9F2B54461750DCC56B1 /* Pods_SalesforceReactTestApp.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4F45C3372FCF8381009CC22E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -87,6 +109,7 @@
 			isa = PBXGroup;
 			children = (
 				13B07FAE1A68108700A75B9A /* SalesforceReactTestApp */,
+				4F45C33B2FCF8381009CC22E /* SalesforceReactTests */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				6473DB45A273CC31E19C4F9A /* Pods */,
 				C73512AABD4BDBC0734E686B /* Frameworks */,
@@ -99,6 +122,7 @@
 			isa = PBXGroup;
 			children = (
 				13B07F961A680F5B00A75B9A /* SalesforceReactTestApp.app */,
+				4F45C33A2FCF8381009CC22E /* SalesforceReactTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -135,12 +159,36 @@
 			productReference = 13B07F961A680F5B00A75B9A /* SalesforceReactTestApp.app */;
 			productType = "com.apple.product-type.application";
 		};
+		4F45C3392FCF8381009CC22E /* SalesforceReactTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4F45C3442FCF8381009CC22E /* Build configuration list for PBXNativeTarget "SalesforceReactTests" */;
+			buildPhases = (
+				4F45C3362FCF8381009CC22E /* Sources */,
+				4F45C3372FCF8381009CC22E /* Frameworks */,
+				4F45C3382FCF8381009CC22E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				4F45C3412FCF8381009CC22E /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				4F45C33B2FCF8381009CC22E /* SalesforceReactTests */,
+			);
+			name = SalesforceReactTests;
+			packageProductDependencies = (
+			);
+			productName = SalesforceReactTests;
+			productReference = 4F45C33A2FCF8381009CC22E /* SalesforceReactTests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		83CBB9F71A601CBA00E9B192 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 2620;
 				LastUpgradeCheck = 1020;
 				ORGANIZATIONNAME = SalesforceReactTestAppOrganizationName;
 				TargetAttributes = {
@@ -151,6 +199,10 @@
 								enabled = 1;
 							};
 						};
+					};
+					4F45C3392FCF8381009CC22E = {
+						CreatedOnToolsVersion = 26.2;
+						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 				};
 			};
@@ -168,6 +220,7 @@
 			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* SalesforceReactTestApp */,
+				4F45C3392FCF8381009CC22E /* SalesforceReactTests */,
 			);
 		};
 /* End PBXProject section */
@@ -182,6 +235,13 @@
 				69BE96192AD5359B002E3F6C /* PrivacyInfo.xcprivacy in Resources */,
 				B7168FBE1FACC7EB00A48DB5 /* LaunchScreen.storyboard in Resources */,
 				4F45C2F42FCF755F009CC22E /* index.ios.bundle in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4F45C3382FCF8381009CC22E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -273,7 +333,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		4F45C3362FCF8381009CC22E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		4F45C3412FCF8381009CC22E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 13B07F861A680F5B00A75B9A /* SalesforceReactTestApp */;
+			targetProxy = 4F45C3402FCF8381009CC22E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
@@ -337,6 +412,77 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Release;
+		};
+		4F45C3422FCF8381009CC22E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.salesforce.mobilesdk.SalesforceReactTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = SalesforceReactTestApp;
+			};
+			name = Debug;
+		};
+		4F45C3432FCF8381009CC22E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.salesforce.mobilesdk.SalesforceReactTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = SalesforceReactTestApp;
 			};
 			name = Release;
 		};
@@ -500,6 +646,15 @@
 			buildConfigurations = (
 				13B07F941A680F5B00A75B9A /* Debug */,
 				13B07F951A680F5B00A75B9A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4F45C3442FCF8381009CC22E /* Build configuration list for PBXNativeTarget "SalesforceReactTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4F45C3422FCF8381009CC22E /* Debug */,
+				4F45C3432FCF8381009CC22E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
