@@ -16,7 +16,7 @@ class BaseReactNativeTest: XCTestCase {
         }
 
         app.launch()
-        XCTAssertTrue(app.otherElements["testList"].waitForExistence(timeout: 30),
+        XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "testList").firstMatch.waitForExistence(timeout: 30),
                       "Test list did not appear")
     }
 
