@@ -4,8 +4,6 @@ import React_RCTAppDelegate
 import ReactAppDependencyProvider
 import SalesforceReact
 import SalesforceSDKCore
-import UserNotifications
-import UserNotificationsUI
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -42,7 +40,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // Salesforce you will also need to implement the
     // application:didRegisterForRemoteNotificationsWithDeviceToken:
     // method below.
-    registerForRemotePushNotifications()
     
     // Uncomment the code below to see how you can customize the color,
     // text color, font and font size of the navigation bar.
@@ -59,7 +56,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     return true
   }
   
-  private func registerForRemotePushNotifications() {
     UNUserNotificationCenter.current().requestAuthorization(options: [.sound, .alert, .badge]) { granted, error in
       if (granted) {
         DispatchQueue.main.async {
@@ -89,10 +85,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     UserAccountManager.shared.loginViewControllerConfig = loginViewConfig
   }
   
-  func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-    // Uncomment the code below to register your device token with the push notification manager
-    didRegisterForRemoteNotifications(withDeviceToken: deviceToken)
-  }
   
   private func didRegisterForRemoteNotifications(withDeviceToken deviceToken:Data) {
     
@@ -103,9 +95,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
   }
   
-  func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: any Error) {
-    // Respond to any push notification registration errors here
-  }
 }
 
 class ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate {
