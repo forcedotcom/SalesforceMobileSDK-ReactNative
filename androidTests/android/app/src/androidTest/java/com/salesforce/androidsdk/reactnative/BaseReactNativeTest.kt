@@ -24,12 +24,13 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.salesforce.androidsdk.reactnative
 
 import android.content.ComponentName
 import android.content.Intent
+import android.os.Build
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.rule.GrantPermissionRule
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiSelector
@@ -38,8 +39,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Rule
-import androidx.test.rule.GrantPermissionRule
-import android.os.Build
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
@@ -55,11 +54,15 @@ abstract class BaseReactNativeTest {
     private val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
 
     @Before
-    fun launchWithInstantLogin() {
+    fun ensureTestListVisible() {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
-        val creds = loadTestCredentials()
 
-        // Launch TestAuthenticationActivity with credentials
+        // Check if test list is already visible (app already running and authenticated)
+        val alreadyVisible = device.findObject(UiSelector().descriptionContains("run_test")).waitForExists(3_000)
+        if (alreadyVisible) return
+
+        // Not visible — need to authenticate and launch
+        val creds = loadTestCredentials()
         val authIntent = Intent().apply {
             component = ComponentName(
                 context.packageName,
@@ -70,9 +73,9 @@ abstract class BaseReactNativeTest {
         }
         context.startActivity(authIntent)
 
-        // Wait for the test list to appear (TestAuthenticationActivity launches MainActivity)
-        val found = device.wait(Until.hasObject(By.desc("testList")), 30_000)
-        assertTrue("Test list did not appear", found != null && found)
+        // Wait for the test list to appear
+        val found = device.findObject(UiSelector().descriptionContains("run_test")).waitForExists(30_000)
+        assertTrue("Test list did not appear", found)
     }
 
     fun runTest(name: String) {
