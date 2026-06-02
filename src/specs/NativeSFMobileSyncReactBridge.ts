@@ -17,6 +17,7 @@ export interface Spec extends TurboModule {
   getSyncStatus(args: Object, callback: (error: Object | null, result: Object | null) => void): void;
   deleteSync(args: Object, callback: (error: Object | null, result: Object | null) => void): void;
   cleanResyncGhosts(args: Object, callback: (error: Object | null, result: Object | null) => void): void;
+  resetSyncManager(args: Object, callback: (error: Object | null, result: Object | null) => void): void;
 }
 
 export default TurboModuleRegistry.get<Spec>("SFMobileSyncReactBridge");
