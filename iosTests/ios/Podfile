@@ -44,5 +44,14 @@ target 'SalesforceReactTestApp' do
       :mac_catalyst_enabled => false,
     )
     mobile_sdk_post_install(installer)
+
+    # Enable module imports for SDK pods in Swift
+    installer.pods_project.targets.each do |target|
+      if ['SalesforceReact', 'SalesforceSDKCore', 'SalesforceAnalytics', 'SalesforceSDKCommon', 'SmartStore', 'MobileSync'].include?(target.name)
+        target.build_configurations.each do |config|
+          config.build_settings['DEFINES_MODULE'] = 'YES'
+        end
+      end
+    end
   end
 end
