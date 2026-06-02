@@ -20,37 +20,33 @@ end
 
 project 'SalesforceReactTestApp.xcodeproj'
 target 'SalesforceReactTestApp' do
-end
-
-target 'SalesforceReactTests' do
-  source 'https://cdn.cocoapods.org/'
   config = use_native_modules!
 
   use_react_native!(
     :path => config[:reactNativePath],
-    # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
   pod 'React-RCTTest', :path => '../RCTTest'
   use_mobile_sdk!(:path => '../mobile_sdk/SalesforceMobileSDK-iOS')
   pod 'SalesforceReact', :path => '../node_modules/react-native-force'
 
-  pre_install do |installer|
-    # Mobile SDK pre install
-    mobile_sdk_pre_install(installer)  
+  target 'SalesforceReactTests' do
+    inherit! :complete
   end
 
+  pre_install do |installer|
+    # Mobile SDK pre install
+    mobile_sdk_pre_install(installer)
+  end
 
   post_install do |installer|
     # React native post install
-    # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
     react_native_post_install(
       installer,
       config[:reactNativePath],
       :mac_catalyst_enabled => false,
-      # :ccache_enabled => true      
-    )  
-    
+    )
+
     # Mobile SDK post install
     mobile_sdk_post_install(installer)
   end
