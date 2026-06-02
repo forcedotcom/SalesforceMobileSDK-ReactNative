@@ -1,12 +1,9 @@
-source 'https://cdn.cocoapods.org/'
-
 # Resolve react_native_pods.rb with node to allow for hoisting
 require Pod::Executable.execute_command('node', ['-p',
   'require.resolve(
-    "../node_modules/react-native/scripts/react_native_pods.rb",
+    "react-native/scripts/react_native_pods.rb",
     {paths: [process.argv[1]]},
   )', __dir__]).strip
-
 require_relative '../mobile_sdk/SalesforceMobileSDK-iOS/mobilesdk_pods'
 
 platform :ios, '18.0'
@@ -18,40 +15,36 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
-project 'SalesforceReactTestApp.xcodeproj'
 target 'SalesforceReactTestApp' do
+  source 'https://cdn.cocoapods.org/'
   config = use_native_modules!
+
+  use_frameworks! :linkage => :static
 
   use_react_native!(
     :path => config[:reactNativePath],
+    # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
+
   use_mobile_sdk!(:path => '../mobile_sdk/SalesforceMobileSDK-iOS')
   pod 'SalesforceReact', :path => '../node_modules/react-native-force'
 
-  target 'SalesforceReactTests' do
-    inherit! :complete
-  end
-
   pre_install do |installer|
+    # Mobile SDK pre install
     mobile_sdk_pre_install(installer)
   end
 
   post_install do |installer|
+    # React native post install
     react_native_post_install(
       installer,
       config[:reactNativePath],
       :mac_catalyst_enabled => false,
+      # :ccache_enabled => true
     )
-    mobile_sdk_post_install(installer)
 
-    # Enable module imports for SDK pods in Swift
-    installer.pods_project.targets.each do |target|
-      if ['SalesforceReact', 'SalesforceSDKCore', 'SalesforceAnalytics', 'SalesforceSDKCommon', 'SmartStore', 'MobileSync'].include?(target.name)
-        target.build_configurations.each do |config|
-          config.build_settings['DEFINES_MODULE'] = 'YES'
-        end
-      end
-    end
+    # Mobile SDK post install
+    mobile_sdk_post_install(installer)
   end
 end
