@@ -31,10 +31,6 @@ import * as mobilesync from '../src/react.force.mobilesync';
 import { registerSuite, registerTest, testDone } from './testRunner';
 import { promiser, timeoutPromiser } from '../src/react.force.util';
 
-registerSuite('MobileSync', {
-  setUp: () => promiser(smartstore.removeAllStores)(),
-});
-
 // Promised based bridge functions for more readable tests
 netCreate = promiser(net.create);
 netRetrieve = promiser(net.retrieve);
@@ -46,6 +42,7 @@ registerSoup = promiser(smartstore.registerSoup);
 upsertSoupEntries = promiser(smartstore.upsertSoupEntries);
 retrieveSoupEntries = promiser(smartstore.retrieveSoupEntries);
 runSmartQuery = promiser(smartstore.runSmartQuery);
+removeAllStores = promiser(smartstore.removeAllStores);
 
 getSyncStatus = promiser(mobilesync.getSyncStatus);
 deleteSync = promiser(mobilesync.deleteSync);
@@ -53,6 +50,18 @@ syncDown = promiser(mobilesync.syncDown);
 syncUp = promiser(mobilesync.syncUp);
 reSync = promiser(mobilesync.reSync);
 cleanResyncGhosts = promiser(mobilesync.cleanResyncGhosts);
+resetSyncManager = promiser(mobilesync.resetSyncManager);
+
+registerSuite('MobileSync', {
+  setUp: async () => {
+    await removeAllStores(storeConfig);
+    await resetSyncManager(storeConfig);
+  },
+  tearDown: async () => {
+    await removeAllStores(storeConfig);
+    await resetSyncManager(storeConfig);
+  },
+});
 
 const storeConfig = {isGlobalStore:false};
 const soupName = 'contacts';
