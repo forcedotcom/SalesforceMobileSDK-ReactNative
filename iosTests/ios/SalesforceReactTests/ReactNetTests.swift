@@ -30,6 +30,8 @@ class ReactNetTests: BaseReactNativeTest {
 
     override var suiteTimeoutSeconds: Double { 30 }
 
+    override var individualTestTimeoutSeconds: Double { 30 }
+
     override var testNames: [String] {
         [
             "testGetApiVersion",

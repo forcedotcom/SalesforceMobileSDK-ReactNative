@@ -52,6 +52,11 @@ class BaseReactNativeTest: XCTestCase {
         return 15
     }
 
+    // Subclasses can override to specify individual test timeout in seconds (default: 15s)
+    var individualTestTimeoutSeconds: Double {
+        return 15
+    }
+
     override class func setUp() {
         super.setUp()
 
@@ -165,7 +170,7 @@ class BaseReactNativeTest: XCTestCase {
         let passElement = app.descendants(matching: .any).matching(identifier: passId).firstMatch
         let failElement = app.descendants(matching: .any).matching(identifier: failId).firstMatch
 
-        let passed = passElement.waitForExistence(timeout: 120)
+        let passed = passElement.waitForExistence(timeout: individualTestTimeoutSeconds)
 
         if !passed {
             let failed = failElement.waitForExistence(timeout: 5)

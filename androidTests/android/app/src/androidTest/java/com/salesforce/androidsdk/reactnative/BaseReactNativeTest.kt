@@ -90,6 +90,10 @@ abstract class BaseReactNativeTest {
     open val suiteTimeoutMs: Long
         get() = 15_000
 
+    // Subclasses can override to specify individual test timeout in milliseconds (default: 15s)
+    open val individualTestTimeoutMs: Long
+        get() = 15_000
+
     @Before
     fun setUp() {
         // Wait for test list to appear
@@ -192,7 +196,7 @@ abstract class BaseReactNativeTest {
         button.click()
 
         val passSelector = UiSelector().description("result_${name}_pass")
-        val passed = device.findObject(passSelector).waitForExists(120_000)
+        val passed = device.findObject(passSelector).waitForExists(individualTestTimeoutMs)
 
         if (!passed) {
             val failSelector = UiSelector().description("result_${name}_fail")

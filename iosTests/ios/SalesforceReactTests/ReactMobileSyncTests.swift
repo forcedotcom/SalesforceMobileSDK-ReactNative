@@ -30,6 +30,8 @@ class ReactMobileSyncTests: BaseReactNativeTest {
 
     override var suiteTimeoutSeconds: Double { 60 }
 
+    override var individualTestTimeoutSeconds: Double { 60 }
+
     override var testNames: [String] {
         [
             "testSyncDown",

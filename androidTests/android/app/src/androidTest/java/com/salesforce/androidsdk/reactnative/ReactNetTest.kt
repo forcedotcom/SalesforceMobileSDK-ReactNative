@@ -34,6 +34,8 @@ class ReactNetTest : BaseReactNativeTest() {
 
     override val suiteTimeoutMs: Long = 30_000
 
+    override val individualTestTimeoutMs: Long = 30_000
+
     override val testNames = listOf(
         "testGetApiVersion",
         "testVersions",
