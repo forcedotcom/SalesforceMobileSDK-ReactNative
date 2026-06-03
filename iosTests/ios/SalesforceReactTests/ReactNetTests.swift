@@ -26,6 +26,29 @@
  */
 
 class ReactNetTests: BaseReactNativeTest {
+    override var suiteName: String { "Net" }
+
+    override var testNames: [String] {
+        [
+            "testGetApiVersion",
+            "testVersions",
+            "testResources",
+            "testDescribeGlobal",
+            "testMetaData",
+            "testDescribe",
+            "testDescribeLayout",
+            "testCreateRetrieve",
+            "testUpsertUpdateRetrieve",
+            "testCreateDelRetrieve",
+            "testQuery",
+            "testSearch",
+            "testPublicApiCall",
+            "testCollectionCreateRetrieve",
+            "testCollectionUpsertUpdateRetrieve",
+            "testCollectionCreateDeleteRetrieve"
+        ]
+    }
+
     func testGetApiVersion() { runTest("testGetApiVersion") }
     func testVersions() { runTest("testVersions") }
     func testResources() { runTest("testResources") }

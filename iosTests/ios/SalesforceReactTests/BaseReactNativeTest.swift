@@ -27,8 +27,25 @@
 
 import XCTest
 
+struct TestResult {
+    let success: Bool
+    let message: String?
+}
+
 class BaseReactNativeTest: XCTestCase {
     static var app: XCUIApplication!
+    // Cache test results per suite: { suiteName: { testName: result } }
+    static var testResults: [String: [String: TestResult]] = [:]
+
+    // Subclasses must override to specify their suite name
+    var suiteName: String {
+        fatalError("Subclass must override suiteName property")
+    }
+
+    // Subclasses must override to provide list of test names in execution order
+    var testNames: [String] {
+        fatalError("Subclass must override testNames property")
+    }
 
     override class func setUp() {
         super.setUp()
@@ -52,13 +69,81 @@ class BaseReactNativeTest: XCTestCase {
     override func setUp() {
         super.setUp()
         continueAfterFailure = false
+
+        // Run suite if not already run (batch execution)
+        if Self.testResults[suiteName] == nil {
+            runSuiteAndCollectResults()
+        }
     }
 
     var app: XCUIApplication {
         return BaseReactNativeTest.app
     }
 
+    /// Run all tests in the suite at once and collect results
+    private func runSuiteAndCollectResults() {
+        let runSuiteId = "runSuite_\(suiteName)"
+        let runButton = app.descendants(matching: .any).matching(identifier: runSuiteId).firstMatch
+
+        // Scroll to button if needed
+        if !runButton.exists {
+            runButton.scrollToElement()
+        }
+
+        XCTAssertTrue(runButton.waitForExistence(timeout: 10),
+                      "Run All button not found: \(runSuiteId) - bundle may be stale or suite not registered")
+
+        runButton.tap()
+
+        // Wait for suite completion by checking for last test result
+        if let lastTestName = testNames.last {
+            let lastPassId = "result_\(lastTestName)_pass"
+            let lastFailId = "result_\(lastTestName)_fail"
+            let lastPassElement = app.descendants(matching: .any).matching(identifier: lastPassId).firstMatch
+            let lastFailElement = app.descendants(matching: .any).matching(identifier: lastFailId).firstMatch
+
+            let completed = lastPassElement.waitForExistence(timeout: 300) || lastFailElement.waitForExistence(timeout: 5)
+            XCTAssertTrue(completed, "Suite \(suiteName) did not complete within 5 minutes")
+        }
+
+        // Collect all test results from UI
+        var results: [String: TestResult] = [:]
+        for testName in testNames {
+            let passId = "result_\(testName)_pass"
+            let failId = "result_\(testName)_fail"
+            let passElement = app.descendants(matching: .any).matching(identifier: passId).firstMatch
+            let failElement = app.descendants(matching: .any).matching(identifier: failId).firstMatch
+
+            if passElement.exists {
+                results[testName] = TestResult(success: true, message: nil)
+            } else if failElement.exists {
+                let errorId = "error_\(testName)"
+                let errorElement = app.descendants(matching: .any).matching(identifier: errorId).firstMatch
+                let message = errorElement.exists ? errorElement.label : "unknown error"
+                results[testName] = TestResult(success: false, message: message)
+            } else {
+                // Test did not run or result not visible
+                results[testName] = TestResult(success: false, message: "No result found for test")
+            }
+        }
+
+        Self.testResults[suiteName] = results
+    }
+
     func runTest(_ name: String) {
+        // Check if we have a cached result from batch execution
+        if let result = Self.testResults[suiteName]?[name] {
+            // Use cached result
+            XCTAssertTrue(result.success, "\(name) failed: \(result.message ?? "unknown error")")
+        } else {
+            // Fallback: run individual test (should rarely happen)
+            print("⚠️ No cached result for \(name), running individually")
+            runTestIndividually(name)
+        }
+    }
+
+    /// Fallback method to run a single test individually (old approach)
+    private func runTestIndividually(_ name: String) {
         let runId = "run_\(name)"
         let element = app.descendants(matching: .any).matching(identifier: runId).firstMatch
 

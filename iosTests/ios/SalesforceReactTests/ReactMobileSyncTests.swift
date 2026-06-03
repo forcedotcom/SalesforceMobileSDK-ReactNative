@@ -26,6 +26,18 @@
  */
 
 class ReactMobileSyncTests: BaseReactNativeTest {
+    override var suiteName: String { "MobileSync" }
+
+    override var testNames: [String] {
+        [
+            "testSyncDown",
+            "testSyncUp",
+            "testReSync",
+            "testCleanResyncGhosts",
+            "testGetSyncStatusDeleteSync"
+        ]
+    }
+
     func testSyncDown() { runTest("testSyncDown") }
     func testSyncUp() { runTest("testSyncUp") }
     func testReSync() { runTest("testReSync") }
