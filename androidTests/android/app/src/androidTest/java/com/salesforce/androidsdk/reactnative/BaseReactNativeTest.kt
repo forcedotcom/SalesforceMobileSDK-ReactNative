@@ -79,6 +79,13 @@ abstract class BaseReactNativeTest {
     }
 
     fun runTest(name: String) {
+        // Scroll to the button if it's not visible
+        val scrollable = androidx.test.uiautomator.UiScrollable(
+            UiSelector().description("testList").scrollable(true)
+        )
+        scrollable.setAsVerticalList()
+        scrollable.scrollIntoView(UiSelector().description("run_$name"))
+
         val button = device.findObject(UiSelector().description("run_$name"))
         assertTrue("Button not found: run_$name", button.waitForExists(10_000))
         button.click()
