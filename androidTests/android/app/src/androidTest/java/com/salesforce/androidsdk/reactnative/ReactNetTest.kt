@@ -30,30 +30,7 @@ package com.salesforce.androidsdk.reactnative
 import org.junit.Test
 
 class ReactNetTest : BaseReactNativeTest() {
-    override val suiteName = "Net"
-
-    override val suiteTimeoutMs: Long = 30_000
-
-    override val individualTestTimeoutMs: Long = 30_000
-
-    override val testNames = listOf(
-        "testGetApiVersion",
-        "testVersions",
-        "testResources",
-        "testDescribeGlobal",
-        "testMetaData",
-        "testDescribe",
-        "testDescribeLayout",
-        "testCreateRetrieve",
-        "testUpsertUpdateRetrieve",
-        "testCreateDelRetrieve",
-        "testQuery",
-        "testSearch",
-        "testPublicApiCall",
-        "testCollectionCreateRetrieve",
-        "testCollectionUpsertUpdateRetrieve",
-        "testCollectionCreateDeleteRetrieve"
-    )
+    override val testTimeoutMs: Long = 30_000
 
     @Test fun testGetApiVersion() = runTest("testGetApiVersion")
     @Test fun testVersions() = runTest("testVersions")

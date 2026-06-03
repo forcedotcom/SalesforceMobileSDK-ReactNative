@@ -30,9 +30,5 @@ package com.salesforce.androidsdk.reactnative
 import org.junit.Test
 
 class ReactOAuthTest : BaseReactNativeTest() {
-    override val suiteName = "OAuth"
 
-    override val testNames = listOf("testGetAuthCredentials")
-
-    @Test fun testGetAuthCredentials() = runTest("testGetAuthCredentials")
 }

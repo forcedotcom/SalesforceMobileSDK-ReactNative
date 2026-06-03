@@ -30,19 +30,7 @@ package com.salesforce.androidsdk.reactnative
 import org.junit.Test
 
 class ReactMobileSyncTest : BaseReactNativeTest() {
-    override val suiteName = "MobileSync"
-
-    override val suiteTimeoutMs: Long = 60_000
-
-    override val individualTestTimeoutMs: Long = 60_000
-
-    override val testNames = listOf(
-        "testSyncDown",
-        "testSyncUp",
-        "testReSync",
-        "testCleanResyncGhosts",
-        "testGetSyncStatusDeleteSync"
-    )
+    override val testTimeoutMs: Long = 60_000
 
     @Test fun testSyncDown() = runTest("testSyncDown")
     @Test fun testSyncUp() = runTest("testSyncUp")
