@@ -12,7 +12,7 @@
     "create-react-class": "^15.7.0",
     "react": "19.2.6",
     "react-native": "0.83.9",
-    "react-native-force": "file:.."
+    "react-native-force": "github:wmathurin/SalesforceMobileSDK-ReactNative#rn-ui-driven-test-infrastructure"
   },
   "devDependencies": {
     "chai": "4.4.1",
