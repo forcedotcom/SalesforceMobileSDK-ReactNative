@@ -3,4 +3,5 @@
 <resources>
     <string name="remoteAccessConsumerKey">__CONSUMER_KEY__</string>
     <string name="oauthRedirectURI">__REDIRECT_URI__</string>
+    <bool name="push_notification_enabled">false</bool>
 </resources>
