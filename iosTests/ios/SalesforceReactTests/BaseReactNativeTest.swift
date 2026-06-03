@@ -37,11 +37,12 @@ class BaseReactNativeTest: XCTestCase {
         // Instant login: pass credentials from shared/test/test_credentials.json
         let testBundle = Bundle(for: type(of: self))
         if let credsURL = testBundle.url(forResource: "test_credentials", withExtension: "json"),
-           let credsData = try? Data(contentsOf: credsURL),
-           let credsString = String(data: credsData, encoding: .utf8) {
-            app.launchArguments = ["-creds", credsString]
-        }
-
+         let credsData = try? Data(contentsOf: credsURL),
+         let credsString = String(data: credsData, encoding: .utf8)?
+        .replacingOccurrences(of: "\n", with: "")
+        .replacingOccurrences(of: "\r", with: "") {
+        app.launchArguments = ["-creds", credsString]
+      }
         app.launch()
         XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "testList").firstMatch.waitForExistence(timeout: 30),
                       "Test list did not appear")
