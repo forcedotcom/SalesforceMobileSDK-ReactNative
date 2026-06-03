@@ -6,7 +6,6 @@ var fs = require('fs');
 
 console.log('=== Installing npm dependencies');
 execSync('rm -rf node_modules', {stdio:[0,1,2]});
-execSync("rm -rf ../iosTests/node_modules", {stdio:[0,1,2]});
 execSync('rm -f yarn.lock', {stdio:[0,1,2]});
 execSync('yarn install', {stdio:[0,1,2]});
 
