@@ -40,7 +40,7 @@ import com.salesforce.androidsdk.util.test.TestAuthenticationActivity
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Before
-import org.junit.Rule
+import org.junit.ClassRule
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
@@ -59,22 +59,24 @@ abstract class BaseReactNativeTest {
             val reader = BufferedReader(InputStreamReader(inputStream))
             return reader.readText().also { reader.close() }
         }
-    }
 
-    @get:Rule(order = 0)
-    val permissionRule: GrantPermissionRule = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        GrantPermissionRule.grant(Manifest.permission.POST_NOTIFICATIONS)
-    } else {
-        GrantPermissionRule.grant()
-    }
+        @JvmField
+        @ClassRule
+        val permissionRule: GrantPermissionRule = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            GrantPermissionRule.grant(Manifest.permission.POST_NOTIFICATIONS)
+        } else {
+            GrantPermissionRule.grant()
+        }
 
-    @get:Rule(order = 1)
-    val activityRule = ActivityScenarioRule<MainActivity>(
-        Intent(
-            InstrumentationRegistry.getInstrumentation().targetContext,
-            TestAuthenticationActivity::class.java
-        ).putExtra("creds", loadTestCredentials())
-    )
+        @JvmField
+        @ClassRule
+        val activityRule = ActivityScenarioRule<MainActivity>(
+            Intent(
+                InstrumentationRegistry.getInstrumentation().targetContext,
+                TestAuthenticationActivity::class.java
+            ).putExtra("creds", loadTestCredentials())
+        )
+    }
 
     protected val device: UiDevice by lazy {
         UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
