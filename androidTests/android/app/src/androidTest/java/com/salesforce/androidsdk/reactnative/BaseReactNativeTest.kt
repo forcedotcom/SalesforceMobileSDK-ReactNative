@@ -37,12 +37,50 @@ import androidx.test.uiautomator.UiSelector
 import androidx.test.uiautomator.Until
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
-import org.junit.Before
+import org.junit.BeforeClass
 import org.junit.Rule
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
 abstract class BaseReactNativeTest {
+
+    companion object {
+        private lateinit var device: UiDevice
+
+        @JvmStatic
+        @BeforeClass
+        fun ensureTestListVisible() {
+            device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+            val context = InstrumentationRegistry.getInstrumentation().targetContext
+
+            // Check if test list is already visible (app already running and authenticated)
+            val alreadyVisible = device.findObject(UiSelector().description("testList")).waitForExists(3_000)
+            if (alreadyVisible) return
+
+            // Not visible — need to authenticate and launch
+            val creds = loadTestCredentials()
+            val authIntent = Intent().apply {
+                component = ComponentName(
+                    context.packageName,
+                    "com.salesforce.androidsdk.util.test.TestAuthenticationActivity"
+                )
+                putExtra("creds", creds)
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+            context.startActivity(authIntent)
+
+            // Wait for the test list ScrollView to appear (testID="testList")
+            val found = device.findObject(UiSelector().description("testList")).waitForExists(30_000)
+            assertTrue("Test list did not appear", found)
+        }
+
+        private fun loadTestCredentials(): String {
+            val context = InstrumentationRegistry.getInstrumentation().targetContext
+            val inputStream = context.assets.open("test_credentials.json")
+            val reader = BufferedReader(InputStreamReader(inputStream))
+            return reader.readText().also { reader.close() }
+        }
+    }
 
     @get:Rule
     val permissionRule: GrantPermissionRule = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -51,32 +89,8 @@ abstract class BaseReactNativeTest {
         GrantPermissionRule.grant()
     }
 
-    private val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-
-    @Before
-    fun ensureTestListVisible() {
-        val context = InstrumentationRegistry.getInstrumentation().targetContext
-
-        // Check if test list is already visible (app already running and authenticated)
-        val alreadyVisible = device.findObject(UiSelector().description("testList")).waitForExists(3_000)
-        if (alreadyVisible) return
-
-        // Not visible — need to authenticate and launch
-        val creds = loadTestCredentials()
-        val authIntent = Intent().apply {
-            component = ComponentName(
-                context.packageName,
-                "com.salesforce.androidsdk.util.test.TestAuthenticationActivity"
-            )
-            putExtra("creds", creds)
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        }
-        context.startActivity(authIntent)
-
-        // Wait for the test list ScrollView to appear (testID="testList")
-        val found = device.findObject(UiSelector().description("testList")).waitForExists(30_000)
-        assertTrue("Test list did not appear", found)
-    }
+    protected val device: UiDevice
+        get() = Companion.device
 
     fun runTest(name: String) {
         // Scroll to the button if it's not visible
@@ -104,12 +118,5 @@ abstract class BaseReactNativeTest {
                 fail("Test $name did not complete in time")
             }
         }
-    }
-
-    private fun loadTestCredentials(): String {
-        val context = InstrumentationRegistry.getInstrumentation().targetContext
-        val inputStream = context.assets.open("test_credentials.json")
-        val reader = BufferedReader(InputStreamReader(inputStream))
-        return reader.readText().also { reader.close() }
     }
 }
