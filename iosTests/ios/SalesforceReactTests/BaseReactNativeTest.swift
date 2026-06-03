@@ -28,29 +28,45 @@
 import XCTest
 
 class BaseReactNativeTest: XCTestCase {
-    let app = XCUIApplication()
+    static var app: XCUIApplication!
 
-    override func setUp() {
+    override class func setUp() {
         super.setUp()
-        continueAfterFailure = false
+
+        app = XCUIApplication()
 
         // Instant login: pass credentials from shared/test/test_credentials.json
-        let testBundle = Bundle(for: type(of: self))
+        let testBundle = Bundle(for: self)
         if let credsURL = testBundle.url(forResource: "test_credentials", withExtension: "json"),
-         let credsData = try? Data(contentsOf: credsURL),
-         let credsString = String(data: credsData, encoding: .utf8)?
-        .replacingOccurrences(of: "\n", with: "")
-        .replacingOccurrences(of: "\r", with: "") {
-        app.launchArguments = ["-creds", credsString]
-      }
+           let credsData = try? Data(contentsOf: credsURL),
+           let credsString = String(data: credsData, encoding: .utf8)?
+            .replacingOccurrences(of: "\n", with: "")
+            .replacingOccurrences(of: "\r", with: "") {
+            app.launchArguments = ["-creds", credsString]
+        }
         app.launch()
         XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "testList").firstMatch.waitForExistence(timeout: 30),
                       "Test list did not appear")
     }
 
+    override func setUp() {
+        super.setUp()
+        continueAfterFailure = false
+    }
+
+    var app: XCUIApplication {
+        return BaseReactNativeTest.app
+    }
+
     func runTest(_ name: String) {
         let runId = "run_\(name)"
         let element = app.descendants(matching: .any).matching(identifier: runId).firstMatch
+
+        // Scroll to the button if it's not immediately visible
+        if !element.exists {
+            element.scrollToElement()
+        }
+
         XCTAssertTrue(element.waitForExistence(timeout: 10), "Button not found: \(runId)")
         element.tap()
 
@@ -71,6 +87,15 @@ class BaseReactNativeTest: XCTestCase {
             } else {
                 XCTFail("Test \(name) did not complete in time")
             }
+        }
+    }
+}
+
+extension XCUIElement {
+    func scrollToElement() {
+        while !self.isHittable {
+            let startCoord = self.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+            startCoord.press(forDuration: 0.01, thenDragTo: startCoord.withOffset(CGVector(dx: 0, dy: -50)))
         }
     }
 }
