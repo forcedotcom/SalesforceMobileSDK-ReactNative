@@ -98,6 +98,10 @@ testSyncUp = () => {
         })
         .then((result) => {
             testDone();
+        })
+        .catch((error) => {
+            console.error('testSyncUp failed:', error);
+            assert.fail('testSyncUp failed: ' + error);
         });
 };
 
@@ -136,6 +140,10 @@ testSyncDown = () => {
         })
         .then((result) => {
             testDone();
+        })
+        .catch((error) => {
+            console.error('testSyncDown failed:', error);
+            assert.fail('testSyncDown failed: ' + error);
         });
 };
 
@@ -199,8 +207,12 @@ testReSync = () => {
             // Cleanup
             return Promise.all([netDel('contact', contactId), netDel('contact', otherContactId)]);
         })
-        .then((result) => { 
+        .then((result) => {
             testDone();
+        })
+        .catch((error) => {
+            console.error('testReSync failed:', error);
+            assert.fail('testReSync failed: ' + error);
         });
 };
 
@@ -257,8 +269,12 @@ testCleanResyncGhosts = () => {
             // Cleanup
             return netDel('contact', contactId);
         })
-        .then((result) => { 
+        .then((result) => {
             testDone();
+        })
+        .catch((error) => {
+            console.error('testCleanResyncGhosts failed:', error);
+            assert.fail('testCleanResyncGhosts failed: ' + error);
         });
 };
 
@@ -305,6 +321,10 @@ testGetSyncStatusDeleteSync = () => {
         })
         .then((result) => {
             testDone();
+        })
+        .catch((error) => {
+            console.error('testGetSyncStatusDeleteSync failed:', error);
+            assert.fail('testGetSyncStatusDeleteSync failed: ' + error);
         });
 };
 
