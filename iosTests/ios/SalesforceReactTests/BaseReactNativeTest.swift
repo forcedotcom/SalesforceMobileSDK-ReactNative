@@ -80,10 +80,17 @@ class BaseReactNativeTest: XCTestCase {
         super.setUp()
         continueAfterFailure = false
 
-        // Run suite if not already run (batch execution)
-        if Self.testResults[suiteName] == nil {
-            runSuiteAndCollectResults()
+        // Check if we should use batch execution (default: false, individual execution)
+        // Set -DuseBatchExecution=true in CI or when running full suite
+        let useBatchExecution = ProcessInfo.processInfo.environment["useBatchExecution"] == "true"
+
+        if useBatchExecution {
+            // Batch mode: Run suite if not already run
+            if Self.testResults[suiteName] == nil {
+                runSuiteAndCollectResults()
+            }
         }
+        // Otherwise, individual tests will run via fallback in runTest()
     }
 
     var app: XCUIApplication {
@@ -143,11 +150,10 @@ class BaseReactNativeTest: XCTestCase {
     func runTest(_ name: String) {
         // Check if we have a cached result from batch execution
         if let result = Self.testResults[suiteName]?[name] {
-            // Use cached result
+            // Use cached result from batch execution
             XCTAssertTrue(result.success, "\(name) failed: \(result.message ?? "unknown error")")
         } else {
-            // Fallback: run individual test (should rarely happen)
-            print("⚠️ No cached result for \(name), running individually")
+            // No cached result - run individual test
             runTestIndividually(name)
         }
     }

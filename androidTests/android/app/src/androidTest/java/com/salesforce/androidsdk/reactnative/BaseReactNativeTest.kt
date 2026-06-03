@@ -102,10 +102,17 @@ abstract class BaseReactNativeTest {
         val found = device.findObject(UiSelector().description("testList")).waitForExists(30_000)
         assertTrue("Test list did not appear", found)
 
-        // Run suite if not already run (batch execution)
-        if (!testResults.containsKey(suiteName)) {
-            runSuiteAndCollectResults()
+        // Check if we should use batch execution (default: false, individual execution)
+        // Set -DuseBatchExecution=true in CI or when running full suite
+        val useBatchExecution = System.getProperty("useBatchExecution", "false").toBoolean()
+
+        if (useBatchExecution) {
+            // Batch mode: Run suite if not already run
+            if (!testResults.containsKey(suiteName)) {
+                runSuiteAndCollectResults()
+            }
         }
+        // Otherwise, individual tests will run via fallback in runTest()
     }
 
     /**
@@ -173,11 +180,10 @@ abstract class BaseReactNativeTest {
         val result = testResults[suiteName]?.get(name)
 
         if (result != null) {
-            // Use cached result
+            // Use cached result from batch execution
             assertTrue("$name failed: ${result.message ?: "unknown error"}", result.success)
         } else {
-            // Fallback: run individual test (should rarely happen)
-            Log.w(TAG, "⚠️ No cached result for $name, running individually")
+            // No cached result - run individual test
             runTestIndividually(name)
         }
     }
