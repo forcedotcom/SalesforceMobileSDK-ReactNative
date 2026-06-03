@@ -36,6 +36,7 @@ import androidx.test.rule.GrantPermissionRule
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiSelector
 import com.salesforce.androidsdk.reactnative.util.MainActivity
+import com.salesforce.androidsdk.util.test.TestAuthenticationActivity
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Before
@@ -71,7 +72,7 @@ abstract class BaseReactNativeTest {
     val activityRule = ActivityScenarioRule<MainActivity>(
         Intent(
             InstrumentationRegistry.getInstrumentation().targetContext,
-            MainActivity::class.java
+            TestAuthenticationActivity::class.java
         ).putExtra("creds", loadTestCredentials())
     )
 
