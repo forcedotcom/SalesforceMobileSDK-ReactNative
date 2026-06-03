@@ -30,6 +30,13 @@ package com.salesforce.androidsdk.reactnative
 import org.junit.Test
 
 class ReactHarnessTest : BaseReactNativeTest() {
+    override val suiteName = "Harness"
+
+    override val testNames = listOf(
+        "testPassing",
+        "testAsyncPassing"
+    )
+
     @Test fun testPassing() = runTest("testPassing")
     @Test fun testAsyncPassing() = runTest("testAsyncPassing")
 }

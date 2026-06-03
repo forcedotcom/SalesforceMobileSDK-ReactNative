@@ -28,32 +28,50 @@ package com.salesforce.androidsdk.reactnative
 
 import android.content.ComponentName
 import android.content.Intent
-import android.os.Build
+import android.util.Log
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.rule.GrantPermissionRule
-import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiSelector
-import androidx.test.uiautomator.Until
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.BeforeClass
-import org.junit.Rule
 import java.io.BufferedReader
 import java.io.InputStreamReader
+
+data class TestResult(val success: Boolean, val message: String?)
 
 abstract class BaseReactNativeTest {
 
     companion object {
+        private const val TAG = "BaseReactNativeTest"
         private lateinit var device: UiDevice
         private var credentials: String? = null
+        // Cache test results per suite: { suiteName: { testName: result } }
+        val testResults = mutableMapOf<String, Map<String, TestResult>>()
 
         @JvmStatic
         @BeforeClass
         fun setupOnce() {
             device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
             credentials = loadTestCredentials()
+
+            // Authenticate and launch app once for all tests
+            val context = InstrumentationRegistry.getInstrumentation().targetContext
+            val authIntent = Intent().apply {
+                component = ComponentName(
+                    context.packageName,
+                    "com.salesforce.androidsdk.util.test.TestAuthenticationActivity"
+                )
+                putExtra("creds", credentials)
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+            context.startActivity(authIntent)
+
+            // Wait for the test list ScrollView to appear (testID="testList")
+            val found = device.findObject(UiSelector().description("testList")).waitForExists(30_000)
+            assertTrue("Test list did not appear", found)
         }
 
         private fun loadTestCredentials(): String {
@@ -64,35 +82,96 @@ abstract class BaseReactNativeTest {
         }
     }
 
-    // No permission rule needed - tests don't require notification permissions
+    // Subclasses must override to specify their suite name
+    abstract val suiteName: String
+
+    // Subclasses must override to provide list of test names in execution order
+    abstract val testNames: List<String>
 
     protected val device: UiDevice
         get() = Companion.device
 
     @Before
-    fun ensureTestListVisible() {
-        // Check if test list is already visible (app already running and authenticated)
-        val alreadyVisible = device.findObject(UiSelector().description("testList")).waitForExists(3_000)
-        if (alreadyVisible) return
-
-        // Not visible — need to authenticate and launch
-        val context = InstrumentationRegistry.getInstrumentation().targetContext
-        val authIntent = Intent().apply {
-            component = ComponentName(
-                context.packageName,
-                "com.salesforce.androidsdk.util.test.TestAuthenticationActivity"
-            )
-            putExtra("creds", credentials)
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+    fun setUp() {
+        // Run suite if not already run (batch execution)
+        if (!testResults.containsKey(suiteName)) {
+            runSuiteAndCollectResults()
         }
-        context.startActivity(authIntent)
+    }
 
-        // Wait for the test list ScrollView to appear (testID="testList")
-        val found = device.findObject(UiSelector().description("testList")).waitForExists(30_000)
-        assertTrue("Test list did not appear", found)
+    /**
+     * Run all tests in the suite at once and collect results
+     */
+    private fun runSuiteAndCollectResults() {
+        val runSuiteId = "runSuite_$suiteName"
+
+        // Scroll to Run All button
+        val scrollable = androidx.test.uiautomator.UiScrollable(
+            UiSelector().description("testList").scrollable(true)
+        )
+        scrollable.setAsVerticalList()
+        scrollable.scrollIntoView(UiSelector().description(runSuiteId))
+
+        val runButton = device.findObject(UiSelector().description(runSuiteId))
+        assertTrue(
+            "Run All button not found: $runSuiteId - bundle may be stale or suite not registered",
+            runButton.waitForExists(10_000)
+        )
+
+        runButton.click()
+
+        // Wait for suite completion by checking for last test result
+        val lastTestName = testNames.lastOrNull()
+        if (lastTestName != null) {
+            val lastPassSelector = UiSelector().description("result_${lastTestName}_pass")
+            val lastFailSelector = UiSelector().description("result_${lastTestName}_fail")
+            val passFound = device.findObject(lastPassSelector).waitForExists(300_000)
+            val failFound = device.findObject(lastFailSelector).waitForExists(5_000)
+            assertTrue("Suite $suiteName did not complete within 5 minutes", passFound || failFound)
+        }
+
+        // Collect all test results from UI
+        val results = mutableMapOf<String, TestResult>()
+        for (testName in testNames) {
+            val passSelector = UiSelector().description("result_${testName}_pass")
+            val failSelector = UiSelector().description("result_${testName}_fail")
+            val passElement = device.findObject(passSelector)
+            val failElement = device.findObject(failSelector)
+
+            if (passElement.exists()) {
+                results[testName] = TestResult(true, null)
+            } else if (failElement.exists()) {
+                val errorSelector = UiSelector().description("error_$testName")
+                val errorElement = device.findObject(errorSelector)
+                val message = if (errorElement.exists()) errorElement.text else "unknown error"
+                results[testName] = TestResult(false, message)
+            } else {
+                // Test did not run or result not visible
+                results[testName] = TestResult(false, "No result found for test")
+            }
+        }
+
+        testResults[suiteName] = results
     }
 
     fun runTest(name: String) {
+        // Check if we have a cached result from batch execution
+        val result = testResults[suiteName]?.get(name)
+
+        if (result != null) {
+            // Use cached result
+            assertTrue("$name failed: ${result.message ?: "unknown error"}", result.success)
+        } else {
+            // Fallback: run individual test (should rarely happen)
+            Log.w(TAG, "⚠️ No cached result for $name, running individually")
+            runTestIndividually(name)
+        }
+    }
+
+    /**
+     * Fallback method to run a single test individually (old approach)
+     */
+    private fun runTestIndividually(name: String) {
         // Scroll to the button if it's not visible
         val scrollable = androidx.test.uiautomator.UiScrollable(
             UiSelector().description("testList").scrollable(true)

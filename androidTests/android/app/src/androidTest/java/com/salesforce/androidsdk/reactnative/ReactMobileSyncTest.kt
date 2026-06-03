@@ -30,6 +30,16 @@ package com.salesforce.androidsdk.reactnative
 import org.junit.Test
 
 class ReactMobileSyncTest : BaseReactNativeTest() {
+    override val suiteName = "MobileSync"
+
+    override val testNames = listOf(
+        "testSyncDown",
+        "testSyncUp",
+        "testReSync",
+        "testCleanResyncGhosts",
+        "testGetSyncStatusDeleteSync"
+    )
+
     @Test fun testSyncDown() = runTest("testSyncDown")
     @Test fun testSyncUp() = runTest("testSyncUp")
     @Test fun testReSync() = runTest("testReSync")

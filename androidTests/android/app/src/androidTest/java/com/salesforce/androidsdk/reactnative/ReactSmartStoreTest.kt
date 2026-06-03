@@ -30,6 +30,22 @@ package com.salesforce.androidsdk.reactnative
 import org.junit.Test
 
 class ReactSmartStoreTest : BaseReactNativeTest() {
+    override val suiteName = "SmartStore"
+
+    override val testNames = listOf(
+        "testGetDatabaseSize",
+        "testRegisterExistsRemoveExists",
+        "testGetSoupIndexSpecs",
+        "testUpsertRetrieve",
+        "testQuerySoup",
+        "testMoveCursor",
+        "testSmartQuerySoup",
+        "testRemoveFromSoup",
+        "testClearSoup",
+        "testGetRemoveStores",
+        "testGetRemoveGlobalStores"
+    )
+
     @Test fun testGetDatabaseSize() = runTest("testGetDatabaseSize")
     @Test fun testRegisterExistsRemoveExists() = runTest("testRegisterExistsRemoveExists")
     @Test fun testGetSoupIndexSpecs() = runTest("testGetSoupIndexSpecs")

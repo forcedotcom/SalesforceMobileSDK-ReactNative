@@ -30,6 +30,27 @@ package com.salesforce.androidsdk.reactnative
 import org.junit.Test
 
 class ReactNetTest : BaseReactNativeTest() {
+    override val suiteName = "Net"
+
+    override val testNames = listOf(
+        "testGetApiVersion",
+        "testVersions",
+        "testResources",
+        "testDescribeGlobal",
+        "testMetaData",
+        "testDescribe",
+        "testDescribeLayout",
+        "testCreateRetrieve",
+        "testUpsertUpdateRetrieve",
+        "testCreateDelRetrieve",
+        "testQuery",
+        "testSearch",
+        "testPublicApiCall",
+        "testCollectionCreateRetrieve",
+        "testCollectionUpsertUpdateRetrieve",
+        "testCollectionCreateDeleteRetrieve"
+    )
+
     @Test fun testGetApiVersion() = runTest("testGetApiVersion")
     @Test fun testVersions() = runTest("testVersions")
     @Test fun testResources() = runTest("testResources")
