@@ -105,12 +105,17 @@ abstract class BaseReactNativeTest {
     private fun runSuiteAndCollectResults() {
         val runSuiteId = "runSuite_$suiteName"
 
-        // Scroll to Run All button
-        val scrollable = androidx.test.uiautomator.UiScrollable(
-            UiSelector().description("testList").scrollable(true)
-        )
-        scrollable.setAsVerticalList()
-        scrollable.scrollIntoView(UiSelector().description(runSuiteId))
+        // Try to scroll to Run All button (optional - button might already be visible)
+        try {
+            val scrollable = androidx.test.uiautomator.UiScrollable(
+                UiSelector().description("testList").scrollable(true)
+            )
+            scrollable.setAsVerticalList()
+            scrollable.scrollIntoView(UiSelector().description(runSuiteId))
+        } catch (e: Exception) {
+            // Scroll failed - button might already be visible or scroll not needed
+            Log.d(TAG, "Scroll failed (button may already be visible): ${e.message}")
+        }
 
         val runButton = device.findObject(UiSelector().description(runSuiteId))
         assertTrue(
