@@ -58,7 +58,7 @@ abstract class BaseReactNativeTest {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
 
         // Check if test list is already visible (app already running and authenticated)
-        val alreadyVisible = device.findObject(UiSelector().descriptionContains("run_test")).waitForExists(3_000)
+        val alreadyVisible = device.findObject(UiSelector().description("testList")).waitForExists(3_000)
         if (alreadyVisible) return
 
         // Not visible — need to authenticate and launch
@@ -73,8 +73,8 @@ abstract class BaseReactNativeTest {
         }
         context.startActivity(authIntent)
 
-        // Wait for the test list to appear
-        val found = device.findObject(UiSelector().descriptionContains("run_test")).waitForExists(30_000)
+        // Wait for the test list ScrollView to appear (testID="testList")
+        val found = device.findObject(UiSelector().description("testList")).waitForExists(30_000)
         assertTrue("Test list did not appear", found)
     }
 
