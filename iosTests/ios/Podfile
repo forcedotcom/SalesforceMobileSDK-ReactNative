@@ -46,19 +46,5 @@ target 'SalesforceReactTestApp' do
 
     # Mobile SDK post install
     mobile_sdk_post_install(installer)
-
-    # Ensure DEBUG is defined for SDK pods (needed for instant login)
-    installer.pods_project.targets.each do |target|
-      if target.name == "SalesforceSDKCore"
-        target.build_configurations.each do |config|
-          if config.name == "Debug"
-            defs = config.build_settings["GCC_PREPROCESSOR_DEFINITIONS"] || "$(inherited)"
-            unless defs.include?("DEBUG=1")
-              config.build_settings["GCC_PREPROCESSOR_DEFINITIONS"] = "#{defs} DEBUG=1"
-            end
-          end
-        end
-      end
-    end
   end
 end
