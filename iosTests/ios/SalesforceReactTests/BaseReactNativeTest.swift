@@ -47,6 +47,11 @@ class BaseReactNativeTest: XCTestCase {
         fatalError("Subclass must override testNames property")
     }
 
+    // Subclasses can override to specify suite timeout in seconds (default: 15s)
+    var suiteTimeoutSeconds: TimeInterval {
+        return 15
+    }
+
     override class func setUp() {
         super.setUp()
 
@@ -102,8 +107,8 @@ class BaseReactNativeTest: XCTestCase {
             let lastPassElement = app.descendants(matching: .any).matching(identifier: lastPassId).firstMatch
             let lastFailElement = app.descendants(matching: .any).matching(identifier: lastFailId).firstMatch
 
-            let completed = lastPassElement.waitForExistence(timeout: 300) || lastFailElement.waitForExistence(timeout: 5)
-            XCTAssertTrue(completed, "Suite \(suiteName) did not complete within 5 minutes")
+            let completed = lastPassElement.waitForExistence(timeout: suiteTimeoutSeconds) || lastFailElement.waitForExistence(timeout: 5)
+            XCTAssertTrue(completed, "Suite \(suiteName) did not complete within \(Int(suiteTimeoutSeconds)) seconds")
         }
 
         // Collect all test results from UI

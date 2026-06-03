@@ -32,6 +32,8 @@ import org.junit.Test
 class ReactMobileSyncTest : BaseReactNativeTest() {
     override val suiteName = "MobileSync"
 
+    override val suiteTimeoutMs: Long = 60_000
+
     override val testNames = listOf(
         "testSyncDown",
         "testSyncUp",

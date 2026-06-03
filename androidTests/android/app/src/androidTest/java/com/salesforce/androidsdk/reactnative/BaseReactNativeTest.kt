@@ -88,6 +88,10 @@ abstract class BaseReactNativeTest {
     // Subclasses must override to provide list of test names in execution order
     abstract val testNames: List<String>
 
+    // Subclasses can override to specify suite timeout in milliseconds (default: 15s)
+    open val suiteTimeoutMs: Long
+        get() = 15_000
+
     protected val device: UiDevice
         get() = Companion.device
 
@@ -130,9 +134,9 @@ abstract class BaseReactNativeTest {
         if (lastTestName != null) {
             val lastPassSelector = UiSelector().description("result_${lastTestName}_pass")
             val lastFailSelector = UiSelector().description("result_${lastTestName}_fail")
-            val passFound = device.findObject(lastPassSelector).waitForExists(300_000)
+            val passFound = device.findObject(lastPassSelector).waitForExists(suiteTimeoutMs)
             val failFound = device.findObject(lastFailSelector).waitForExists(5_000)
-            assertTrue("Suite $suiteName did not complete within 5 minutes", passFound || failFound)
+            assertTrue("Suite $suiteName did not complete within ${suiteTimeoutMs / 1000} seconds", passFound || failFound)
         }
 
         // Collect all test results from UI
