@@ -54,11 +54,11 @@ resetSyncManager = promiser(mobilesync.resetSyncManager);
 
 registerSuite('MobileSync', {
   setUp: async () => {
-    await removeAllStores(storeConfig);
+    await removeAllStores();
     await resetSyncManager(storeConfig);
   },
   tearDown: async () => {
-    await removeAllStores(storeConfig);
+    await removeAllStores();
     await resetSyncManager(storeConfig);
   },
 });
