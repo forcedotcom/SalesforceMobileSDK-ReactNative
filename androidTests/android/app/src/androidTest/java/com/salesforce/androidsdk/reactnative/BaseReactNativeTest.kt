@@ -37,6 +37,7 @@ import androidx.test.uiautomator.UiSelector
 import androidx.test.uiautomator.Until
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
+import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Rule
 import java.io.BufferedReader
@@ -46,32 +47,13 @@ abstract class BaseReactNativeTest {
 
     companion object {
         private lateinit var device: UiDevice
+        private var credentials: String? = null
 
         @JvmStatic
         @BeforeClass
-        fun ensureTestListVisible() {
+        fun setupOnce() {
             device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-            val context = InstrumentationRegistry.getInstrumentation().targetContext
-
-            // Check if test list is already visible (app already running and authenticated)
-            val alreadyVisible = device.findObject(UiSelector().description("testList")).waitForExists(3_000)
-            if (alreadyVisible) return
-
-            // Not visible — need to authenticate and launch
-            val creds = loadTestCredentials()
-            val authIntent = Intent().apply {
-                component = ComponentName(
-                    context.packageName,
-                    "com.salesforce.androidsdk.util.test.TestAuthenticationActivity"
-                )
-                putExtra("creds", creds)
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            }
-            context.startActivity(authIntent)
-
-            // Wait for the test list ScrollView to appear (testID="testList")
-            val found = device.findObject(UiSelector().description("testList")).waitForExists(30_000)
-            assertTrue("Test list did not appear", found)
+            credentials = loadTestCredentials()
         }
 
         private fun loadTestCredentials(): String {
@@ -86,6 +68,29 @@ abstract class BaseReactNativeTest {
 
     protected val device: UiDevice
         get() = Companion.device
+
+    @Before
+    fun ensureTestListVisible() {
+        // Check if test list is already visible (app already running and authenticated)
+        val alreadyVisible = device.findObject(UiSelector().description("testList")).waitForExists(3_000)
+        if (alreadyVisible) return
+
+        // Not visible — need to authenticate and launch
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val authIntent = Intent().apply {
+            component = ComponentName(
+                context.packageName,
+                "com.salesforce.androidsdk.util.test.TestAuthenticationActivity"
+            )
+            putExtra("creds", credentials)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+        context.startActivity(authIntent)
+
+        // Wait for the test list ScrollView to appear (testID="testList")
+        val found = device.findObject(UiSelector().description("testList")).waitForExists(30_000)
+        assertTrue("Test list did not appear", found)
+    }
 
     fun runTest(name: String) {
         // Scroll to the button if it's not visible
