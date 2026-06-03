@@ -74,41 +74,8 @@ abstract class BaseReactNativeTest {
         context.startActivity(authIntent)
 
         // Wait for the test list ScrollView to appear (testID="testList")
-        Thread.sleep(5000) // Give app time to render
-
-        // Dump UI hierarchy for debugging
-        dumpUIHierarchy()
-
         val found = device.findObject(UiSelector().description("testList")).waitForExists(30_000)
         assertTrue("Test list did not appear", found)
-    }
-
-    private fun dumpUIHierarchy() {
-        println("===== UI HIERARCHY DUMP =====")
-        val root = device.findObject(By.pkg(InstrumentationRegistry.getInstrumentation().targetContext.packageName))
-        if (root != null) {
-            dumpNode(root, 0)
-        } else {
-            println("No root node found")
-        }
-        println("===== END UI HIERARCHY =====")
-    }
-
-    private fun dumpNode(node: androidx.test.uiautomator.UiObject2, depth: Int) {
-        val indent = "  ".repeat(depth)
-        val desc = node.contentDescription ?: ""
-        val text = node.text ?: ""
-        val className = node.className ?: ""
-        val resourceId = node.resourceName ?: ""
-
-        println("$indent[${className.substringAfterLast('.')}] " +
-                "desc='$desc' text='$text' " +
-                "id='$resourceId' " +
-                "clickable=${node.isClickable}")
-
-        node.children.forEach { child ->
-            dumpNode(child, depth + 1)
-        }
     }
 
     fun runTest(name: String) {
