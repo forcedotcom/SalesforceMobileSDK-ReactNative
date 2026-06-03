@@ -26,4 +26,7 @@
  */
 
 class ReactOAuthTests: BaseReactNativeTest {
-
+    func testGetAuthCredentials() { runTest("testGetAuthCredentials") }
+    func testLogout() { runTest("testLogout") }
+    func testAuthenticate() { runTest("testAuthenticate") }
+}
