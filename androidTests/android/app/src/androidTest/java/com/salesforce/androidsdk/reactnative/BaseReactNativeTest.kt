@@ -82,12 +82,7 @@ abstract class BaseReactNativeTest {
         }
     }
 
-    @get:Rule
-    val permissionRule: GrantPermissionRule = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        GrantPermissionRule.grant(android.Manifest.permission.POST_NOTIFICATIONS)
-    } else {
-        GrantPermissionRule.grant()
-    }
+    // No permission rule needed - tests don't require notification permissions
 
     protected val device: UiDevice
         get() = Companion.device
