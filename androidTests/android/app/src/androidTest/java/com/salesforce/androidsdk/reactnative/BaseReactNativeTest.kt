@@ -26,17 +26,20 @@
  */
 package com.salesforce.androidsdk.reactnative
 
-import android.content.ComponentName
+import android.Manifest
 import android.content.Intent
+import android.os.Build
 import android.util.Log
+import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.rule.GrantPermissionRule
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiSelector
-import org.junit.Assert.assertNotNull
+import com.salesforce.androidsdk.reactnative.util.MainActivity
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Before
-import org.junit.BeforeClass
+import org.junit.Rule
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
@@ -46,46 +49,8 @@ abstract class BaseReactNativeTest {
 
     companion object {
         private const val TAG = "BaseReactNativeTest"
-        private lateinit var device: UiDevice
-        private var credentials: String? = null
         // Cache test results per suite: { suiteName: { testName: result } }
         val testResults = mutableMapOf<String, Map<String, TestResult>>()
-
-        @JvmStatic
-        @BeforeClass
-        fun setupOnce() {
-            device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-            credentials = loadTestCredentials()
-
-            // Authenticate once for all tests
-            val context = InstrumentationRegistry.getInstrumentation().targetContext
-            val authIntent = Intent().apply {
-                component = ComponentName(
-                    context.packageName,
-                    "com.salesforce.androidsdk.util.test.TestAuthenticationActivity"
-                )
-                putExtra("creds", credentials)
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            }
-            context.startActivity(authIntent)
-
-            // Wait for authentication to complete (activity will finish)
-            Thread.sleep(2000)
-
-            // Launch the main React Native activity
-            val mainIntent = Intent().apply {
-                component = ComponentName(
-                    context.packageName,
-                    "com.salesforce.androidsdk.reactnative.util.MainActivity"
-                )
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-            }
-            context.startActivity(mainIntent)
-
-            // Wait for the test list ScrollView to appear (testID="testList")
-            val found = device.findObject(UiSelector().description("testList")).waitForExists(30_000)
-            assertTrue("Test list did not appear", found)
-        }
 
         private fun loadTestCredentials(): String {
             val context = InstrumentationRegistry.getInstrumentation().targetContext
@@ -93,6 +58,25 @@ abstract class BaseReactNativeTest {
             val reader = BufferedReader(InputStreamReader(inputStream))
             return reader.readText().also { reader.close() }
         }
+    }
+
+    @get:Rule(order = 0)
+    val permissionRule: GrantPermissionRule = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        GrantPermissionRule.grant(Manifest.permission.POST_NOTIFICATIONS)
+    } else {
+        GrantPermissionRule.grant()
+    }
+
+    @get:Rule(order = 1)
+    val activityRule = ActivityScenarioRule<MainActivity>(
+        Intent(
+            InstrumentationRegistry.getInstrumentation().targetContext,
+            MainActivity::class.java
+        ).putExtra("creds", loadTestCredentials())
+    )
+
+    protected val device: UiDevice by lazy {
+        UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
     }
 
     // Subclasses must override to specify their suite name
@@ -105,11 +89,12 @@ abstract class BaseReactNativeTest {
     open val suiteTimeoutMs: Long
         get() = 15_000
 
-    protected val device: UiDevice
-        get() = Companion.device
-
     @Before
     fun setUp() {
+        // Wait for test list to appear
+        val found = device.findObject(UiSelector().description("testList")).waitForExists(30_000)
+        assertTrue("Test list did not appear", found)
+
         // Run suite if not already run (batch execution)
         if (!testResults.containsKey(suiteName)) {
             runSuiteAndCollectResults()

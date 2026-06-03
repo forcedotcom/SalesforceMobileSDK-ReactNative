@@ -44,5 +44,8 @@ class MainActivity : SalesforceReactActivity() {
     override fun createReactActivityDelegate(): ReactActivityDelegate =
         DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled)
 
-    override fun shouldAuthenticate() = true
+    override fun shouldAuthenticate(): Boolean {
+        // If credentials passed via intent, TestAuthenticationActivity already handled auth
+        return intent.getStringExtra("creds") == null
+    }
 }
