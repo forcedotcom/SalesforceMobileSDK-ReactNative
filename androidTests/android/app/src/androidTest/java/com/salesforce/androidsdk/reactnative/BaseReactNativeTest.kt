@@ -57,7 +57,7 @@ abstract class BaseReactNativeTest {
             device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
             credentials = loadTestCredentials()
 
-            // Authenticate and launch app once for all tests
+            // Authenticate once for all tests
             val context = InstrumentationRegistry.getInstrumentation().targetContext
             val authIntent = Intent().apply {
                 component = ComponentName(
@@ -68,6 +68,19 @@ abstract class BaseReactNativeTest {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
             }
             context.startActivity(authIntent)
+
+            // Wait for authentication to complete (activity will finish)
+            Thread.sleep(2000)
+
+            // Launch the main React Native activity
+            val mainIntent = Intent().apply {
+                component = ComponentName(
+                    context.packageName,
+                    "com.salesforce.androidsdk.reactnative.util.MainActivity"
+                )
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            }
+            context.startActivity(mainIntent)
 
             // Wait for the test list ScrollView to appear (testID="testList")
             val found = device.findObject(UiSelector().description("testList")).waitForExists(30_000)
