@@ -78,7 +78,7 @@ export default function TestApp() {
   };
 
   return (
-    <ScrollView style={styles.container} testID="testList" accessible={true} accessibilityLabel="testList">
+    <ScrollView style={styles.container} testID="testList">
       <Text style={styles.title}>React Native SDK Tests</Text>
       <TouchableOpacity style={styles.runAllButton} testID="runAll" accessible={true} onPress={handleRunAll}>
         <Text style={styles.runAllText}>Run All Tests</Text>
