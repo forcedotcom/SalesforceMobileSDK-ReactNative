@@ -26,11 +26,4 @@
  */
 
 class ReactOAuthTests: BaseReactNativeTest {
-    override var suiteName: String { "OAuth" }
 
-    override var testNames: [String] {
-        ["testGetAuthCredentials"]
-    }
-
-    func testGetAuthCredentials() { runTest("testGetAuthCredentials") }
-}

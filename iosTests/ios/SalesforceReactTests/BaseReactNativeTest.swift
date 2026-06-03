@@ -27,33 +27,11 @@
 
 import XCTest
 
-struct TestResult {
-    let success: Bool
-    let message: String?
-}
-
 class BaseReactNativeTest: XCTestCase {
     static var app: XCUIApplication!
-    // Cache test results per suite: { suiteName: { testName: result } }
-    static var testResults: [String: [String: TestResult]] = [:]
 
-    // Subclasses must override to specify their suite name
-    var suiteName: String {
-        fatalError("Subclass must override suiteName property")
-    }
-
-    // Subclasses must override to provide list of test names in execution order
-    var testNames: [String] {
-        fatalError("Subclass must override testNames property")
-    }
-
-    // Subclasses can override to specify suite timeout in seconds (default: 15s)
-    var suiteTimeoutSeconds: Double {
-        return 15
-    }
-
-    // Subclasses can override to specify individual test timeout in seconds (default: 15s)
-    var individualTestTimeoutSeconds: Double {
+    // Subclasses can override to specify test timeout in seconds (default: 15s)
+    var testTimeoutSeconds: Double {
         return 15
     }
 
@@ -79,87 +57,13 @@ class BaseReactNativeTest: XCTestCase {
     override func setUp() {
         super.setUp()
         continueAfterFailure = false
-
-        // Check if we should use batch execution (default: false, individual execution)
-        // Set -DuseBatchExecution=true in CI or when running full suite
-        let useBatchExecution = ProcessInfo.processInfo.environment["useBatchExecution"] == "true"
-
-        if useBatchExecution {
-            // Batch mode: Run suite if not already run
-            if Self.testResults[suiteName] == nil {
-                runSuiteAndCollectResults()
-            }
-        }
-        // Otherwise, individual tests will run via fallback in runTest()
     }
 
     var app: XCUIApplication {
         return BaseReactNativeTest.app
     }
 
-    /// Run all tests in the suite at once and collect results
-    private func runSuiteAndCollectResults() {
-        let runSuiteId = "runSuite_\(suiteName)"
-        let runButton = app.descendants(matching: .any).matching(identifier: runSuiteId).firstMatch
-
-        // Scroll to button if needed
-        if !runButton.exists {
-            runButton.scrollToElement()
-        }
-
-        XCTAssertTrue(runButton.waitForExistence(timeout: 10),
-                      "Run All button not found: \(runSuiteId) - bundle may be stale or suite not registered")
-
-        runButton.tap()
-
-        // Wait for suite completion by checking for last test result
-        if let lastTestName = testNames.last {
-            let lastPassId = "result_\(lastTestName)_pass"
-            let lastFailId = "result_\(lastTestName)_fail"
-            let lastPassElement = app.descendants(matching: .any).matching(identifier: lastPassId).firstMatch
-            let lastFailElement = app.descendants(matching: .any).matching(identifier: lastFailId).firstMatch
-
-            let completed = lastPassElement.waitForExistence(timeout: suiteTimeoutSeconds) || lastFailElement.waitForExistence(timeout: 5)
-            XCTAssertTrue(completed, "Suite \(suiteName) did not complete within \(Int(suiteTimeoutSeconds)) seconds")
-        }
-
-        // Collect all test results from UI
-        var results: [String: TestResult] = [:]
-        for testName in testNames {
-            let passId = "result_\(testName)_pass"
-            let failId = "result_\(testName)_fail"
-            let passElement = app.descendants(matching: .any).matching(identifier: passId).firstMatch
-            let failElement = app.descendants(matching: .any).matching(identifier: failId).firstMatch
-
-            if passElement.exists {
-                results[testName] = TestResult(success: true, message: nil)
-            } else if failElement.exists {
-                let errorId = "error_\(testName)"
-                let errorElement = app.descendants(matching: .any).matching(identifier: errorId).firstMatch
-                let message = errorElement.exists ? errorElement.label : "unknown error"
-                results[testName] = TestResult(success: false, message: message)
-            } else {
-                // Test did not run or result not visible
-                results[testName] = TestResult(success: false, message: "No result found for test")
-            }
-        }
-
-        Self.testResults[suiteName] = results
-    }
-
     func runTest(_ name: String) {
-        // Check if we have a cached result from batch execution
-        if let result = Self.testResults[suiteName]?[name] {
-            // Use cached result from batch execution
-            XCTAssertTrue(result.success, "\(name) failed: \(result.message ?? "unknown error")")
-        } else {
-            // No cached result - run individual test
-            runTestIndividually(name)
-        }
-    }
-
-    /// Fallback method to run a single test individually (old approach)
-    private func runTestIndividually(_ name: String) {
         let runId = "run_\(name)"
         let element = app.descendants(matching: .any).matching(identifier: runId).firstMatch
 
@@ -176,7 +80,7 @@ class BaseReactNativeTest: XCTestCase {
         let passElement = app.descendants(matching: .any).matching(identifier: passId).firstMatch
         let failElement = app.descendants(matching: .any).matching(identifier: failId).firstMatch
 
-        let passed = passElement.waitForExistence(timeout: individualTestTimeoutSeconds)
+        let passed = passElement.waitForExistence(timeout: testTimeoutSeconds)
 
         if !passed {
             let failed = failElement.waitForExistence(timeout: 5)

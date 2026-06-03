@@ -26,21 +26,7 @@
  */
 
 class ReactMobileSyncTests: BaseReactNativeTest {
-    override var suiteName: String { "MobileSync" }
-
-    override var suiteTimeoutSeconds: Double { 60 }
-
-    override var individualTestTimeoutSeconds: Double { 60 }
-
-    override var testNames: [String] {
-        [
-            "testSyncDown",
-            "testSyncUp",
-            "testReSync",
-            "testCleanResyncGhosts",
-            "testGetSyncStatusDeleteSync"
-        ]
-    }
+    override var testTimeoutSeconds: Double { 60 }
 
     func testSyncDown() { runTest("testSyncDown") }
     func testSyncUp() { runTest("testSyncUp") }

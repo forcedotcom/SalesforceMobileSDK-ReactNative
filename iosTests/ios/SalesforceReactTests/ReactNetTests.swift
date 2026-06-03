@@ -26,32 +26,7 @@
  */
 
 class ReactNetTests: BaseReactNativeTest {
-    override var suiteName: String { "Net" }
-
-    override var suiteTimeoutSeconds: Double { 30 }
-
-    override var individualTestTimeoutSeconds: Double { 30 }
-
-    override var testNames: [String] {
-        [
-            "testGetApiVersion",
-            "testVersions",
-            "testResources",
-            "testDescribeGlobal",
-            "testMetaData",
-            "testDescribe",
-            "testDescribeLayout",
-            "testCreateRetrieve",
-            "testUpsertUpdateRetrieve",
-            "testCreateDelRetrieve",
-            "testQuery",
-            "testSearch",
-            "testPublicApiCall",
-            "testCollectionCreateRetrieve",
-            "testCollectionUpsertUpdateRetrieve",
-            "testCollectionCreateDeleteRetrieve"
-        ]
-    }
+    override var testTimeoutSeconds: Double { 30 }
 
     func testGetApiVersion() { runTest("testGetApiVersion") }
     func testVersions() { runTest("testVersions") }

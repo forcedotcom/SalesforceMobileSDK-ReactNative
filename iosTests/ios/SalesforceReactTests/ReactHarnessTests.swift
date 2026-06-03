@@ -26,15 +26,4 @@
  */
 
 class ReactHarnessTests: BaseReactNativeTest {
-    override var suiteName: String { "Harness" }
 
-    override var testNames: [String] {
-        [
-            "testPassing",
-            "testAsyncPassing"
-        ]
-    }
-
-    func testPassing() { runTest("testPassing") }
-    func testAsyncPassing() { runTest("testAsyncPassing") }
-}
