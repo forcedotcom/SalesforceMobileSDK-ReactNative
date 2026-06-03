@@ -28,7 +28,7 @@
 class ReactMobileSyncTests: BaseReactNativeTest {
     override var suiteName: String { "MobileSync" }
 
-    override var suiteTimeoutSeconds: TimeInterval { 60 }
+    override var suiteTimeoutSeconds: Double { 60 }
 
     override var testNames: [String] {
         [

@@ -28,7 +28,7 @@
 class ReactNetTests: BaseReactNativeTest {
     override var suiteName: String { "Net" }
 
-    override var suiteTimeoutSeconds: TimeInterval { 30 }
+    override var suiteTimeoutSeconds: Double { 30 }
 
     override var testNames: [String] {
         [

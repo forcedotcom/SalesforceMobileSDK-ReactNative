@@ -48,7 +48,7 @@ class BaseReactNativeTest: XCTestCase {
     }
 
     // Subclasses can override to specify suite timeout in seconds (default: 15s)
-    var suiteTimeoutSeconds: TimeInterval {
+    var suiteTimeoutSeconds: Double {
         return 15
     }
 
