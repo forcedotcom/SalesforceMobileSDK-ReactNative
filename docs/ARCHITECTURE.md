@@ -681,25 +681,32 @@ graph TB
 
 ## Testing Architecture
 
-### Test Harness
+### UI-Driven Test Infrastructure
 
-Tests are written in JavaScript and executed on both platforms:
+Tests are written in JavaScript and executed via automated UI tests on both platforms. The new architecture uses:
+- **iOS**: XCUITest to drive the test app UI
+- **Android**: UIAutomator to drive the test app UI
 
 ```
-test/alltests.js (JavaScript test suite)
+Native UI Test (XCUITest/UIAutomator)
+        ↓ (finds and taps test buttons)
+React Native Test App (test/TestApp.js)
+        ↓ (runs selected test)
+Pure JS Test Runner (test/testRunner.js)
+        ↓ (executes test suite)
+SDK Bridge → Native SDK
         ↓
-iosTests/ios/ (XCTest runs JavaScript)
-        ↓
-iOS Bridge → iOS SDK
-        ↓
-Test Results
-
-androidTests/ (AndroidX Test/JUnit runs JavaScript)
-        ↓
-Android Bridge → Android SDK
-        ↓
-Test Results
+Test Results (displayed inline in app UI)
 ```
+
+**Key Benefits**:
+- No coupling to React Native internal APIs
+- Works with React Native precompiled binaries
+- Full error messages visible in app UI
+- Tests can be run manually (tap buttons in app)
+- No complex test bridge modules
+
+**Instant Login**: Tests use a credentials-based instant login mechanism that bypasses the OAuth UI, passing credentials via launch arguments.
 
 See [ios-tests/README.md](ios-tests/README.md) for iOS testing details.
 See [android-tests/README.md](android-tests/README.md) for Android testing details.
