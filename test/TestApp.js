@@ -78,7 +78,11 @@ export default function TestApp() {
   };
 
   return (
-    <ScrollView style={styles.container} testID="testList" accessibilityLabel="testList">
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.scrollContent}
+      testID="testList"
+      accessibilityLabel="testList">
       <Text style={styles.title}>React Native SDK Tests</Text>
       <TouchableOpacity
         style={styles.runAllButton}
@@ -136,6 +140,7 @@ export default function TestApp() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16, paddingTop: 60, backgroundColor: '#fff' },
+  scrollContent: { paddingBottom: 100 },
   title: { fontSize: 20, fontWeight: 'bold', marginBottom: 12 },
   runAllButton: { backgroundColor: '#0070d2', padding: 12, borderRadius: 6, marginBottom: 16, alignItems: 'center' },
   runAllText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
