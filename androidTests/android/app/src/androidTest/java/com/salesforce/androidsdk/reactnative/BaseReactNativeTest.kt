@@ -87,19 +87,26 @@ abstract class BaseReactNativeTest {
         assertTrue("Test list did not appear", found)
 
         // Scroll to the test button if needed
-        try {
-            val scrollable = androidx.test.uiautomator.UiScrollable(
-                UiSelector().description("testList").scrollable(true)
-            )
-            scrollable.setAsVerticalList()
-            scrollable.scrollIntoView(UiSelector().description("run_$name"))
-        } catch (e: Exception) {
-            // Scroll failed - button might already be visible
-            Log.d(TAG, "Scroll failed (button may already be visible): ${e.message}")
+        val button = device.findObject(UiSelector().description("run_$name"))
+
+        if (!button.exists()) {
+            // Button not immediately visible, try scrolling
+            try {
+                val scrollable = androidx.test.uiautomator.UiScrollable(
+                    UiSelector().description("testList").scrollable(true)
+                )
+                scrollable.setAsVerticalList()
+                scrollable.setMaxSearchSwipes(20) // Allow more swipes to reach bottom
+                val scrolled = scrollable.scrollIntoView(UiSelector().description("run_$name"))
+                if (!scrolled) {
+                    Log.w(TAG, "scrollIntoView returned false for run_$name")
+                }
+            } catch (e: Exception) {
+                Log.w(TAG, "Scroll failed for run_$name: ${e.message}")
+            }
         }
 
-        val button = device.findObject(UiSelector().description("run_$name"))
-        assertTrue("Button not found: run_$name", button.waitForExists(10_000))
+        assertTrue("Button not found: run_$name - may need to scroll further", button.waitForExists(10_000))
         button.click()
 
         val passSelector = UiSelector().description("result_${name}_pass")
