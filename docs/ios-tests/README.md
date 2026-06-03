@@ -210,83 +210,137 @@ xcodebuild test \
 
 ## Test Execution Flow
 
-### How Tests Run
+### How Tests Run (Batch Execution)
+
+Tests now use **batch suite execution** (adopted from Hybrid SDK's JSTestCase pattern):
+
+1. **App launches once** per test class via `class func setUp()`
+2. **First test's setUp()** taps "Run All" button for the suite
+3. **All tests run** sequentially in JavaScript
+4. **Results collected** from UI into `static var testResults` map
+5. **Individual tests** look up their cached result and assert
 
 ```mermaid
 sequenceDiagram
     participant XCUITest as XCUITest (Swift)
     participant App as React Native Test App
-    participant Button as Test Button (TouchableOpacity)
+    participant RunAll as "Run All" Button
     participant Runner as testRunner.js
-    participant Test as oauth.test.js
+    participant Tests as Test Suite
     participant SDK as SDK Bridge
     
-    XCUITest->>App: Launch with instant login credentials
+    XCUITest->>App: Launch once with instant login (class func setUp)
     App->>App: AppDelegate performs instant login
-    App->>Button: Render test buttons in ScrollView
-    XCUITest->>Button: Find button by testID, tap
-    Button->>Runner: onPress() → runTest("testGetAuthCredentials")
-    Runner->>Test: Execute testGetAuthCredentials()
-    Test->>SDK: oauth.getAuthCredentials(success, error)
-    SDK->>Test: callback(credentials)
-    Test->>Runner: Report result (pass/fail)
-    Runner->>App: Display result inline in UI
-    XCUITest->>App: Wait for result text to appear
-    XCUITest->>XCUITest: XCTAssert(result contains "PASS")
+    App->>RunAll: Render "Run All" button per suite
+    XCUITest->>RunAll: First test setUp() finds and taps "Run All"
+    RunAll->>Runner: runSuite("OAuth") → run all tests
+    Runner->>Tests: Execute all tests sequentially
+    Tests->>SDK: Bridge calls (auth, net, smartstore, etc.)
+    SDK->>Tests: Callbacks with results
+    Tests->>Runner: Collect all results
+    Runner->>App: Display all results inline in UI
+    XCUITest->>App: Scrape all results from UI
+    XCUITest->>XCUITest: Cache results in static testResults map
+    XCUITest->>XCUITest: Individual tests look up result, assert
 ```
 
 ### BaseReactNativeTest Class
 
-All XCUITest classes inherit from `BaseReactNativeTest` (in `iosTests/ios/SalesforceReactTestAppUITests/BaseReactNativeTest.swift`). It launches the app once per test class with instant login credentials.
+All XCUITest classes inherit from `BaseReactNativeTest` which implements batch execution:
 
 ```swift
 import XCTest
 
+struct TestResult {
+    let success: Bool
+    let message: String?
+}
+
 class BaseReactNativeTest: XCTestCase {
-    var app: XCUIApplication!
+    static var app: XCUIApplication!
+    static var testResults: [String: [String: TestResult]] = [:] // { suite: { test: result } }
+    
+    var suiteName: String { fatalError("Subclass must override") }
+    var testNames: [String] { fatalError("Subclass must override") }
     
     override class func setUp() {
         super.setUp()
-        
         // Launch once per test class (not per test)
-        let app = XCUIApplication()
-        
-        // Pass credentials via launch arguments for instant login
+        app = XCUIApplication()
         let credentials = loadTestCredentials()
         app.launchArguments = ["-creds", credentials]
-        
         app.launch()
-        
-        // Wait for test list to appear
-        let testList = app.scrollViews["testList"]
-        XCTAssertTrue(testList.waitForExistence(timeout: 30))
+        XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "testList")
+                      .firstMatch.waitForExistence(timeout: 30))
     }
     
-    func runTest(testID: String) {
-        // Find and tap the test button
-        let button = app.buttons[testID]
-        
-        // Scroll into view if needed
-        if !button.isHittable {
-            scrollToElement(button)
+    override func setUp() {
+        super.setUp()
+        // Run suite if not already run (batch execution)
+        if Self.testResults[suiteName] == nil {
+            runSuiteAndCollectResults()
         }
+    }
+    
+    private func runSuiteAndCollectResults() {
+        // Tap "Run All" button for suite
+        let runButton = app.descendants(matching: .any)
+                          .matching(identifier: "runSuite_\(suiteName)").firstMatch
+        XCTAssertTrue(runButton.waitForExistence(timeout: 10), 
+                      "Run All button not found - bundle may be stale")
+        runButton.tap()
         
-        button.tap()
+        // Wait for suite completion (check last test result)
+        let lastTest = testNames.last!
+        let passed = app.descendants(matching: .any)
+                       .matching(identifier: "result_\(lastTest)_pass")
+                       .firstMatch.waitForExistence(timeout: 300)
+        let failed = app.descendants(matching: .any)
+                       .matching(identifier: "result_\(lastTest)_fail")
+                       .firstMatch.waitForExistence(timeout: 5)
+        XCTAssertTrue(passed || failed, "Suite did not complete")
         
-        // Wait for result to appear
-        let resultText = app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'PASS' OR label CONTAINS 'FAIL'")).firstMatch
-        XCTAssertTrue(resultText.waitForExistence(timeout: 60))
-        XCTAssertTrue(resultText.label.contains("PASS"))
+        // Collect all results from UI
+        var results: [String: TestResult] = [:]
+        for testName in testNames {
+            let passElement = app.descendants(matching: .any)
+                                .matching(identifier: "result_\(testName)_pass").firstMatch
+            let failElement = app.descendants(matching: .any)
+                                .matching(identifier: "result_\(testName)_fail").firstMatch
+            
+            if passElement.exists {
+                results[testName] = TestResult(success: true, message: nil)
+            } else if failElement.exists {
+                let errorElement = app.descendants(matching: .any)
+                                     .matching(identifier: "error_\(testName)").firstMatch
+                results[testName] = TestResult(success: false, 
+                                              message: errorElement.label)
+            }
+        }
+        Self.testResults[suiteName] = results
+    }
+    
+    func runTest(_ name: String) {
+        // Look up cached result from batch execution
+        if let result = Self.testResults[suiteName]?[name] {
+            XCTAssertTrue(result.success, 
+                         "\(name) failed: \(result.message ?? "unknown")")
+        } else {
+            XCTFail("No result found for \(name)")
+        }
     }
 }
 ```
 
-**Example subclass** (actual `ReactOAuthTests.swift`):
+**Example subclass**:
 
 ```swift
 class ReactOAuthTests: BaseReactNativeTest {
+    override var suiteName: String { "OAuth" }
+    override var testNames: [String] { ["testGetAuthCredentials"] }
+    
     func testGetAuthCredentials() {
-        runTest(testID: "run_test_GetAuthCredentials")
+        runTest("testGetAuthCredentials")
     }
 }
 ```
