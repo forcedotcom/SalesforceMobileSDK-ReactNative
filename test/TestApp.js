@@ -78,9 +78,14 @@ export default function TestApp() {
   };
 
   return (
-    <ScrollView style={styles.container} testID="testList">
+    <ScrollView style={styles.container} testID="testList" accessibilityLabel="testList">
       <Text style={styles.title}>React Native SDK Tests</Text>
-      <TouchableOpacity style={styles.runAllButton} testID="runAll" accessible={true} onPress={handleRunAll}>
+      <TouchableOpacity
+        style={styles.runAllButton}
+        testID="runAll"
+        accessibilityLabel="runAll"
+        onPress={handleRunAll}
+      >
         <Text style={styles.runAllText}>Run All Tests</Text>
       </TouchableOpacity>
 
@@ -88,7 +93,11 @@ export default function TestApp() {
         <View key={suiteName} style={styles.suite}>
           <View style={styles.suiteHeader}>
             <Text style={styles.suiteName}>{suiteName}</Text>
-            <TouchableOpacity testID={`runSuite_${suiteName}`} accessible={true} onPress={() => handleRunSuite(suiteName)}>
+            <TouchableOpacity
+              testID={`runSuite_${suiteName}`}
+              accessibilityLabel={`runSuite_${suiteName}`}
+              onPress={() => handleRunSuite(suiteName)}
+            >
               <Text style={styles.runButton}>Run All</Text>
             </TouchableOpacity>
           </View>
@@ -98,17 +107,21 @@ export default function TestApp() {
             return (
               <View key={name} style={styles.testRow}>
                 <View style={styles.testInfo}>
-                  {status === STATUS_PASS && <Text testID={`result_${name}_pass`} accessible={true} style={styles.pass}>✓</Text>}
-                  {status === STATUS_FAIL && <Text testID={`result_${name}_fail`} accessible={true} style={styles.fail}>✗</Text>}
+                  {status === STATUS_PASS && <Text testID={`result_${name}_pass`} accessibilityLabel={`result_${name}_pass`} style={styles.pass}>✓</Text>}
+                  {status === STATUS_FAIL && <Text testID={`result_${name}_fail`} accessibilityLabel={`result_${name}_fail`} style={styles.fail}>✗</Text>}
                   {status === STATUS_RUNNING && <Text style={styles.running}>⋯</Text>}
                   {status === STATUS_PENDING && <Text style={styles.pending}>○</Text>}
                   <Text style={styles.testName}>{name}</Text>
-                  <TouchableOpacity testID={`run_${name}`} accessible={true} onPress={() => handleRunTest(suiteName, name)}>
+                  <TouchableOpacity
+                    testID={`run_${name}`}
+                    accessibilityLabel={`run_${name}`}
+                    onPress={() => handleRunTest(suiteName, name)}
+                  >
                     <Text style={styles.runButton}>Run</Text>
                   </TouchableOpacity>
                 </View>
                 {status === STATUS_FAIL && error && (
-                  <Text testID={`error_${name}`} accessible={true} style={styles.errorText}>
+                  <Text testID={`error_${name}`} accessibilityLabel={`error_${name}`} style={styles.errorText}>
                     {String(error.message || error)}
                   </Text>
                 )}
