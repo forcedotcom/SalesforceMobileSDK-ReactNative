@@ -59,6 +59,11 @@ jobs:
             XCODE=$(ls -d /Applications/Xcode_16*.app 2>/dev/null | sort -V | tail -1 || echo /Applications/Xcode.app)
           fi
           sudo xcode-select -s "$XCODE"
+          # Redirect /Applications/Xcode.app symlink to the selected version so
+          # prebuilt Swift modules that embed the Xcode.app path resolve correctly.
+          if [[ "$XCODE" != "/Applications/Xcode.app" ]]; then
+            sudo ln -sfn "$XCODE" /Applications/Xcode.app
+          fi
           xcodebuild -version
       - name: Install Dependencies
         env:
