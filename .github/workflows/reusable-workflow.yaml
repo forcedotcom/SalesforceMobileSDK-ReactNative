@@ -60,16 +60,51 @@ jobs:
           cd iosTests
           ./create_test_credentials_from_env.js
           ./prepareios.js
+      # Use mxcl to select Xcode only — mxcl does not support -retry-tests-on-failure
       - uses: mxcl/xcodebuild@d3ee9b419c1be9a988086c58fe0988f32d99cfc5  # v3.6.0
-        id: xcodebuild
         with:
           xcode: ${{ inputs.xcode }}
           platform: iOS
           platform-version: ${{ inputs.ios }}
-          workspace: iosTests/ios/SalesforceReactTestApp.xcworkspace
-          scheme: "SalesforceReactTestApp"
-          code-coverage: true
-          verbosity: xcbeautify
+          action: none
+      - name: Resolve simulator destination
+        id: resolve_destination
+        env:
+          IOS: ${{ inputs.ios }}
+        run: |
+          IOS_MAJOR=$(echo "$IOS" | sed 's/^\^//' | cut -d. -f1)
+          SIM_UDID=$(xcrun simctl list devices available -j | python3 -c '
+          import sys, json
+          major = sys.argv[1]
+          d = json.load(sys.stdin)
+          for runtime_key, devices in d.get("devices", {}).items():
+            if ("iOS-" + major + "-") not in runtime_key:
+              continue
+            for dev in devices:
+              if dev.get("isAvailable", True) and "iPhone" in dev.get("name", ""):
+                print(dev["udid"])
+                sys.exit(0)
+          sys.exit(1)
+          ' "$IOS_MAJOR")
+          if [ -z "$SIM_UDID" ]; then
+            echo "::error::No available iPhone simulator found for iOS ${IOS_MAJOR}"
+            exit 1
+          fi
+          printf 'destination=platform=iOS Simulator,id=%s\n' "$SIM_UDID" >> "$GITHUB_OUTPUT"
+      - name: Run Tests
+        id: xcodebuild
+        env:
+          DESTINATION: ${{ steps.resolve_destination.outputs.destination }}
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -workspace iosTests/ios/SalesforceReactTestApp.xcworkspace \
+            -scheme SalesforceReactTestApp \
+            -destination "$DESTINATION" \
+            -resultBundlePath test.xcresult \
+            -enableCodeCoverage YES \
+            -retry-tests-on-failure \
+            | xcbeautify
       - name: Archive xcodebuild logs on build failure
         if: failure() && steps.xcodebuild.outcome == 'failure'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2
@@ -79,6 +114,13 @@ jobs:
             ~/Library/Developer/Xcode/DerivedData/**/Logs/Build/*.xcactivitylog
           if-no-files-found: ignore
           retention-days: 14
+      - name: Verify xcresult bundle exists
+        if: success() || failure()
+        run: |
+          if [ ! -d "test.xcresult" ]; then
+            echo "::error::test.xcresult bundle was not created — no tests ran"
+            exit 1
+          fi
       - name: Parse test results
         if: success() || failure()
         env:
@@ -97,7 +139,7 @@ jobs:
           simplified_summary: true
           detailed_summary: true
           comment: true
-          job_summary: ${{ steps.xcodebuild.outcome == 'failure' }}
+          job_summary: true
           report_paths: 'test-results-ios${{ inputs.ios }}.xml'
       - uses: codecov/codecov-action@b9fd7d16f6d7d1b5d2bec1a2887e65ceed900238  # v4.6.0
         env:
