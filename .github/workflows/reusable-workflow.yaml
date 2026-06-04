@@ -103,6 +103,7 @@ jobs:
             -workspace iosTests/ios/SalesforceReactTestApp.xcworkspace \
             -scheme SalesforceReactTestApp \
             -destination "$DESTINATION" \
+            -derivedDataPath derived_data \
             -resultBundlePath test.xcresult \
             -enableCodeCoverage YES \
             -retry-tests-on-failure \
