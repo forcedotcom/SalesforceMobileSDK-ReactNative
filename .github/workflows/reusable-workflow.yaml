@@ -77,10 +77,10 @@ jobs:
           import sys, json
           major = sys.argv[1]
           d = json.load(sys.stdin)
-          for runtime_key, devices in d.get("devices", {}).items():
-            if ("iOS-" + major + "-") not in runtime_key:
-              continue
-            for dev in devices:
+          prefix = "iOS-" + major + "-"
+          matching = {k: v for k, v in d.get("devices", {}).items() if prefix in k}
+          for runtime_key in sorted(matching.keys(), reverse=True):
+            for dev in matching[runtime_key]:
               if dev.get("isAvailable", True) and "iPhone" in dev.get("name", ""):
                 print(dev["udid"])
                 sys.exit(0)
