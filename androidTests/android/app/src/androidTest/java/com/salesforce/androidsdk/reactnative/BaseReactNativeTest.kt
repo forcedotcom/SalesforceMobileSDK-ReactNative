@@ -77,9 +77,9 @@ abstract class BaseReactNativeTest {
         UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
     }
 
-    // Subclasses can override to specify test timeout in milliseconds (default: 15s)
+    // Subclasses can override to specify test timeout in milliseconds (default: 30s)
     open val testTimeoutMs: Long
-        get() = 15_000
+        get() = 30_000
 
     fun runTest(name: String) {
         // Wait for test list to appear

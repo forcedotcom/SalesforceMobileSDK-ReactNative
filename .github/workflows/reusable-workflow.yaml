@@ -40,6 +40,17 @@ jobs:
         with:
           persist-credentials: false
           ref: ${{ github.head_ref }}
+      - name: Select Xcode
+        env:
+          XCODE_VERSION: ${{ inputs.xcode }}
+        run: |
+          if [[ "$XCODE_VERSION" == "^26" ]]; then
+            XCODE=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | tail -1)
+          else
+            XCODE=$(ls -d /Applications/Xcode_16*.app 2>/dev/null | sort -V | tail -1 || echo /Applications/Xcode.app)
+          fi
+          sudo xcode-select -s "$XCODE"
+          xcodebuild -version
       - name: Install Dependencies
         env:
           TEST_CREDENTIALS: ${{ secrets.TEST_CREDENTIALS }}
