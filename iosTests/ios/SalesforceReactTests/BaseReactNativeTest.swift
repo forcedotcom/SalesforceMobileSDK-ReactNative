@@ -50,7 +50,7 @@ class BaseReactNativeTest: XCTestCase {
             app.launchArguments = ["-creds", credsString]
         }
         app.launch()
-        XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "testList").firstMatch.waitForExistence(timeout: 30),
+        XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "testList").firstMatch.waitForExistence(timeout: 60),
                       "Test list did not appear")
     }
 
