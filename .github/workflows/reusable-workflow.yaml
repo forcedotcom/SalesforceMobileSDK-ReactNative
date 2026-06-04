@@ -40,6 +40,15 @@ jobs:
         with:
           persist-credentials: false
           ref: ${{ github.head_ref }}
+      # Use mxcl to select Xcode first — pod install must run with the same Xcode
+      # to avoid embedding stale toolchain paths in pod module maps.
+      # mxcl does not support -retry-tests-on-failure so we use action:none only.
+      - uses: mxcl/xcodebuild@d3ee9b419c1be9a988086c58fe0988f32d99cfc5  # v3.6.0
+        with:
+          xcode: ${{ inputs.xcode }}
+          platform: iOS
+          platform-version: ${{ inputs.ios }}
+          action: none
       - name: Select Xcode
         env:
           XCODE_VERSION: ${{ inputs.xcode }}
@@ -60,13 +69,6 @@ jobs:
           cd iosTests
           ./create_test_credentials_from_env.js
           ./prepareios.js
-      # Use mxcl to select Xcode only — mxcl does not support -retry-tests-on-failure
-      - uses: mxcl/xcodebuild@d3ee9b419c1be9a988086c58fe0988f32d99cfc5  # v3.6.0
-        with:
-          xcode: ${{ inputs.xcode }}
-          platform: iOS
-          platform-version: ${{ inputs.ios }}
-          action: none
       - name: Resolve simulator destination
         id: resolve_destination
         env:
