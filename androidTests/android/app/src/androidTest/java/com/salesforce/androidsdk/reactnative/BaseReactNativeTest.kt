@@ -77,26 +77,29 @@ abstract class BaseReactNativeTest {
         UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
     }
 
-    // Subclasses can override to specify test timeout in milliseconds (default: 30s)
+    // Subclasses can override to specify test timeout in milliseconds (default: 60s)
     open val testTimeoutMs: Long
-        get() = 30_000
+        get() = 60_000
 
     fun runTest(name: String) {
-        // Wait for test list to appear
-        val found = device.findObject(UiSelector().description("testList")).waitForExists(30_000)
+        // Wait for test list to appear (60s for slower Firebase ARM devices)
+        val found = device.findObject(UiSelector().description("testList")).waitForExists(60_000)
         assertTrue("Test list did not appear", found)
 
         // Scroll to the test button if needed
         val button = device.findObject(UiSelector().description("run_$name"))
 
         if (!button.exists()) {
-            // Button not immediately visible, try scrolling
+            // Button not immediately visible, try scrolling.
+            // Use scrollable(true) without description constraint — on some Firebase
+            // devices the testList ScrollView may not report scrollable=true via
+            // the description selector, but any scrollable container will work.
             try {
                 val scrollable = androidx.test.uiautomator.UiScrollable(
-                    UiSelector().description("testList").scrollable(true)
+                    UiSelector().scrollable(true)
                 )
                 scrollable.setAsVerticalList()
-                scrollable.setMaxSearchSwipes(20) // Allow more swipes to reach bottom
+                scrollable.setMaxSearchSwipes(20)
                 val scrolled = scrollable.scrollIntoView(UiSelector().description("run_$name"))
                 if (!scrolled) {
                     Log.w(TAG, "scrollIntoView returned false for run_$name")

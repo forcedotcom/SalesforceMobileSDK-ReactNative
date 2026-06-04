@@ -30,7 +30,7 @@ package com.salesforce.androidsdk.reactnative
 import org.junit.Test
 
 class ReactNetTest : BaseReactNativeTest() {
-    override val testTimeoutMs: Long = 30_000
+    override val testTimeoutMs: Long = 60_000
 
     @Test fun testGetApiVersion() = runTest("testGetApiVersion")
     @Test fun testVersions() = runTest("testVersions")
