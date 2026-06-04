@@ -104,6 +104,7 @@ jobs:
             -resultBundlePath test.xcresult \
             -enableCodeCoverage YES \
             -retry-tests-on-failure \
+            SWIFT_SERIALIZE_DEBUGGING_OPTIONS=NO \
             | xcbeautify
       - name: Archive xcodebuild logs on build failure
         if: failure() && steps.xcodebuild.outcome == 'failure'

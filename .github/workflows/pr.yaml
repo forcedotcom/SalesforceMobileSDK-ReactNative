@@ -44,12 +44,12 @@ jobs:
       pull-requests: write
     needs: [permission-check]
     strategy:
+      fail-fast: false
       matrix:
-        # ios: [^26, ^18]  # ^26 disabled until Xcode 26 runner stability improves
-        ios: [^18]
+        ios: [^26, ^18]
         include:
-          # - ios: ^26
-          #   xcode: ^26
+          - ios: ^26
+            xcode: ^26
           - ios: ^18
             xcode: ^16
     uses: ./.github/workflows/reusable-workflow.yaml
