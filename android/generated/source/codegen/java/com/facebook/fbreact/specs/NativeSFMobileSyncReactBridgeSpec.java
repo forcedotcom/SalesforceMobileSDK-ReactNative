@@ -56,4 +56,8 @@ public abstract class NativeSFMobileSyncReactBridgeSpec extends ReactContextBase
   @ReactMethod
   @DoNotStrip
   public abstract void cleanResyncGhosts(ReadableMap args, Callback callback);
+
+  @ReactMethod
+  @DoNotStrip
+  public abstract void resetSyncManager(ReadableMap args, Callback callback);
 }

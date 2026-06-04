@@ -26,8 +26,12 @@
 
 import { assert } from './assert';
 import * as smartstore from '../src/react.force.smartstore';
-import { registerTest, testDone } from '../src/react.force.test';
+import { registerSuite, registerTest, testDone } from './testRunner';
 import { promiser } from '../src/react.force.util';
+
+registerSuite('SmartStore', {
+  setUp: () => promiser(smartstore.removeAllStores)(),
+});
 
 // Promised based bridge functions for more readable tests
 getDatabaseSize = promiser(smartstore.getDatabaseSize);

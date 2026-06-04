@@ -245,3 +245,15 @@ export const MERGE_MODE = {
   OVERWRITE: "OVERWRITE",
   LEAVE_IF_CHANGED: "LEAVE_IF_CHANGED",
 } as const;
+
+export const resetSyncManager = (
+  storeConfig: StoreConfig | boolean,
+  successCB: ExecSuccessCallback<string>,
+  errorCB: ExecErrorCallback,
+): void => {
+  storeConfig = checkFirstArg(storeConfig);
+  exec(successCB, errorCB, "resetSyncManager", {
+    isGlobalStore: storeConfig.isGlobalStore,
+    storeName: storeConfig.storeName,
+  });
+};

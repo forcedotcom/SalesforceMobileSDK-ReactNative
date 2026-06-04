@@ -245,4 +245,11 @@ RCT_EXPORT_METHOD(syncUp:(NSDictionary *)args callback:(RCTResponseSenderBlock)c
 }
 #endif
 
+
+RCT_EXPORT_METHOD(resetSyncManager:(NSDictionary *)args callback:(RCTResponseSenderBlock)callback)
+{
+    [SFMobileSyncSyncManager removeSharedInstances];
+    callback(@[[NSNull null], @"OK"]);
+}
+
 @end

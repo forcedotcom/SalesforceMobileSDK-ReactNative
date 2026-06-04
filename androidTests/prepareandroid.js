@@ -9,6 +9,11 @@ execSync('rm -rf node_modules', {stdio:[0,1,2]});
 execSync('rm -f yarn.lock', {stdio:[0,1,2]});
 execSync('yarn install', {stdio:[0,1,2]});
 
+console.log("=== Removing nested node_modules from react-native-force (prevents duplicate React)");
+var rimrafSync = require("rimraf").sync || function(p) { execSync("rm -rf " + p); };
+rimrafSync(path.join("node_modules", "react-native-force", "node_modules"));
+
+
 console.log('=== Installing sdk dependencies');
 execSync('node ./updatesdk.js', {stdio: [0,1,2]});
 

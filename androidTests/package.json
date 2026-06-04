@@ -14,7 +14,7 @@
     "jsc-android": "^250231.0.0",
     "react": "19.1.1",
     "react-native": "0.82.1",
-    "react-native-force": "file:.."
+    "react-native-force": "git+https://github.com/wmathurin/SalesforceMobileSDK-ReactNative.git#rn-ui-driven-test-infrastructure"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

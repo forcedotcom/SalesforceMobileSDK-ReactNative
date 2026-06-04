@@ -26,6 +26,10 @@
 
 @implementation SalesforceReactSDKManager
 
++ (void)initializeSDK {
+    [super initializeSDKWithClass:self.class];
+}
+
 - (SFAppType) appType {
     return kSFAppTypeReactNative;
 }

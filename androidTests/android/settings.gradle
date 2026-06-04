@@ -11,6 +11,8 @@ extensions.configure(com.facebook.react.ReactSettingsExtension) { ex -> ex.autol
 
 rootProject.name = 'SalesforceReactTests'
 include ':app'
+include ':react-native-force'
+project(':react-native-force').projectDir = new File(rootProject.projectDir, '../../android')
 includeBuild('../node_modules/@react-native/gradle-plugin')
 
 // Include Android SDK libraries from mobile_sdk clone
@@ -25,3 +27,4 @@ if (androidSdkRoot.exists()) {
         }
     }
 }
+

@@ -26,9 +26,10 @@
 
 import { assert } from './assert';
 import * as net from '../src/react.force.net';
-import { registerTest, testDone } from '../src/react.force.test';
+import { registerSuite, registerTest, testDone } from './testRunner';
 import { promiser } from '../src/react.force.util';
 
+registerSuite('Net');
 // Promised based bridge functions for more readable tests
 netVersions = promiser(net.versions);
 netResources = promiser(net.resources);
