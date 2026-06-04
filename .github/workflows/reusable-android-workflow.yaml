@@ -81,8 +81,6 @@ jobs:
           gcloud firebase test android run \
             --project mobile-apps-firebase-test \
             --type instrumentation \
-            --use-orchestrator \
-            --environment-variables clearPackageData=true \
             --app "$APP_APK" \
             --test "$TEST_APK" \
             --device model=MediumPhone.arm,version=35,locale=en,orientation=portrait \
