@@ -12,7 +12,7 @@
     "create-react-class": "^15.7.0",
     "react": "19.2.3",
     "react-native": "0.84.1",
-    "react-native-force": "git+https://github.com/wmathurin/SalesforceMobileSDK-ReactNative.git#rn-upgrade-0.84"
+    "react-native-force": "git+https://github.com/forcedotcom/SalesforceMobileSDK-ReactNative.git#dev"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
