@@ -65,8 +65,8 @@ tasks.matching { it.name.startsWith("merge") && it.name.contains("Assets") }.con
 }
 
 dependencies {
-    implementation("com.facebook.react:react-android:0.83.9")
-    implementation("com.facebook.react:hermes-android:0.83.9")
+    implementation("com.facebook.react:react-android:0.84.1")
+    implementation("com.facebook.react:hermes-android:0.84.1")
 
     androidTestImplementation("androidx.test:runner:1.6.2")
     androidTestImplementation("androidx.test:rules:1.6.1")

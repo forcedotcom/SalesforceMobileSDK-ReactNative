@@ -58,9 +58,9 @@ From `iosTests/package.json`:
 ```json
 {
   "dependencies": {
-    "react": "18.3.1",
-    "react-native": "0.83.9",
-    "react-native-force": "github:wmathurin/SalesforceMobileSDK-ReactNative#rn-ui-driven-test-infrastructure"
+    "react": "19.2.3",
+    "react-native": "0.84.1",
+    "react-native-force": "git+https://github.com/forcedotcom/SalesforceMobileSDK-ReactNative.git#dev"
   },
   "devDependencies": {
     "@babel/core": "...",
@@ -248,8 +248,8 @@ end
 === Installing pod dependencies
 Analyzing dependencies
 Downloading dependencies
-Installing React-Core (0.83.9)
-Installing React-hermes (0.83.9)
+Installing React-Core (0.84.1)
+Installing React-hermes (0.84.1)
 Installing SalesforceSDKCore (14.0.0)
 Installing SmartStore (14.0.0)
 Installing MobileSync (14.0.0)
