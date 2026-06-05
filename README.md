@@ -63,7 +63,7 @@ npm install react-native-force
 ### Prerequisites
 
 - **Node.js**: 22 or higher
-- **React Native**: 0.84.1 (see `package.json` for current version)
+- **React Native**: 0.85.3 (see `package.json` for current version)
 - **iOS Development**: Xcode 15+, macOS (for iOS builds)
 - **Android Development**: Android Studio, Java 17+ (for Android builds)
 
@@ -344,7 +344,7 @@ The TypeScript definitions in `src/typings/` provide inline documentation for al
 
 | React Native SDK | React Native | iOS SDK | Android SDK | iOS Min | Android Min |
 |-----------------|--------------|---------|-------------|---------|-------------|
-| 14.0.0          | 0.84.1       | 14.0.0  | 14.0.0      | 18.0    | 31 (12.0)   |
+| 14.0.0          | 0.85.3       | 14.0.0  | 14.0.0      | 18.0    | 31 (12.0)   |
 | 13.2.0          | 0.81.5       | 13.2.0  | 13.2.0      | 17.0    | 28 (9.0)    |
 | 13.1.0          | 0.79.3       | 13.1.0  | 13.1.0      | 17.0    | 28 (9.0)    |
 | 13.0.0          | 0.74.7       | 13.0.0  | 13.0.0      | 17.0    | 28 (9.0)    |

@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
 var packageJson = require('./package.json');
+var execSync = require('child_process').execSync;
 var execFileSync = require('child_process').execFileSync;
 var path = require('path');
 var fs = require('fs');
-var rimraf = require('rimraf');
 
 var sdkDependency = 'SalesforceMobileSDK-Android';
 var repoUrlWithBranch = packageJson.sdkDependencies[sdkDependency];
@@ -13,15 +13,15 @@ var repoUrl = parts[0];
 var branch = parts.length > 1 ? parts[1] : 'dev';
 var targetDir = path.join('mobile_sdk', sdkDependency);
 
-rimraf.sync(targetDir);
+execSync('rm -rf ' + targetDir);
 execFileSync('git', ['clone', '--branch', branch, '--single-branch', '--depth', '1', repoUrl, targetDir], {stdio:[0,1,2]});
 
 // Remove unnecessary directories
-rimraf.sync(path.join(targetDir, 'hybrid'));
-rimraf.sync(path.join(targetDir, 'native'));
-rimraf.sync(path.join(targetDir, 'libs', 'SalesforceHybrid'));
-rimraf.sync(path.join(targetDir, 'libs', 'SalesforceReact'));
-rimraf.sync(path.join(targetDir, 'libs', 'test'));
+execSync('rm -rf ' + path.join(targetDir, 'hybrid'));
+execSync('rm -rf ' + path.join(targetDir, 'native'));
+execSync('rm -rf ' + path.join(targetDir, 'libs', 'SalesforceHybrid'));
+execSync('rm -rf ' + path.join(targetDir, 'libs', 'SalesforceReact'));
+execSync('rm -rf ' + path.join(targetDir, 'libs', 'test'));
 
 // Patch settings.gradle.kts to exclude sample apps and removed libs
 var settingsFile = path.join(targetDir, 'settings.gradle.kts');
