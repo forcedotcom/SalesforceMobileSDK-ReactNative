@@ -42,6 +42,11 @@ static facebook::jsi::Value __hostFunction_NativeSFMobileSyncReactBridgeSpecJSI_
   return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "cleanResyncGhosts", "(Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Callback;)V", args, count, cachedMethodId);
 }
 
+static facebook::jsi::Value __hostFunction_NativeSFMobileSyncReactBridgeSpecJSI_resetSyncManager(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+  static jmethodID cachedMethodId = nullptr;
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "resetSyncManager", "(Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Callback;)V", args, count, cachedMethodId);
+}
+
 NativeSFMobileSyncReactBridgeSpecJSI::NativeSFMobileSyncReactBridgeSpecJSI(const JavaTurboModule::InitParams &params)
   : JavaTurboModule(params) {
   methodMap_["syncDown"] = MethodMetadata {2, __hostFunction_NativeSFMobileSyncReactBridgeSpecJSI_syncDown};
@@ -50,6 +55,7 @@ NativeSFMobileSyncReactBridgeSpecJSI::NativeSFMobileSyncReactBridgeSpecJSI(const
   methodMap_["getSyncStatus"] = MethodMetadata {2, __hostFunction_NativeSFMobileSyncReactBridgeSpecJSI_getSyncStatus};
   methodMap_["deleteSync"] = MethodMetadata {2, __hostFunction_NativeSFMobileSyncReactBridgeSpecJSI_deleteSync};
   methodMap_["cleanResyncGhosts"] = MethodMetadata {2, __hostFunction_NativeSFMobileSyncReactBridgeSpecJSI_cleanResyncGhosts};
+  methodMap_["resetSyncManager"] = MethodMetadata {2, __hostFunction_NativeSFMobileSyncReactBridgeSpecJSI_resetSyncManager};
 }
 static facebook::jsi::Value __hostFunction_NativeSFNetReactBridgeSpecJSI_sendRequest(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
   static jmethodID cachedMethodId = nullptr;

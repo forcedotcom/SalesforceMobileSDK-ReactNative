@@ -12,3 +12,5 @@ Tests require Salesforce org credentials. Copy `shared/test/test_credentials.jso
 3. Open the workspace: `open ios/SalesforceReactTestApp.xcworkspace` and run the tests (Cmd+U)
 
 See `docs/ios-tests/README.md` for detailed documentation.
+
+See `docs/ios-tests/README.md` for detailed documentation.

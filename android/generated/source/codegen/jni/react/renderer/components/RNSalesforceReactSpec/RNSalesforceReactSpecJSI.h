@@ -15,453 +15,361 @@
 namespace facebook::react {
 
 
-  class JSI_EXPORT NativeSFMobileSyncReactBridgeCxxSpecJSI : public TurboModule {
-protected:
-  NativeSFMobileSyncReactBridgeCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
-
-public:
-  virtual void syncDown(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) = 0;
-  virtual void syncUp(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) = 0;
-  virtual void reSync(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) = 0;
-  virtual void getSyncStatus(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) = 0;
-  virtual void deleteSync(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) = 0;
-  virtual void cleanResyncGhosts(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) = 0;
-
-};
-
 template <typename T>
 class JSI_EXPORT NativeSFMobileSyncReactBridgeCxxSpec : public TurboModule {
 public:
-  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.create(rt, propName);
-  }
-
-  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
-    return delegate_.getPropertyNames(runtime);
-  }
-
   static constexpr std::string_view kModuleName = "SFMobileSyncReactBridge";
 
 protected:
-  NativeSFMobileSyncReactBridgeCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(std::string{NativeSFMobileSyncReactBridgeCxxSpec::kModuleName}, jsInvoker),
-      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
-
-
+  NativeSFMobileSyncReactBridgeCxxSpec(std::shared_ptr<CallInvoker> jsInvoker) : TurboModule(std::string{NativeSFMobileSyncReactBridgeCxxSpec::kModuleName}, jsInvoker) {
+    methodMap_["syncDown"] = MethodMetadata {.argCount = 2, .invoker = __syncDown};
+    methodMap_["syncUp"] = MethodMetadata {.argCount = 2, .invoker = __syncUp};
+    methodMap_["reSync"] = MethodMetadata {.argCount = 2, .invoker = __reSync};
+    methodMap_["getSyncStatus"] = MethodMetadata {.argCount = 2, .invoker = __getSyncStatus};
+    methodMap_["deleteSync"] = MethodMetadata {.argCount = 2, .invoker = __deleteSync};
+    methodMap_["cleanResyncGhosts"] = MethodMetadata {.argCount = 2, .invoker = __cleanResyncGhosts};
+    methodMap_["resetSyncManager"] = MethodMetadata {.argCount = 2, .invoker = __resetSyncManager};
+  }
+  
 private:
-  class Delegate : public NativeSFMobileSyncReactBridgeCxxSpecJSI {
-  public:
-    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeSFMobileSyncReactBridgeCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+  static jsi::Value __syncDown(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::syncDown) == 3,
+      "Expected syncDown(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::syncDown,  static_cast<NativeSFMobileSyncReactBridgeCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt).asFunction(rt));return jsi::Value::undefined();
+  }
 
-    }
+  static jsi::Value __syncUp(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::syncUp) == 3,
+      "Expected syncUp(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::syncUp,  static_cast<NativeSFMobileSyncReactBridgeCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt).asFunction(rt));return jsi::Value::undefined();
+  }
 
-    void syncDown(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) override {
-      static_assert(
-          bridging::getParameterCount(&T::syncDown) == 3,
-          "Expected syncDown(...) to have 3 parameters");
+  static jsi::Value __reSync(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::reSync) == 3,
+      "Expected reSync(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::reSync,  static_cast<NativeSFMobileSyncReactBridgeCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt).asFunction(rt));return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::syncDown, jsInvoker_, instance_, std::move(args), std::move(callback));
-    }
-    void syncUp(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) override {
-      static_assert(
-          bridging::getParameterCount(&T::syncUp) == 3,
-          "Expected syncUp(...) to have 3 parameters");
+  static jsi::Value __getSyncStatus(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::getSyncStatus) == 3,
+      "Expected getSyncStatus(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::getSyncStatus,  static_cast<NativeSFMobileSyncReactBridgeCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt).asFunction(rt));return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::syncUp, jsInvoker_, instance_, std::move(args), std::move(callback));
-    }
-    void reSync(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) override {
-      static_assert(
-          bridging::getParameterCount(&T::reSync) == 3,
-          "Expected reSync(...) to have 3 parameters");
+  static jsi::Value __deleteSync(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::deleteSync) == 3,
+      "Expected deleteSync(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::deleteSync,  static_cast<NativeSFMobileSyncReactBridgeCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt).asFunction(rt));return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::reSync, jsInvoker_, instance_, std::move(args), std::move(callback));
-    }
-    void getSyncStatus(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) override {
-      static_assert(
-          bridging::getParameterCount(&T::getSyncStatus) == 3,
-          "Expected getSyncStatus(...) to have 3 parameters");
+  static jsi::Value __cleanResyncGhosts(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::cleanResyncGhosts) == 3,
+      "Expected cleanResyncGhosts(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::cleanResyncGhosts,  static_cast<NativeSFMobileSyncReactBridgeCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt).asFunction(rt));return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::getSyncStatus, jsInvoker_, instance_, std::move(args), std::move(callback));
-    }
-    void deleteSync(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) override {
-      static_assert(
-          bridging::getParameterCount(&T::deleteSync) == 3,
-          "Expected deleteSync(...) to have 3 parameters");
-
-      return bridging::callFromJs<void>(
-          rt, &T::deleteSync, jsInvoker_, instance_, std::move(args), std::move(callback));
-    }
-    void cleanResyncGhosts(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) override {
-      static_assert(
-          bridging::getParameterCount(&T::cleanResyncGhosts) == 3,
-          "Expected cleanResyncGhosts(...) to have 3 parameters");
-
-      return bridging::callFromJs<void>(
-          rt, &T::cleanResyncGhosts, jsInvoker_, instance_, std::move(args), std::move(callback));
-    }
-
-  private:
-    friend class NativeSFMobileSyncReactBridgeCxxSpec;
-    T *instance_;
-  };
-
-  Delegate delegate_;
+  static jsi::Value __resetSyncManager(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::resetSyncManager) == 3,
+      "Expected resetSyncManager(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::resetSyncManager,  static_cast<NativeSFMobileSyncReactBridgeCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt).asFunction(rt));return jsi::Value::undefined();
+  }
 };
 
-
-  class JSI_EXPORT NativeSFNetReactBridgeCxxSpecJSI : public TurboModule {
-protected:
-  NativeSFNetReactBridgeCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
-
-public:
-  virtual void sendRequest(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) = 0;
-
-};
 
 template <typename T>
 class JSI_EXPORT NativeSFNetReactBridgeCxxSpec : public TurboModule {
 public:
-  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.create(rt, propName);
-  }
-
-  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
-    return delegate_.getPropertyNames(runtime);
-  }
-
   static constexpr std::string_view kModuleName = "SFNetReactBridge";
 
 protected:
-  NativeSFNetReactBridgeCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(std::string{NativeSFNetReactBridgeCxxSpec::kModuleName}, jsInvoker),
-      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
-
-
+  NativeSFNetReactBridgeCxxSpec(std::shared_ptr<CallInvoker> jsInvoker) : TurboModule(std::string{NativeSFNetReactBridgeCxxSpec::kModuleName}, jsInvoker) {
+    methodMap_["sendRequest"] = MethodMetadata {.argCount = 2, .invoker = __sendRequest};
+  }
+  
 private:
-  class Delegate : public NativeSFNetReactBridgeCxxSpecJSI {
-  public:
-    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeSFNetReactBridgeCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
-
-    }
-
-    void sendRequest(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) override {
-      static_assert(
-          bridging::getParameterCount(&T::sendRequest) == 3,
-          "Expected sendRequest(...) to have 3 parameters");
-
-      return bridging::callFromJs<void>(
-          rt, &T::sendRequest, jsInvoker_, instance_, std::move(args), std::move(callback));
-    }
-
-  private:
-    friend class NativeSFNetReactBridgeCxxSpec;
-    T *instance_;
-  };
-
-  Delegate delegate_;
+  static jsi::Value __sendRequest(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::sendRequest) == 3,
+      "Expected sendRequest(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::sendRequest,  static_cast<NativeSFNetReactBridgeCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt).asFunction(rt));return jsi::Value::undefined();
+  }
 };
 
-
-  class JSI_EXPORT NativeSFOauthReactBridgeCxxSpecJSI : public TurboModule {
-protected:
-  NativeSFOauthReactBridgeCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
-
-public:
-  virtual void getAuthCredentials(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) = 0;
-  virtual void authenticate(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) = 0;
-  virtual void logoutCurrentUser(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) = 0;
-
-};
 
 template <typename T>
 class JSI_EXPORT NativeSFOauthReactBridgeCxxSpec : public TurboModule {
 public:
-  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.create(rt, propName);
-  }
-
-  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
-    return delegate_.getPropertyNames(runtime);
-  }
-
   static constexpr std::string_view kModuleName = "SFOauthReactBridge";
 
 protected:
-  NativeSFOauthReactBridgeCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(std::string{NativeSFOauthReactBridgeCxxSpec::kModuleName}, jsInvoker),
-      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
-
-
+  NativeSFOauthReactBridgeCxxSpec(std::shared_ptr<CallInvoker> jsInvoker) : TurboModule(std::string{NativeSFOauthReactBridgeCxxSpec::kModuleName}, jsInvoker) {
+    methodMap_["getAuthCredentials"] = MethodMetadata {.argCount = 2, .invoker = __getAuthCredentials};
+    methodMap_["authenticate"] = MethodMetadata {.argCount = 2, .invoker = __authenticate};
+    methodMap_["logoutCurrentUser"] = MethodMetadata {.argCount = 2, .invoker = __logoutCurrentUser};
+  }
+  
 private:
-  class Delegate : public NativeSFOauthReactBridgeCxxSpecJSI {
-  public:
-    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeSFOauthReactBridgeCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+  static jsi::Value __getAuthCredentials(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::getAuthCredentials) == 3,
+      "Expected getAuthCredentials(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::getAuthCredentials,  static_cast<NativeSFOauthReactBridgeCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt).asFunction(rt));return jsi::Value::undefined();
+  }
 
-    }
+  static jsi::Value __authenticate(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::authenticate) == 3,
+      "Expected authenticate(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::authenticate,  static_cast<NativeSFOauthReactBridgeCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt).asFunction(rt));return jsi::Value::undefined();
+  }
 
-    void getAuthCredentials(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) override {
-      static_assert(
-          bridging::getParameterCount(&T::getAuthCredentials) == 3,
-          "Expected getAuthCredentials(...) to have 3 parameters");
-
-      return bridging::callFromJs<void>(
-          rt, &T::getAuthCredentials, jsInvoker_, instance_, std::move(args), std::move(callback));
-    }
-    void authenticate(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) override {
-      static_assert(
-          bridging::getParameterCount(&T::authenticate) == 3,
-          "Expected authenticate(...) to have 3 parameters");
-
-      return bridging::callFromJs<void>(
-          rt, &T::authenticate, jsInvoker_, instance_, std::move(args), std::move(callback));
-    }
-    void logoutCurrentUser(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) override {
-      static_assert(
-          bridging::getParameterCount(&T::logoutCurrentUser) == 3,
-          "Expected logoutCurrentUser(...) to have 3 parameters");
-
-      return bridging::callFromJs<void>(
-          rt, &T::logoutCurrentUser, jsInvoker_, instance_, std::move(args), std::move(callback));
-    }
-
-  private:
-    friend class NativeSFOauthReactBridgeCxxSpec;
-    T *instance_;
-  };
-
-  Delegate delegate_;
+  static jsi::Value __logoutCurrentUser(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::logoutCurrentUser) == 3,
+      "Expected logoutCurrentUser(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::logoutCurrentUser,  static_cast<NativeSFOauthReactBridgeCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt).asFunction(rt));return jsi::Value::undefined();
+  }
 };
 
-
-  class JSI_EXPORT NativeSFSmartStoreReactBridgeCxxSpecJSI : public TurboModule {
-protected:
-  NativeSFSmartStoreReactBridgeCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
-
-public:
-  virtual void soupExists(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) = 0;
-  virtual void registerSoup(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) = 0;
-  virtual void removeSoup(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) = 0;
-  virtual void getSoupIndexSpecs(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) = 0;
-  virtual void alterSoup(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) = 0;
-  virtual void reIndexSoup(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) = 0;
-  virtual void clearSoup(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) = 0;
-  virtual void upsertSoupEntries(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) = 0;
-  virtual void retrieveSoupEntries(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) = 0;
-  virtual void removeFromSoup(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) = 0;
-  virtual void querySoup(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) = 0;
-  virtual void runSmartQuery(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) = 0;
-  virtual void moveCursorToPageIndex(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) = 0;
-  virtual void closeCursor(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) = 0;
-  virtual void getDatabaseSize(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) = 0;
-  virtual void getAllStores(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) = 0;
-  virtual void getAllGlobalStores(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) = 0;
-  virtual void removeStore(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) = 0;
-  virtual void removeAllStores(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) = 0;
-  virtual void removeAllGlobalStores(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) = 0;
-
-};
 
 template <typename T>
 class JSI_EXPORT NativeSFSmartStoreReactBridgeCxxSpec : public TurboModule {
 public:
-  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.create(rt, propName);
-  }
-
-  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
-    return delegate_.getPropertyNames(runtime);
-  }
-
   static constexpr std::string_view kModuleName = "SFSmartStoreReactBridge";
 
 protected:
-  NativeSFSmartStoreReactBridgeCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(std::string{NativeSFSmartStoreReactBridgeCxxSpec::kModuleName}, jsInvoker),
-      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
-
-
+  NativeSFSmartStoreReactBridgeCxxSpec(std::shared_ptr<CallInvoker> jsInvoker) : TurboModule(std::string{NativeSFSmartStoreReactBridgeCxxSpec::kModuleName}, jsInvoker) {
+    methodMap_["soupExists"] = MethodMetadata {.argCount = 2, .invoker = __soupExists};
+    methodMap_["registerSoup"] = MethodMetadata {.argCount = 2, .invoker = __registerSoup};
+    methodMap_["removeSoup"] = MethodMetadata {.argCount = 2, .invoker = __removeSoup};
+    methodMap_["getSoupIndexSpecs"] = MethodMetadata {.argCount = 2, .invoker = __getSoupIndexSpecs};
+    methodMap_["alterSoup"] = MethodMetadata {.argCount = 2, .invoker = __alterSoup};
+    methodMap_["reIndexSoup"] = MethodMetadata {.argCount = 2, .invoker = __reIndexSoup};
+    methodMap_["clearSoup"] = MethodMetadata {.argCount = 2, .invoker = __clearSoup};
+    methodMap_["upsertSoupEntries"] = MethodMetadata {.argCount = 2, .invoker = __upsertSoupEntries};
+    methodMap_["retrieveSoupEntries"] = MethodMetadata {.argCount = 2, .invoker = __retrieveSoupEntries};
+    methodMap_["removeFromSoup"] = MethodMetadata {.argCount = 2, .invoker = __removeFromSoup};
+    methodMap_["querySoup"] = MethodMetadata {.argCount = 2, .invoker = __querySoup};
+    methodMap_["runSmartQuery"] = MethodMetadata {.argCount = 2, .invoker = __runSmartQuery};
+    methodMap_["moveCursorToPageIndex"] = MethodMetadata {.argCount = 2, .invoker = __moveCursorToPageIndex};
+    methodMap_["closeCursor"] = MethodMetadata {.argCount = 2, .invoker = __closeCursor};
+    methodMap_["getDatabaseSize"] = MethodMetadata {.argCount = 2, .invoker = __getDatabaseSize};
+    methodMap_["getAllStores"] = MethodMetadata {.argCount = 2, .invoker = __getAllStores};
+    methodMap_["getAllGlobalStores"] = MethodMetadata {.argCount = 2, .invoker = __getAllGlobalStores};
+    methodMap_["removeStore"] = MethodMetadata {.argCount = 2, .invoker = __removeStore};
+    methodMap_["removeAllStores"] = MethodMetadata {.argCount = 2, .invoker = __removeAllStores};
+    methodMap_["removeAllGlobalStores"] = MethodMetadata {.argCount = 2, .invoker = __removeAllGlobalStores};
+  }
+  
 private:
-  class Delegate : public NativeSFSmartStoreReactBridgeCxxSpecJSI {
-  public:
-    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeSFSmartStoreReactBridgeCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+  static jsi::Value __soupExists(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::soupExists) == 3,
+      "Expected soupExists(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::soupExists,  static_cast<NativeSFSmartStoreReactBridgeCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt).asFunction(rt));return jsi::Value::undefined();
+  }
 
-    }
+  static jsi::Value __registerSoup(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::registerSoup) == 3,
+      "Expected registerSoup(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::registerSoup,  static_cast<NativeSFSmartStoreReactBridgeCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt).asFunction(rt));return jsi::Value::undefined();
+  }
 
-    void soupExists(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) override {
-      static_assert(
-          bridging::getParameterCount(&T::soupExists) == 3,
-          "Expected soupExists(...) to have 3 parameters");
+  static jsi::Value __removeSoup(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::removeSoup) == 3,
+      "Expected removeSoup(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::removeSoup,  static_cast<NativeSFSmartStoreReactBridgeCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt).asFunction(rt));return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::soupExists, jsInvoker_, instance_, std::move(args), std::move(callback));
-    }
-    void registerSoup(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) override {
-      static_assert(
-          bridging::getParameterCount(&T::registerSoup) == 3,
-          "Expected registerSoup(...) to have 3 parameters");
+  static jsi::Value __getSoupIndexSpecs(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::getSoupIndexSpecs) == 3,
+      "Expected getSoupIndexSpecs(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::getSoupIndexSpecs,  static_cast<NativeSFSmartStoreReactBridgeCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt).asFunction(rt));return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::registerSoup, jsInvoker_, instance_, std::move(args), std::move(callback));
-    }
-    void removeSoup(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) override {
-      static_assert(
-          bridging::getParameterCount(&T::removeSoup) == 3,
-          "Expected removeSoup(...) to have 3 parameters");
+  static jsi::Value __alterSoup(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::alterSoup) == 3,
+      "Expected alterSoup(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::alterSoup,  static_cast<NativeSFSmartStoreReactBridgeCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt).asFunction(rt));return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::removeSoup, jsInvoker_, instance_, std::move(args), std::move(callback));
-    }
-    void getSoupIndexSpecs(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) override {
-      static_assert(
-          bridging::getParameterCount(&T::getSoupIndexSpecs) == 3,
-          "Expected getSoupIndexSpecs(...) to have 3 parameters");
+  static jsi::Value __reIndexSoup(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::reIndexSoup) == 3,
+      "Expected reIndexSoup(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::reIndexSoup,  static_cast<NativeSFSmartStoreReactBridgeCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt).asFunction(rt));return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::getSoupIndexSpecs, jsInvoker_, instance_, std::move(args), std::move(callback));
-    }
-    void alterSoup(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) override {
-      static_assert(
-          bridging::getParameterCount(&T::alterSoup) == 3,
-          "Expected alterSoup(...) to have 3 parameters");
+  static jsi::Value __clearSoup(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::clearSoup) == 3,
+      "Expected clearSoup(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::clearSoup,  static_cast<NativeSFSmartStoreReactBridgeCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt).asFunction(rt));return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::alterSoup, jsInvoker_, instance_, std::move(args), std::move(callback));
-    }
-    void reIndexSoup(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) override {
-      static_assert(
-          bridging::getParameterCount(&T::reIndexSoup) == 3,
-          "Expected reIndexSoup(...) to have 3 parameters");
+  static jsi::Value __upsertSoupEntries(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::upsertSoupEntries) == 3,
+      "Expected upsertSoupEntries(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::upsertSoupEntries,  static_cast<NativeSFSmartStoreReactBridgeCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt).asFunction(rt));return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::reIndexSoup, jsInvoker_, instance_, std::move(args), std::move(callback));
-    }
-    void clearSoup(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) override {
-      static_assert(
-          bridging::getParameterCount(&T::clearSoup) == 3,
-          "Expected clearSoup(...) to have 3 parameters");
+  static jsi::Value __retrieveSoupEntries(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::retrieveSoupEntries) == 3,
+      "Expected retrieveSoupEntries(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::retrieveSoupEntries,  static_cast<NativeSFSmartStoreReactBridgeCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt).asFunction(rt));return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::clearSoup, jsInvoker_, instance_, std::move(args), std::move(callback));
-    }
-    void upsertSoupEntries(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) override {
-      static_assert(
-          bridging::getParameterCount(&T::upsertSoupEntries) == 3,
-          "Expected upsertSoupEntries(...) to have 3 parameters");
+  static jsi::Value __removeFromSoup(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::removeFromSoup) == 3,
+      "Expected removeFromSoup(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::removeFromSoup,  static_cast<NativeSFSmartStoreReactBridgeCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt).asFunction(rt));return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::upsertSoupEntries, jsInvoker_, instance_, std::move(args), std::move(callback));
-    }
-    void retrieveSoupEntries(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) override {
-      static_assert(
-          bridging::getParameterCount(&T::retrieveSoupEntries) == 3,
-          "Expected retrieveSoupEntries(...) to have 3 parameters");
+  static jsi::Value __querySoup(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::querySoup) == 3,
+      "Expected querySoup(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::querySoup,  static_cast<NativeSFSmartStoreReactBridgeCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt).asFunction(rt));return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::retrieveSoupEntries, jsInvoker_, instance_, std::move(args), std::move(callback));
-    }
-    void removeFromSoup(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) override {
-      static_assert(
-          bridging::getParameterCount(&T::removeFromSoup) == 3,
-          "Expected removeFromSoup(...) to have 3 parameters");
+  static jsi::Value __runSmartQuery(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::runSmartQuery) == 3,
+      "Expected runSmartQuery(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::runSmartQuery,  static_cast<NativeSFSmartStoreReactBridgeCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt).asFunction(rt));return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::removeFromSoup, jsInvoker_, instance_, std::move(args), std::move(callback));
-    }
-    void querySoup(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) override {
-      static_assert(
-          bridging::getParameterCount(&T::querySoup) == 3,
-          "Expected querySoup(...) to have 3 parameters");
+  static jsi::Value __moveCursorToPageIndex(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::moveCursorToPageIndex) == 3,
+      "Expected moveCursorToPageIndex(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::moveCursorToPageIndex,  static_cast<NativeSFSmartStoreReactBridgeCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt).asFunction(rt));return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::querySoup, jsInvoker_, instance_, std::move(args), std::move(callback));
-    }
-    void runSmartQuery(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) override {
-      static_assert(
-          bridging::getParameterCount(&T::runSmartQuery) == 3,
-          "Expected runSmartQuery(...) to have 3 parameters");
+  static jsi::Value __closeCursor(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::closeCursor) == 3,
+      "Expected closeCursor(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::closeCursor,  static_cast<NativeSFSmartStoreReactBridgeCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt).asFunction(rt));return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::runSmartQuery, jsInvoker_, instance_, std::move(args), std::move(callback));
-    }
-    void moveCursorToPageIndex(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) override {
-      static_assert(
-          bridging::getParameterCount(&T::moveCursorToPageIndex) == 3,
-          "Expected moveCursorToPageIndex(...) to have 3 parameters");
+  static jsi::Value __getDatabaseSize(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::getDatabaseSize) == 3,
+      "Expected getDatabaseSize(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::getDatabaseSize,  static_cast<NativeSFSmartStoreReactBridgeCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt).asFunction(rt));return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::moveCursorToPageIndex, jsInvoker_, instance_, std::move(args), std::move(callback));
-    }
-    void closeCursor(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) override {
-      static_assert(
-          bridging::getParameterCount(&T::closeCursor) == 3,
-          "Expected closeCursor(...) to have 3 parameters");
+  static jsi::Value __getAllStores(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::getAllStores) == 3,
+      "Expected getAllStores(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::getAllStores,  static_cast<NativeSFSmartStoreReactBridgeCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt).asFunction(rt));return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::closeCursor, jsInvoker_, instance_, std::move(args), std::move(callback));
-    }
-    void getDatabaseSize(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) override {
-      static_assert(
-          bridging::getParameterCount(&T::getDatabaseSize) == 3,
-          "Expected getDatabaseSize(...) to have 3 parameters");
+  static jsi::Value __getAllGlobalStores(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::getAllGlobalStores) == 3,
+      "Expected getAllGlobalStores(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::getAllGlobalStores,  static_cast<NativeSFSmartStoreReactBridgeCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt).asFunction(rt));return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::getDatabaseSize, jsInvoker_, instance_, std::move(args), std::move(callback));
-    }
-    void getAllStores(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) override {
-      static_assert(
-          bridging::getParameterCount(&T::getAllStores) == 3,
-          "Expected getAllStores(...) to have 3 parameters");
+  static jsi::Value __removeStore(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::removeStore) == 3,
+      "Expected removeStore(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::removeStore,  static_cast<NativeSFSmartStoreReactBridgeCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt).asFunction(rt));return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::getAllStores, jsInvoker_, instance_, std::move(args), std::move(callback));
-    }
-    void getAllGlobalStores(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) override {
-      static_assert(
-          bridging::getParameterCount(&T::getAllGlobalStores) == 3,
-          "Expected getAllGlobalStores(...) to have 3 parameters");
+  static jsi::Value __removeAllStores(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::removeAllStores) == 3,
+      "Expected removeAllStores(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::removeAllStores,  static_cast<NativeSFSmartStoreReactBridgeCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt).asFunction(rt));return jsi::Value::undefined();
+  }
 
-      return bridging::callFromJs<void>(
-          rt, &T::getAllGlobalStores, jsInvoker_, instance_, std::move(args), std::move(callback));
-    }
-    void removeStore(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) override {
-      static_assert(
-          bridging::getParameterCount(&T::removeStore) == 3,
-          "Expected removeStore(...) to have 3 parameters");
-
-      return bridging::callFromJs<void>(
-          rt, &T::removeStore, jsInvoker_, instance_, std::move(args), std::move(callback));
-    }
-    void removeAllStores(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) override {
-      static_assert(
-          bridging::getParameterCount(&T::removeAllStores) == 3,
-          "Expected removeAllStores(...) to have 3 parameters");
-
-      return bridging::callFromJs<void>(
-          rt, &T::removeAllStores, jsInvoker_, instance_, std::move(args), std::move(callback));
-    }
-    void removeAllGlobalStores(jsi::Runtime &rt, jsi::Object args, jsi::Function callback) override {
-      static_assert(
-          bridging::getParameterCount(&T::removeAllGlobalStores) == 3,
-          "Expected removeAllGlobalStores(...) to have 3 parameters");
-
-      return bridging::callFromJs<void>(
-          rt, &T::removeAllGlobalStores, jsInvoker_, instance_, std::move(args), std::move(callback));
-    }
-
-  private:
-    friend class NativeSFSmartStoreReactBridgeCxxSpec;
-    T *instance_;
-  };
-
-  Delegate delegate_;
+  static jsi::Value __removeAllGlobalStores(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::removeAllGlobalStores) == 3,
+      "Expected removeAllGlobalStores(...) to have 3 parameters");
+    bridging::callFromJs<void>(rt, &T::removeAllGlobalStores,  static_cast<NativeSFSmartStoreReactBridgeCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt).asFunction(rt));return jsi::Value::undefined();
+  }
 };
 
 } // namespace facebook::react

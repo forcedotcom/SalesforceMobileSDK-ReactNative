@@ -27,41 +27,25 @@
 
 package com.salesforce.androidsdk.reactnative.util
 
-import android.app.Application
-import com.facebook.react.PackageList
-import com.facebook.react.ReactApplication
-import com.facebook.react.ReactHost
-import com.facebook.react.ReactNativeHost
-import com.facebook.react.ReactPackage
-import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
-import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
-import com.facebook.react.defaults.DefaultReactNativeHost
-import com.facebook.react.soloader.OpenSourceMergedSoMapping
-import com.facebook.soloader.SoLoader
-import com.salesforce.androidsdk.reactnative.app.SalesforceReactSDKManager
+import android.os.Bundle
+import com.facebook.react.ReactActivityDelegate
+import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
+import com.facebook.react.defaults.DefaultReactActivityDelegate
+import com.salesforce.androidsdk.reactnative.ui.SalesforceReactActivity
 
-class SalesforceReactTestApp : Application(), ReactApplication {
+class MainActivity : SalesforceReactActivity() {
 
-    override val reactNativeHost: ReactNativeHost =
-        object : DefaultReactNativeHost(this) {
-            override fun getPackages(): List<ReactPackage> =
-                PackageList(this).packages
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(null)
+    }
 
-            override fun getJSMainModuleName(): String = "index"
+    override fun getMainComponentName() = "SalesforceReactTestApp"
 
-            override fun getUseDeveloperSupport(): Boolean = false
+    override fun createReactActivityDelegate(): ReactActivityDelegate =
+        DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled)
 
-            override val isNewArchEnabled: Boolean = true
-            override val isHermesEnabled: Boolean = true
-        }
-
-    override val reactHost: ReactHost
-        get() = getDefaultReactHost(applicationContext, reactNativeHost)
-
-    override fun onCreate() {
-        super.onCreate()
-        SoLoader.init(this, OpenSourceMergedSoMapping)
-        load()
-        SalesforceReactSDKManager.initReactNative(applicationContext, MainActivity::class.java)
+    override fun shouldAuthenticate(): Boolean {
+        // If credentials passed via intent, TestAuthenticationActivity already handled auth
+        return intent.getStringExtra("creds") == null
     }
 }

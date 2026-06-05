@@ -14,71 +14,83 @@ This document describes the iOS test application structure and how to run tests 
 
 ## Overview
 
-The iOS test app is a React Native application that runs JavaScript tests through the native iOS XCTest framework. This approach allows testing the complete bridge from JavaScript → React Native → iOS Native → iOS SDK.
+The iOS test app uses **UI-driven testing** where XCUITest automation drives a React Native app that displays test buttons. This approach allows testing the complete stack from UI automation → React Native UI → JavaScript tests → iOS SDK bridge.
 
 ### Key Components
 
-1. **JavaScript Test Suite** (`test/`) - Shared test files for all platforms
-2. **iOS Test App** (`iosTests/`) - React Native app that loads tests
-3. **XCTest Suite** (`iosTests/ios/SalesforceReactTests/`) - Native test runner
-4. **Test Harness** (`src/react.force.test.tsx`) - Bridge between JS and native tests
+1. **XCUITest Suite** (`iosTests/ios/SalesforceReactTestAppUITests/`) - Swift test classes that find and tap test buttons
+2. **React Native Test App** (`test/TestApp.js`) - Displays scrollable list of test buttons
+3. **Pure JS Test Runner** (`test/testRunner.js`) - Executes tests and displays results inline
+4. **JavaScript Test Suite** (`test/`) - Shared test files for all platforms (oauth, net, smartstore, mobilesync)
+
+### Key Benefits
+
+- **No React Native internal API coupling**: No RCTTestModule or test bridge code
+- **Works with precompiled binaries**: Standard React Native app with no special test infrastructure
+- **Full error messages visible**: Test results display inline in the app UI
+- **Manual testing possible**: Can tap buttons in the app to run tests manually
+- **Instant login**: Credentials passed via launch arguments to bypass OAuth UI
 
 ## Test Architecture
 
+The iOS test suite uses **UI-driven testing** with XCUITest automation:
+
 ```mermaid
 graph TB
-    subgraph "XCTest (Objective-C)"
-        A[ReactTestCase.m]
-        B[ReactOauthTests.m]
-        C[ReactNetTests.m]
-        D[ReactSmartStoreTests.m]
-        E[ReactMobileSyncTests.m]
+    subgraph "XCUITest (Swift)"
+        A[BaseReactNativeTest]
+        B[ReactHarnessTests]
+        C[ReactOAuthTests]
+        D[ReactNetTests]
+        E[ReactSmartStoreTests]
+        F[ReactMobileSyncTests]
     end
     
-    subgraph "React Native Runtime"
-        F[RCTReactNativeFactory]
+    subgraph "React Native Test App"
+        G[TestApp.js - renders test buttons]
     end
     
-    subgraph "JavaScript Test Suite"
-        G[test/alltests.js]
-        H[test/oauth.test.js]
-        I[test/net.test.js]
-        J[test/smartstore.test.js]
-        K[test/mobilesync.test.js]
+    subgraph "Pure JS Test Runner"
+        H[testRunner.js]
+        I[test/oauth.test.js]
+        J[test/net.test.js]
+        K[test/smartstore.test.js]
+        L[test/mobilesync.test.js]
     end
     
     subgraph "SDK Bridge Modules"
-        L[SFOauthReactBridge]
-        M[SFNetReactBridge]
-        N[SFSmartStoreReactBridge]
-        O[SFMobileSyncReactBridge]
+        M[SFOauthReactBridge]
+        N[SFNetReactBridge]
+        O[SFSmartStoreReactBridge]
+        P[SFMobileSyncReactBridge]
     end
     
     subgraph "iOS SDK"
-        P[SalesforceSDKCore]
-        Q[SmartStore]
-        R[MobileSync]
+        Q[SalesforceSDKCore]
+        R[SmartStore]
+        S[MobileSync]
     end
     
-    B --> F
-    C --> F
-    D --> F
-    E --> F
+    C -->|finds button by testID| G
+    D -->|finds button by testID| G
+    E -->|finds button by testID| G
+    F -->|finds button by testID| G
     
-    F --> H
-    F --> I
-    F --> J
-    F --> K
-    
+    G -->|onPress runs test| H
+    H --> I
+    H --> J
+    H --> K
     H --> L
+    
     I --> M
     J --> N
     K --> O
-    
     L --> P
-    M --> P
+    
+    M --> Q
     N --> Q
     O --> R
+    P --> S
 ```
 
 ## Directory Structure
@@ -129,23 +141,21 @@ cd iosTests
 ./prepareios.js
 ```
 
-**What it does** (6 phases):
-1. **Phase 1**: Installs npm dependencies (React Native, SDK, build tools)
-2. **Phase 2**: Clones React Native repo and extracts RCTTest framework
-3. **Phase 3**: Clones iOS SDK from configured repository branch
-4. **Phase 4**: Creates Xcode configuration and runs pod install
-5. **Phase 5**: Creates test_credentials.json placeholder
-6. **Phase 6**: Bundles JavaScript tests into index.ios.bundle
+**What it does** (5 phases):
+1. **Phase 1**: Installs npm dependencies (React Native, SDK via git URL, build tools)
+2. **Phase 2**: Clones iOS SDK from configured repository branch
+3. **Phase 3**: Creates Xcode configuration and runs pod install
+4. **Phase 4**: Copies test_credentials.json from shared/test/
+5. **Phase 5**: Bundles JavaScript test app into main.jsbundle
 
 **For detailed explanation of each phase**, see [PREPAREIOS_DETAILED.md](./PREPAREIOS_DETAILED.md).
 
 **Key files created**:
 - `node_modules/` - npm dependencies
-- `RCTTest/` - React Native test framework (extracted from RN source)
 - `mobile_sdk/SalesforceMobileSDK-iOS/` - Cloned iOS SDK
 - `ios/Pods/` - CocoaPods dependencies
 - `ios/.xcode.env` - Node binary path for Xcode
-- `ios/index.ios.bundle` - Bundled JavaScript tests
+- `ios/main.jsbundle` - Bundled JavaScript test app
 - `ios/test_credentials.json` - Copied from `shared/test/test_credentials.json` (must be populated)
 
 ### Step 2: Configure Test Credentials
@@ -174,18 +184,7 @@ This reads credentials from environment variables:
 - `SFDC_TEST_USERNAME`
 - `SFDC_TEST_PASSWORD`
 
-### Step 3: Start Metro Bundler
-
-In a terminal window:
-
-```bash
-cd iosTests
-npm start
-```
-
-**Why?** React Native needs the Metro bundler to serve JavaScript to the native app.
-
-### Step 4: Run Tests in Xcode
+### Step 3: Run Tests in Xcode
 
 1. Open workspace:
    ```bash
@@ -211,99 +210,201 @@ xcodebuild test \
 
 ## Test Execution Flow
 
-### How Tests Run
+### How Tests Run (Batch Execution)
+
+Tests now use **batch suite execution** (adopted from Hybrid SDK's JSTestCase pattern):
+
+1. **App launches once** per test class via `class func setUp()`
+2. **First test's setUp()** taps "Run All" button for the suite
+3. **All tests run** sequentially in JavaScript
+4. **Results collected** from UI into `static var testResults` map
+5. **Individual tests** look up their cached result and assert
 
 ```mermaid
 sequenceDiagram
-    participant X as XCTest
-    participant N as Native Test Case
-    participant RCT as React Native Runtime
-    participant JS as JavaScript Test
+    participant XCUITest as XCUITest (Swift)
+    participant App as React Native Test App
+    participant RunAll as "Run All" Button
+    participant Runner as testRunner.js
+    participant Tests as Test Suite
     participant SDK as SDK Bridge
     
-    X->>N: - (void)testGetAuthCredentials (RCT_TEST macro)
-    N->>RCT: runner.runTest module:"GetAuthCredentials"
-    RCT->>JS: Mount RN component "GetAuthCredentials"
-    JS->>JS: ComponentForTest.componentDidMount → testGetAuthCredentials()
-    JS->>SDK: oauth.getAuthCredentials(success, error)
-    SDK->>JS: callback(credentials)
-    JS->>N: testDone() → TestModule.markTestCompleted()
-    N->>X: XCTAssertTrue(testPassed)
+    XCUITest->>App: Launch once with instant login (class func setUp)
+    App->>App: AppDelegate performs instant login
+    App->>RunAll: Render "Run All" button per suite
+    XCUITest->>RunAll: First test setUp() finds and taps "Run All"
+    RunAll->>Runner: runSuite("OAuth") → run all tests
+    Runner->>Tests: Execute all tests sequentially
+    Tests->>SDK: Bridge calls (auth, net, smartstore, etc.)
+    SDK->>Tests: Callbacks with results
+    Tests->>Runner: Collect all results
+    Runner->>App: Display all results inline in UI
+    XCUITest->>App: Scrape all results from UI
+    XCUITest->>XCUITest: Cache results in static testResults map
+    XCUITest->>XCUITest: Individual tests look up result, assert
 ```
 
-### ReactTestCase Base Class
+### BaseReactNativeTest Class
 
-All test cases inherit from `ReactTestCase` (in `iosTests/ios/SalesforceReactTests/ReactTestCase.h/m`). It uses React Native's `RCTTestRunner` (from React Native's RCTTest framework, extracted by `prepareios.js`).
+All XCUITest classes inherit from `BaseReactNativeTest` which implements batch execution:
 
-```objective-c
-#import <RCTTest/RCTTestRunner.h>
+```swift
+import XCTest
 
-#define RCT_TEST(name)                        \
-- (void)test##name                            \
-{                                             \
-    [self.runner runTest:_cmd module:@#name]; \
+struct TestResult {
+    let success: Bool
+    let message: String?
 }
 
-@interface ReactTestCase : XCTestCase
-
-@property (nonatomic, strong) RCTTestRunner* runner;
-@property (nonatomic, strong) NSString *jsSuitePath;
-
-@end
-```
-
-**Example subclass** (actual `ReactOauthTests.m`):
-
-```objective-c
-#import "ReactTestCase.h"
-
-@interface ReactOauthTests : ReactTestCase
-@end
-
-@implementation ReactOauthTests
-
-- (void)setUp {
-    self.jsSuitePath = @"node_modules/react-native-force/test/oauth.test";
-    [super setUp];
+class BaseReactNativeTest: XCTestCase {
+    static var app: XCUIApplication!
+    static var testResults: [String: [String: TestResult]] = [:] // { suite: { test: result } }
+    
+    var suiteName: String { fatalError("Subclass must override") }
+    var testNames: [String] { fatalError("Subclass must override") }
+    
+    override class func setUp() {
+        super.setUp()
+        // Launch once per test class (not per test)
+        app = XCUIApplication()
+        let credentials = loadTestCredentials()
+        app.launchArguments = ["-creds", credentials]
+        app.launch()
+        XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "testList")
+                      .firstMatch.waitForExistence(timeout: 30))
+    }
+    
+    override func setUp() {
+        super.setUp()
+        // Run suite if not already run (batch execution)
+        if Self.testResults[suiteName] == nil {
+            runSuiteAndCollectResults()
+        }
+    }
+    
+    private func runSuiteAndCollectResults() {
+        // Tap "Run All" button for suite
+        let runButton = app.descendants(matching: .any)
+                          .matching(identifier: "runSuite_\(suiteName)").firstMatch
+        XCTAssertTrue(runButton.waitForExistence(timeout: 10), 
+                      "Run All button not found - bundle may be stale")
+        runButton.tap()
+        
+        // Wait for suite completion (check last test result)
+        let lastTest = testNames.last!
+        let passed = app.descendants(matching: .any)
+                       .matching(identifier: "result_\(lastTest)_pass")
+                       .firstMatch.waitForExistence(timeout: 300)
+        let failed = app.descendants(matching: .any)
+                       .matching(identifier: "result_\(lastTest)_fail")
+                       .firstMatch.waitForExistence(timeout: 5)
+        XCTAssertTrue(passed || failed, "Suite did not complete")
+        
+        // Collect all results from UI
+        var results: [String: TestResult] = [:]
+        for testName in testNames {
+            let passElement = app.descendants(matching: .any)
+                                .matching(identifier: "result_\(testName)_pass").firstMatch
+            let failElement = app.descendants(matching: .any)
+                                .matching(identifier: "result_\(testName)_fail").firstMatch
+            
+            if passElement.exists {
+                results[testName] = TestResult(success: true, message: nil)
+            } else if failElement.exists {
+                let errorElement = app.descendants(matching: .any)
+                                     .matching(identifier: "error_\(testName)").firstMatch
+                results[testName] = TestResult(success: false, 
+                                              message: errorElement.label)
+            }
+        }
+        Self.testResults[suiteName] = results
+    }
+    
+    func runTest(_ name: String) {
+        // Look up cached result from batch execution
+        if let result = Self.testResults[suiteName]?[name] {
+            XCTAssertTrue(result.success, 
+                         "\(name) failed: \(result.message ?? "unknown")")
+        } else {
+            XCTFail("No result found for \(name)")
+        }
+    }
 }
-
-// RCT_TEST macro generates - (void)testGetAuthCredentials
-RCT_TEST(GetAuthCredentials)
-
-@end
 ```
 
-The `RCT_TEST(Name)` macro generates an XCTest method `testName` that invokes `[self.runner runTest:_cmd module:@"Name"]`. The runner mounts the registered React Native component (named `"Name"`) which kicks off the JS test.
+**Example subclass**:
 
-### Test Harness (`react.force.test.tsx`)
-
-**Location**: `src/react.force.test.tsx`
-
-The test harness exports just two functions and connects JavaScript tests to the native test framework via `AppRegistry`:
-
-```typescript
-import { AppRegistry, NativeModules, View } from "react-native";
-const { SalesforceTestBridge, TestModule } = NativeModules;
-
-// Mounts JS test as a React Native component named after the test function
-export const registerTest = (test: any) => {
-  AppRegistry.registerComponent(
-    test.name.substring("test".length),
-    () => testComponentProvider(test)
-  );
-};
-
-// Called from JS test to signal completion to native
-export const testDone = () => {
-  if (TestModule) {                  // iOS via RCTTestModule
-    TestModule.markTestCompleted();
-  } else if (SalesforceTestBridge) { // Android via SalesforceTestBridge
-    SalesforceTestBridge.markTestCompleted();
-  }
-};
+```swift
+class ReactOAuthTests: BaseReactNativeTest {
+    override var suiteName: String { "OAuth" }
+    override var testNames: [String] { ["testGetAuthCredentials"] }
+    
+    func testGetAuthCredentials() {
+        runTest("testGetAuthCredentials")
+    }
+}
 ```
 
-Note: there are no `testFailed`, `assertEqual`, `assertTrue`, etc. helpers in the harness. Test files use plain JS conditions and `testDone()` to signal pass/fail (assertion failures are reported by RCTTestRunner via thrown errors / non-completion).
+### Test App UI (`test/TestApp.js`)
+
+The test app renders a scrollable list of buttons for each test:
+
+```javascript
+import React, { useState } from 'react';
+import { ScrollView, TouchableOpacity, Text, View } from 'react-native';
+import { runTest } from './testRunner';
+
+export default function TestApp() {
+    const [results, setResults] = useState({});
+    
+    const handleRunTest = (testName) => {
+        runTest(testName, (result) => {
+            setResults(prev => ({ ...prev, [testName]: result }));
+        });
+    };
+    
+    return (
+        <ScrollView testID="testList" accessibilityLabel="testList">
+            <TouchableOpacity 
+                testID="run_test_GetAuthCredentials"
+                accessibilityLabel="run_test_GetAuthCredentials"
+                onPress={() => handleRunTest('testGetAuthCredentials')}>
+                <Text>OAuth: GetAuthCredentials</Text>
+                {results.testGetAuthCredentials && (
+                    <Text>{results.testGetAuthCredentials}</Text>
+                )}
+            </TouchableOpacity>
+            {/* More test buttons... */}
+        </ScrollView>
+    );
+}
+```
+
+### Test Runner (`test/testRunner.js`)
+
+The pure JavaScript test runner executes tests and captures results:
+
+```javascript
+export function runTest(testName, callback) {
+    try {
+        // Import test module
+        const testModule = require('./oauth.test');
+        const testFn = testModule[testName];
+        
+        // Execute test
+        const result = testFn();
+        
+        if (result === false) {
+            // Async test - will call callback later
+            return;
+        }
+        
+        callback('PASS');
+    } catch (error) {
+        callback(`FAIL: ${error.message}`);
+    }
+}
+```
 
 ## Writing Tests
 
@@ -311,15 +412,14 @@ Note: there are no `testFailed`, `assertEqual`, `assertTrue`, etc. helpers in th
 
 **Location**: `test/<module>.test.js`
 
-Tests use a lightweight custom assert module (test/assert.js) and the `registerTest`/`testDone` harness:
+Tests use a lightweight custom assert module (test/assert.js) and throw errors on failure:
 
 ```javascript
 // test/oauth.test.js (actual file)
 import { assert } from './assert';
 import * as oauth from '../src/react.force.oauth';
-import { registerTest, testDone } from '../src/react.force.test';
 
-testGetAuthCredentials = () => {
+export function testGetAuthCredentials(callback) {
     oauth.getAuthCredentials(
         (creds) => {
             assert.containsAllKeys(
@@ -327,26 +427,24 @@ testGetAuthCredentials = () => {
               ["accessToken","instanceUrl","loginUrl","orgId","refreshToken","userAgent","userId"],
               'Wrong keys in credentials'
             );
-            testDone();
+            callback('PASS');
         },
-        (error) => { throw error; }
+        (error) => { 
+            callback(`FAIL: ${error.message}`); 
+        }
     );
-
-    return false; // not done
-};
-
-registerTest(testGetAuthCredentials);
+}
 ```
 
 ### Test Naming Convention
 
-**Format**: JS test function names start with `test` followed by the module-specific name, in camelCase. The `RCT_TEST(Name)` macro on the iOS side passes `Name` (without `test` prefix) as the React Native module name; the harness registers the JS test under that same name (using `test.name.substring("test".length)`).
+**Format**: JS test function names start with `test` followed by the module-specific name, in camelCase. The XCUITest button has `testID="run_test_<TestName>"` and the test runner looks up the function by name.
 
 Example mapping:
-| JavaScript Function | iOS Macro | Module Name (registered) |
-|---------------------|-----------|--------------------------|
-| `testGetAuthCredentials` | `RCT_TEST(GetAuthCredentials)` | `GetAuthCredentials` |
-| `testRegisterSoup` | `RCT_TEST(RegisterSoup)` | `RegisterSoup` |
+| JavaScript Function | Button testID | XCUITest Method |
+|---------------------|---------------|-----------------|
+| `testGetAuthCredentials` | `run_test_GetAuthCredentials` | `func testGetAuthCredentials()` |
+| `testRegisterSoup` | `run_test_RegisterSoup` | `func testRegisterSoup()` |
 
 ### Adding a New Test
 
@@ -355,76 +453,92 @@ Example mapping:
 ```javascript
 import { assert } from './assert';
 import * as oauth from '../src/react.force.oauth';
-import { registerTest, testDone } from '../src/react.force.test';
 
-testGetUserInfo = () => {
+export function testGetUserInfo(callback) {
     oauth.getUserInfo(
         (userInfo) => {
             assert.isString(userInfo.userName, 'userName should be a string');
-            testDone();
+            callback('PASS');
         },
-        (error) => { throw error; }
+        (error) => { 
+            callback(`FAIL: ${error.message}`); 
+        }
     );
-    return false;
-};
-
-registerTest(testGetUserInfo);
+}
 ```
 
-**2. Add the test to the bundled JS entry** (`iosTests/index.js` imports the test files - verify in actual project)
+**2. Add button to TestApp** (`test/TestApp.js`):
 
-**3. Add XCTest method** (`iosTests/ios/SalesforceReactTests/ReactOauthTests.m`):
+```javascript
+<TouchableOpacity 
+    testID="run_test_GetUserInfo"
+    accessibilityLabel="run_test_GetUserInfo"
+    onPress={() => handleRunTest('testGetUserInfo')}>
+    <Text>OAuth: GetUserInfo</Text>
+    {results.testGetUserInfo && (
+        <Text>{results.testGetUserInfo}</Text>
+    )}
+</TouchableOpacity>
+```
 
-```objective-c
-RCT_TEST(GetUserInfo)  // generates - (void)testGetUserInfo
+**3. Add XCUITest method** (`iosTests/ios/SalesforceReactTestAppUITests/ReactOAuthTests.swift`):
+
+```swift
+func testGetUserInfo() {
+    runTest(testID: "run_test_GetUserInfo")
+}
 ```
 
 **4. Run tests** (see [Setup and Running Tests](#setup-and-running-tests))
 
 ### Test Patterns
 
-Tests use a lightweight custom assert module (test/assert.js). Throw errors on failure; call `testDone()` on success.
+Tests use a lightweight custom assert module (test/assert.js). Call the callback with "PASS" on success, or "FAIL: <message>" on failure.
 
 #### Async Operations
 
 ```javascript
-testAsyncOperation = () => {
+export function testAsyncOperation(callback) {
     someAsyncCall(
         (result) => {
             assert.equal(result.value, 'expected');
-            testDone();
+            callback('PASS');
         },
-        (error) => { throw error; }
+        (error) => { 
+            callback(`FAIL: ${error.message}`); 
+        }
     );
-    return false;
-};
+}
 ```
 
 #### Chained Operations
 
 ```javascript
-testChainedOperations = () => {
+export function testChainedOperations(callback) {
     oauth.getAuthCredentials(
         (credentials) => {
             net.query(
                 'SELECT Id FROM Contact LIMIT 1',
                 (result) => {
                     assert.isAbove(result.totalSize, 0, 'Should have records');
-                    testDone();
+                    callback('PASS');
                 },
-                (error) => { throw error; }
+                (error) => { 
+                    callback(`FAIL: ${error.message}`); 
+                }
             );
         },
-        (error) => { throw error; }
+        (error) => { 
+            callback(`FAIL: ${error.message}`); 
+        }
     );
-    return false;
-};
+}
 ```
 
 #### Cleanup
 
 ```javascript
-testWithCleanup = () => {
+export function testWithCleanup(callback) {
     smartstore.registerSoup(
         false, 'test_soup',
         [{path: 'Id', type: 'string'}],
@@ -432,14 +546,17 @@ testWithCleanup = () => {
             // Test operations, then cleanup
             smartstore.removeSoup(
                 false, 'test_soup',
-                () => testDone(),
-                (error) => { throw error; }
+                () => callback('PASS'),
+                (error) => { 
+                    callback(`FAIL: ${error.message}`); 
+                }
             );
         },
-        (error) => { throw error; }
+        (error) => { 
+            callback(`FAIL: ${error.message}`); 
+        }
     );
-    return false;
-};
+}
 ```
 
 ### Assertions

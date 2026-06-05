@@ -250,4 +250,13 @@ class MobileSyncReactBridge(reactContext: ReactApplicationContext) :
         val smartStore = SmartStoreReactBridge.getSmartStore(args)
         return SyncManager.getInstance(null, null, smartStore)
     }
+
+    /**
+     * Native implementation of resetSyncManager
+     */
+    @ReactMethod
+    fun resetSyncManager(args: ReadableMap, callback: Callback) {
+        SyncManager.reset()
+        callback.invoke(null, "OK")
+    }
 }

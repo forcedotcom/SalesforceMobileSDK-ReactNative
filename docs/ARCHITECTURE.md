@@ -681,25 +681,43 @@ graph TB
 
 ## Testing Architecture
 
-### Test Harness
+### UI-Driven Test Infrastructure
 
-Tests are written in JavaScript and executed on both platforms:
+Tests are written in JavaScript and executed via automated UI tests on both platforms. The architecture uses:
+- **iOS**: XCUITest to drive the test app UI
+- **Android**: UIAutomator to drive the test app UI
 
 ```
-test/alltests.js (JavaScript test suite)
+Native UI Test (XCUITest/UIAutomator)
+        ↓ (taps "Run All" button for suite)
+React Native Test App (test/TestApp.js)
+        ↓ (runs all tests in suite sequentially)
+Pure JS Test Runner (test/testRunner.js)
+        ↓ (executes each test, collects results)
+SDK Bridge → Native SDK
         ↓
-iosTests/ios/ (XCTest runs JavaScript)
-        ↓
-iOS Bridge → iOS SDK
-        ↓
-Test Results
-
-androidTests/ (AndroidX Test/JUnit runs JavaScript)
-        ↓
-Android Bridge → Android SDK
-        ↓
-Test Results
+Test Results (displayed inline in app UI)
+        ↓ (native test scrapes results from UI)
+Native Test Assertion (pass/fail per test)
 ```
+
+**Batch Execution Pattern** (adopted from Hybrid SDK's JSTestCase/SFPluginTestSuite):
+1. App launches once per test class (`@BeforeClass` / `class func setUp()`)
+2. First test's `setUp()` taps "Run All" button for the suite
+3. Waits for suite completion (checks for last test result)
+4. Collects all results from UI into a cached map
+5. Individual test methods look up their result and assert
+6. Fallback: if result missing, runs test individually
+
+**Key Benefits**:
+- No coupling to React Native internal APIs
+- Works with React Native precompiled binaries
+- Full error messages visible in app UI
+- Tests can be run manually (tap buttons in app)
+- Faster execution: 5 "Run All" taps instead of 35 individual taps
+- Clearer error reporting: failures captured immediately, not via timeout
+
+**Instant Login**: Tests use a credentials-based instant login mechanism that bypasses the OAuth UI, passing credentials via launch arguments.
 
 See [ios-tests/README.md](ios-tests/README.md) for iOS testing details.
 See [android-tests/README.md](android-tests/README.md) for Android testing details.

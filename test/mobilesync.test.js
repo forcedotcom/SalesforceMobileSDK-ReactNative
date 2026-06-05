@@ -28,7 +28,7 @@ import { assert } from './assert';
 import * as net from '../src/react.force.net';
 import * as smartstore from '../src/react.force.smartstore';
 import * as mobilesync from '../src/react.force.mobilesync';
-import { registerTest, testDone } from '../src/react.force.test';
+import { registerSuite, registerTest, testDone } from './testRunner';
 import { promiser, timeoutPromiser } from '../src/react.force.util';
 
 // Promised based bridge functions for more readable tests
@@ -42,6 +42,7 @@ registerSoup = promiser(smartstore.registerSoup);
 upsertSoupEntries = promiser(smartstore.upsertSoupEntries);
 retrieveSoupEntries = promiser(smartstore.retrieveSoupEntries);
 runSmartQuery = promiser(smartstore.runSmartQuery);
+removeAllStores = promiser(smartstore.removeAllStores);
 
 getSyncStatus = promiser(mobilesync.getSyncStatus);
 deleteSync = promiser(mobilesync.deleteSync);
@@ -49,6 +50,18 @@ syncDown = promiser(mobilesync.syncDown);
 syncUp = promiser(mobilesync.syncUp);
 reSync = promiser(mobilesync.reSync);
 cleanResyncGhosts = promiser(mobilesync.cleanResyncGhosts);
+resetSyncManager = promiser(mobilesync.resetSyncManager);
+
+registerSuite('MobileSync', {
+  setUp: async () => {
+    await removeAllStores();
+    await resetSyncManager(storeConfig);
+  },
+  tearDown: async () => {
+    await removeAllStores();
+    await resetSyncManager(storeConfig);
+  },
+});
 
 const storeConfig = {isGlobalStore:false};
 const soupName = 'contacts';

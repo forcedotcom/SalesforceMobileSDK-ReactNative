@@ -4,13 +4,9 @@ This document provides a deep dive into the `prepareios.js` setup script, explai
 
 ## Overview
 
-The iOS test suite for React Native requires several components that aren't part of the standard repository:
-- React Native's test infrastructure (RCTTest)
-- iOS SDK libraries (from another repository)
-- Bundled JavaScript tests
-- Test credentials configuration
+The iOS test suite uses a UI-driven test architecture where XCUITest automation drives a React Native test app. The test app displays buttons for each test, and XCUITest finds and taps these buttons to execute tests.
 
-`prepareios.js` automates the setup of all these dependencies.
+`prepareios.js` automates the setup of all dependencies needed for this test infrastructure.
 
 ## Script Location
 
@@ -29,27 +25,23 @@ cd iosTests
 ```mermaid
 graph TB
     A[Start] --> B[Phase 1: npm install]
-    B --> C[Phase 2: Extract RCTTest]
-    C --> D[Phase 3: Clone iOS SDK]
-    D --> E[Phase 4: pod install]
-    E --> F[Phase 5: Copy test_credentials.json]
-    F --> G[Phase 6: Bundle JS tests]
-    G --> H[Complete]
+    B --> C[Phase 2: Clone iOS SDK]
+    C --> D[Phase 3: pod install]
+    D --> E[Phase 4: Copy test_credentials.json]
+    E --> F[Phase 5: Bundle JS tests]
+    F --> G[Complete]
     
     C1[Clean node_modules] --> B
-    C2[Clone react-native repo] --> C
-    C3[Extract RCTTest framework] --> C
-    C4[Modify podspec] --> C
-    C5[Delete react-native repo] --> C
+    C2[Install react-native-force via git URL] --> B
     
-    D1[Read sdkDependencies] --> D
-    D2[Clone iOS SDK repo] --> D
+    D1[Read sdkDependencies] --> C
+    D2[Clone iOS SDK repo] --> C
     
-    E1[Create .xcode.env] --> E
-    E2[Run pod update] --> E
+    E1[Create .xcode.env] --> D
+    E2[Run pod update] --> D
     
-    G1[Run updatebundle.js] --> G
-    G2[Bundle test/alltests.js] --> G
+    G1[Run updatebundle.js] --> F
+    G2[Bundle test/TestApp.js] --> F
 ```
 
 ## Phase 1: Install npm Dependencies
@@ -62,13 +54,13 @@ graph TB
 
 ### Key Dependencies Installed
 
-From `iosTests/package.json` (versions vary by release):
+From `iosTests/package.json`:
 ```json
 {
   "dependencies": {
-    "react": "...",
+    "react": "18.3.1",
     "react-native": "0.83.9",
-    "react-native-force": "file:../"
+    "react-native-force": "github:wmathurin/SalesforceMobileSDK-ReactNative#rn-ui-driven-test-infrastructure"
   },
   "devDependencies": {
     "@babel/core": "...",
@@ -78,12 +70,12 @@ From `iosTests/package.json` (versions vary by release):
 }
 ```
 
-**Note**: `react-native-force` points to parent directory (`../`) — this is the package we're testing!
+**Important**: `react-native-force` uses a git URL instead of `file:..` to avoid yarn cache conflicts when both iOS and Android test apps install dependencies sequentially.
 
 ### Why This Phase Is Needed
 
 - React Native and its peer dependencies must be available for bundling
-- `react-native-force` (the SDK being tested) must be linked
+- `react-native-force` (the SDK being tested) must be installed from git
 - Build tools (Babel, Metro) must be installed
 
 ### Console Output Example
@@ -98,72 +90,7 @@ yarn install v1.22.19
 Done in 45.23s.
 ```
 
-## Phase 2: Extract RCTTest Framework
-
-### What It Does
-
-1. **Reads React Native version** from parent `package.json` peerDependencies
-
-2. **Clones React Native repository** (shallow clone of specific version):
-   - Uses `--branch v0.83.9` to checkout exact version tag
-   - Uses `--single-branch` to only download one branch (faster)
-   - Uses `--depth 1` for shallow clone with no history (faster)
-
-3. **Extracts RCTTest framework**:
-   - Removes any existing RCTTest directory
-   - Moves `react-native/packages/rn-tester/RCTTest` to current directory
-
-4. **Modifies podspec** for standalone use:
-   - Updates package reference to be standalone
-   - Sets version to match React Native version
-
-5. **Deletes cloned repo** (only needed RCTTest)
-
-### Why This Phase Is Needed
-
-**RCTTest is not distributed as a CocoaPod or npm package.** It's internal React Native test infrastructure used by `rn-tester` (React Native's own test app).
-
-**What RCTTest provides**:
-- `RCTTestRunner.h/m` - Test execution framework
-- `RCTTestModule` - Native module for test result reporting
-- Test utilities and helpers
-
-**Why we need it**:
-- Mobile SDK's test pattern mirrors React Native's own testing approach
-- Without RCTTest, we'd have to reimplement the test runner from scratch
-- This ensures compatibility with React Native's testing conventions
-
-### RCTTest Framework Contents
-
-```
-RCTTest/
-├── React-RCTTest.podspec     # CocoaPods specification
-├── RCTTestRunner.h           # Test runner interface
-├── RCTTestRunner.m           # Test runner implementation
-├── RCTTestModule.h           # Test module interface
-├── RCTTestModule.m           # Test reporting module
-└── (other test utilities)
-```
-
-**How it's used** (referenced in `ios/Podfile`):
-```ruby
-pod 'React-RCTTest', :path => '../RCTTest'
-```
-
-### Console Output Example
-
-```
-=== Getting react native git repo (for test runner classes)
-Cloning into 'react-native'...
-remote: Enumerating objects: 15234, done.
-remote: Counting objects: 100% (15234/15234), done.
-remote: Compressing objects: 100% (12421/12421), done.
-remote: Total 15234 (delta 2567), reused 6891 (delta 1543)
-Receiving objects: 100% (15234/15234), 234.56 MiB | 5.23 MiB/s, done.
-Resolving deltas: 100% (2567/2567), done.
-```
-
-## Phase 3: Clone iOS SDK
+## Phase 2: Clone iOS SDK
 
 ### What It Does
 
@@ -189,7 +116,7 @@ The `updatesdk.js` helper script:
 
 ### Why This Phase Is Needed
 
-**CocoaPods can't easily use local file paths for development.**
+**CocoaPods requires local SDK code for development.**
 
 During development, you might be:
 - Testing unreleased iOS SDK changes
@@ -240,7 +167,7 @@ Receiving objects: 100% (3421/3421), 12.34 MiB | 3.45 MiB/s, done.
 Resolving deltas: 100% (567/567), done.
 ```
 
-## Phase 4: Setup CocoaPods
+## Phase 3: Setup CocoaPods
 
 ### What It Does
 
@@ -277,16 +204,17 @@ target 'SalesforceReactTestApp' do
     :hermes_enabled => true
   )
   
-  # Test infrastructure
-  pod 'React-RCTTest', :path => '../RCTTest'
-  
   # iOS SDK (from cloned directory)
   pod 'SalesforceSDKCore', :path => '../mobile_sdk/SalesforceMobileSDK-iOS'
   pod 'SmartStore', :path => '../mobile_sdk/SalesforceMobileSDK-iOS'
   pod 'MobileSync', :path => '../mobile_sdk/SalesforceMobileSDK-iOS'
   
-  # Bridge modules (from parent repo)
-  pod 'SalesforceReact', :path => '../../'
+  # Bridge modules (from git URL via npm)
+  pod 'SalesforceReact', :path => '../node_modules/react-native-force'
+end
+
+target 'SalesforceReactTestAppUITests' do
+  # XCUITest framework (no additional dependencies needed)
 end
 ```
 
@@ -305,9 +233,6 @@ end
 - `React-hermes` (JavaScript engine)
 - Many others (~40 pods total)
 
-**Test infrastructure**:
-- `React-RCTTest` (from extracted framework)
-
 **iOS SDK dependencies**:
 - `SalesforceSDKCommon` - Common utilities
 - `SalesforceSDKCore` - Core SDK (OAuth, REST, etc.)
@@ -315,7 +240,7 @@ end
 - `MobileSync` - Sync framework
 
 **Bridge module**:
-- `SalesforceReact` (from `../../`, the parent directory — this is the React Native SDK repo itself)
+- `SalesforceReact` (from `../node_modules/react-native-force`, installed via git URL)
 
 ### Console Output Example
 
@@ -336,7 +261,7 @@ Integrating client project
 Pod installation complete! There are 45 dependencies from the Podfile and 62 total pods installed.
 ```
 
-## Phase 5: Copy Test Credentials
+## Phase 4: Copy Test Credentials
 
 ### What It Does
 
@@ -344,7 +269,7 @@ Copies `shared/test/test_credentials.json` (at the repo root) into `iosTests/ios
 
 ### Why This Phase Is Needed
 
-The test app's AppDelegate loads this file at launch to authenticate the test user. If it doesn't exist or is empty, the app still builds but authentication tests will fail.
+The test app uses instant login that reads credentials from this file. The credentials are passed via launch arguments to bypass the OAuth UI.
 
 ### Setting Up Credentials
 
@@ -400,7 +325,7 @@ iosTests/ios/test_credentials.json
 === Copying test_credentials.json
 ```
 
-## Phase 6: Bundle JavaScript Tests
+## Phase 5: Bundle JavaScript Tests
 
 ### What It Does
 
@@ -408,82 +333,73 @@ The `updatebundle.js` helper script runs React Native's bundler (Metro) to creat
 
 Bundles JavaScript with parameters:
 - Platform: iOS
-- Dev mode: true (source maps, better errors)
-- Entry file: `node_modules/react-native-force/test/alltests.js`
-- Output: `ios/index.ios.bundle`
+- Dev mode: false (to avoid DevTools bridge crashes)
+- Minify: false (to preserve test function names)
+- Entry file: `test/TestApp.js`
+- Output: `ios/main.jsbundle`
 - Assets: `ios/`
 
 ### Why This Phase Is Needed
 
-**React Native apps require a JavaScript bundle.**
+**The test app displays test buttons in a React Native UI.**
 
-During development with Metro running, the app loads JavaScript dynamically from the packager. But for testing in CI or without Metro, we need a pre-bundled file.
+The `TestApp.js` file renders a scrollable list of buttons for each test. When XCUITest taps a button, the corresponding test executes and displays results inline.
 
-**The test app loads this bundle** in `AppDelegate.m`:
-```objective-c
-#ifdef DEBUG
-  // Try Metro bundler first (if running)
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
-#else
-  // Use pre-bundled file
-  return [[NSBundle mainBundle] URLForResource:@"index.ios" withExtension:@"bundle"];
-#endif
-```
+### Entry Point: test/TestApp.js
 
-### Entry Point: test/alltests.js
-
-**File**: `test/alltests.js`
+**File**: `test/TestApp.js`
 
 ```javascript
-// Import all test modules
+import React from 'react';
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { runTest } from './testRunner';
+
+// Import all test suites
 import * as oauth from './oauth.test';
 import * as net from './net.test';
 import * as smartstore from './smartstore.test';
 import * as mobilesync from './mobilesync.test';
 import * as harness from './harness.test';
 
-// Export all tests
-export {
-  oauth,
-  net,
-  smartstore,
-  mobilesync,
-  harness
-};
-
-// Register test modules
-import { registerTestModule } from '../src/react.force.test';
-
-registerTestModule('oauth', oauth);
-registerTestModule('net', net);
-registerTestModule('smartstore', smartstore);
-registerTestModule('mobilesync', mobilesync);
-registerTestModule('harness', harness);
+export default function TestApp() {
+  // Render buttons for each test
+  return (
+    <ScrollView testID="testList" accessibilityLabel="testList">
+      <TouchableOpacity testID="run_test_GetAuthCredentials" accessibilityLabel="run_test_GetAuthCredentials">
+        <Text>OAuth: GetAuthCredentials</Text>
+      </TouchableOpacity>
+      {/* ... more test buttons ... */}
+    </ScrollView>
+  );
+}
 ```
 
 **This bundles**:
+- Test app UI (TestApp.js)
+- Pure JS test runner (testRunner.js)
 - All test files from `test/`
-- The `react-native-force` library (from `src/`)
+- The `react-native-force` library
 - React Native core libraries
 - All dependencies
 
 ### Bundle Contents
 
-The resulting `ios/index.ios.bundle` is a single JavaScript file (~2-3 MB) containing:
+The resulting `ios/main.jsbundle` is a single JavaScript file (~2-3 MB) containing:
 - React Native framework code
-- Test harness code
+- Test app UI code
+- Pure JS test runner
 - All test modules
 - Mobile SDK JavaScript API
 
 ### Console Output Example
 
 ```
-=== Creating index.ios.bundle
+=== Creating main.jsbundle
 warning: the transform cache was reset.
                  Welcome to Metro
               Fast - Scalable - Integrated
 
-info Writing bundle output to:, ios/index.ios.bundle
+info Writing bundle output to:, ios/main.jsbundle
 info Done writing bundle output
 info Copying 0 asset files
 info Done copying assets
@@ -496,36 +412,33 @@ iosTests/
 ├── node_modules/               # npm dependencies (Phase 1)
 │   ├── react/
 │   ├── react-native/
-│   └── react-native-force/     # Symlink to ../
-├── RCTTest/                    # Extracted test framework (Phase 2)
-│   ├── React-RCTTest.podspec
-│   ├── RCTTestRunner.h
-│   └── RCTTestRunner.m
-├── mobile_sdk/                 # Cloned iOS SDK (Phase 3)
+│   └── react-native-force/     # Installed from git URL
+├── mobile_sdk/                 # Cloned iOS SDK (Phase 2)
 │   └── SalesforceMobileSDK-iOS/
 │       └── libs/
 │           ├── SalesforceSDKCore/
 │           ├── SmartStore/
 │           └── MobileSync/
 ├── ios/                        # iOS project
-│   ├── .xcode.env              # Node path (Phase 4)
-│   ├── Pods/                   # CocoaPods dependencies (Phase 4)
+│   ├── .xcode.env              # Node path (Phase 3)
+│   ├── Pods/                   # CocoaPods dependencies (Phase 3)
 │   ├── Podfile
 │   ├── Podfile.lock
-│   ├── index.ios.bundle        # JavaScript bundle (Phase 6)
+│   ├── main.jsbundle           # JavaScript bundle (Phase 5)
+│   ├── test_credentials.json   # Test credentials (Phase 4)
 │   ├── SalesforceReactTestApp.xcodeproj
 │   ├── SalesforceReactTestApp.xcworkspace  # ← Open this in Xcode
 │   ├── SalesforceReactTestApp/
 │   │   ├── AppDelegate.{h,m}
 │   │   ├── Info.plist
 │   │   └── main.m
-│   └── SalesforceReactTests/   # XCTest suite
-│       ├── ReactTestCase.{h,m}
-│       ├── OAuthReactTestCase.m
-│       ├── NetReactTestCase.m
-│       ├── SmartStoreReactTestCase.m
-│       └── MobileSyncReactTestCase.m
-├── test_credentials.json       # Empty placeholder (Phase 5)
+│   └── SalesforceReactTestAppUITests/   # XCUITest suite
+│       ├── BaseReactNativeTest.swift
+│       ├── ReactHarnessTests.swift
+│       ├── ReactOAuthTests.swift
+│       ├── ReactNetTests.swift
+│       ├── ReactSmartStoreTests.swift
+│       └── ReactMobileSyncTests.swift
 ├── package.json
 ├── prepareios.js               # This script
 ├── updatebundle.js
@@ -552,24 +465,11 @@ yarn install --network-timeout 100000
 
 ### Phase 2 Failures
 
-**Error**: `gsed: command not found`
-
-**Solution**: Install GNU sed:
-```bash
-brew install gnu-sed
-```
-
-**Error**: Git clone times out
-
-**Solution**: Check GitHub access, or clone manually with longer timeout
-
-### Phase 3 Failures
-
 **Error**: Cannot clone iOS SDK (permission denied)
 
 **Solution**: Check GitHub access, SSH keys, or use HTTPS URL in sdkDependencies
 
-### Phase 4 Failures
+### Phase 3 Failures
 
 **Error**: `pod: command not found`
 
@@ -592,7 +492,7 @@ pod cache clean --all
 pod install
 ```
 
-### Phase 6 Failures
+### Phase 5 Failures
 
 **Error**: Metro bundler fails
 
@@ -600,10 +500,9 @@ pod install
 
 **Error**: Cannot find entry file
 
-**Solution**: Verify `react-native-force` is properly linked:
+**Solution**: Verify `test/TestApp.js` exists:
 ```bash
-ls -la node_modules/react-native-force
-# Should point to ../
+ls -la ../test/TestApp.js
 ```
 
 ## Manual Setup (Alternative to Script)
@@ -640,7 +539,7 @@ node updatebundle.js
 **When to re-run**:
 - After modifying test files (`test/*.test.js`)
 - After modifying SDK source (`src/`)
-- When testing without Metro bundler running
+- After modifying test app UI (`test/TestApp.js`)
 
 ### create_test_credentials_from_env.js
 Generates `test_credentials.json` from environment variables.
@@ -674,12 +573,6 @@ When running tests in CI:
     cd iosTests
     node create_test_credentials_from_env.js
 
-- name: Start Metro Bundler
-  run: |
-    cd iosTests
-    npm start &
-    sleep 10
-
 - name: Run Tests
   run: |
     cd iosTests/ios
@@ -691,18 +584,18 @@ When running tests in CI:
 
 ## Summary
 
-`prepareios.js` orchestrates a complex setup:
-1. Installs npm dependencies (React Native, SDK, build tools)
-2. Extracts React Native's internal test framework
-3. Clones iOS SDK from configured repository
-4. Configures and installs CocoaPods dependencies
-5. Copies test credentials from `shared/test/test_credentials.json`
-6. Bundles JavaScript tests for offline execution
+`prepareios.js` orchestrates a streamlined setup for UI-driven testing:
+1. Installs npm dependencies (React Native, SDK via git URL, build tools)
+2. Clones iOS SDK from configured repository
+3. Configures and installs CocoaPods dependencies
+4. Copies test credentials from `shared/test/test_credentials.json`
+5. Bundles JavaScript test app for offline execution
 
-**Why so complex?**
-- React Native test infrastructure isn't packaged separately
-- iOS SDK lives in another repository
+**Why this approach?**
+- No coupling to React Native internal APIs (no RCTTestModule)
+- Git URL dependencies avoid yarn cache conflicts
 - CocoaPods needs local SDK for development
-- Tests need both native and JavaScript code bundled
+- XCUITest drives the app like a real user would
+- Tests display results inline in the app UI
 
-**Result**: A fully functional iOS test app ready to run XCTest suites that exercise the React Native bridge.
+**Result**: A fully functional iOS test app ready to run XCUITest suites that drive the React Native test UI.

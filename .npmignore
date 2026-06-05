@@ -1,0 +1,7 @@
+iosTests/
+androidTests/
+docs/
+shared/
+.github/
+.claude/
+node_modules/
