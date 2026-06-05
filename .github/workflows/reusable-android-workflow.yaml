@@ -83,7 +83,7 @@ jobs:
             --type instrumentation \
             --app "$APP_APK" \
             --test "$TEST_APK" \
-            --device model=MediumPhone.arm,version=35,locale=en,orientation=portrait \
+            --device model=MediumPhone.arm,version=36,locale=en,orientation=portrait \
             --timeout 40m \
             --results-bucket "cloud-test-${REPO_OWNER}" \
             --results-dir "SalesforceReactNative/${RUN_ID}" \
