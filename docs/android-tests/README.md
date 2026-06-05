@@ -127,9 +127,9 @@ androidTests/
 
 - **Android Studio**: Latest stable version
 - **Java**: JDK 17+
-- **Node.js**: 20 or later
-- **Android SDK**: API 28+ (compileSdk 36)
-- **Emulator or device**: API 28+ for running tests
+- **Node.js**: 22 or later
+- **Android SDK**: API 31+ (compileSdk 36)
+- **Emulator or device**: API 31+ for running tests
 - **Salesforce Org**: For authentication tests
 
 ### Step 1: Setup Test Workspace

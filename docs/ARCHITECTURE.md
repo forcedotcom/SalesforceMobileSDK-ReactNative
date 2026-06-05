@@ -533,11 +533,10 @@ end
   "name": "react-native-force",
   "version": "14.0.0",
   "peerDependencies": {
-    "react-native": "0.83.9"
+    "react-native": "0.84.1"
   },
   "dependencies": {
-    "react": "19.2.6",
-    "react-native": "0.83.9",
+    "react": "19.2.3",
     "react-native-timer": "^1.3.6"
   }
 }

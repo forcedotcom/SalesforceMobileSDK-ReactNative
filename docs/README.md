@@ -119,7 +119,7 @@ The Android bridge lives in this repository at `android/`. It follows the same p
 
 | React Native SDK | React Native | iOS SDK | Android SDK | iOS Min | Android Min |
 |-----------------|--------------|---------|-------------|---------|-------------|
-| 14.0.0          | 0.83.9       | 14.0.0  | 14.0.0      | 18.0    | 28 (9.0)    |
+| 14.0.0          | 0.84.1       | 14.0.0  | 14.0.0      | 18.0    | 31 (12.0)   |
 
 See the [main README](../README.md) for the full version compatibility table.
 
