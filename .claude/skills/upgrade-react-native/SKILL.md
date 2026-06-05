@@ -197,8 +197,9 @@ Update version references in:
 - `README.md` (ReactNative repo): RN version compat table
 - Any other docs referencing the old RN version
 
-**Pre-merge step** (do NOT merge without this):
+**⚠️ Pre-merge step** (do NOT merge without this):
 - Revert `react-native-force` URLs in `iosTests/package.json`, `androidTests/package.json`, and all 4 template `package.json` files from `FORK_USER#BRANCH` back to `forcedotcom#dev`
+- If this revert is done before merging, no post-merge cleanup PR is needed
 
 **Create PRs**:
 ```bash
