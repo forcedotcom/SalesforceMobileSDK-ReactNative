@@ -146,6 +146,7 @@ This runs yarn install, clones SalesforceMobileSDK-Android, patches Gradle files
 
 ### Phase 7: Template Validation
 
+**7a. Automated build test** — verifies install + compile, no app launch:
 ```bash
 cd SalesforceMobileSDK-Templates
 ./test_template.sh \
@@ -158,7 +159,35 @@ cd SalesforceMobileSDK-Templates
   --platform android
 ```
 
-Then manual smoke test all 4 templates (login + basic functionality) on iOS simulator and Android emulator.
+**7b. Manual smoke test** — verifies login + basic app functionality. For each of the 4 templates:
+
+1. In the template directory, temporarily point `react-native-force` to your fork branch:
+   ```json
+   "react-native-force": "git+https://github.com/FORK_USER/SalesforceMobileSDK-ReactNative.git#BRANCH"
+   ```
+
+2. Install dependencies:
+   ```bash
+   node installios.js    # iOS — clones iOS SDK, runs pod install
+   node installandroid.js # Android — clones Android SDK
+   ```
+
+3. Inject credentials (per `docs/TESTING_CREDENTIALS.md` in the Workspace repo):
+   ```bash
+   # iOS — run from template root
+   sed -i '' 's|<string>__INSERT_DEFAULT_LOGIN_SERVER__</string>|<string>authflowtestingmsdksdb38.test1.my.pc-rnd.salesforce.com</string>|' ios/<AppName>/Info.plist
+   sed -i '' 's|__INSERT_CONSUMER_KEY_HERE__|3MVG9H2sjXhorwC_Obi8SL7EU.SfZl1KKgEOJGl6Vza1ssDxuInaD1hOxpbpYND3JBEjefBfQtSM.CqtyUVn6|' ios/<AppName>/bootconfig.plist
+   sed -i '' 's|__INSERT_CALLBACK_URL_HERE__|ecaadvancedjwt://success/done|' ios/<AppName>/bootconfig.plist
+
+   # Android — run from template root
+   sed -i '' 's|__INSERT_DEFAULT_LOGIN_SERVER__|https://authflowtestingmsdksdb38.test1.my.pc-rnd.salesforce.com|' android/app/src/main/res/xml/servers.xml
+   sed -i '' 's|__INSERT_CONSUMER_KEY_HERE__|3MVG9H2sjXhorwC_Obi8SL7EU.SfZl1KKgEOJGl6Vza1ssDxuInaD1hOxpbpYND3JBEjefBfQtSM.CqtyUVn6|' android/app/src/main/res/values/bootconfig.xml
+   sed -i '' 's|__INSERT_CALLBACK_URL_HERE__|ecaadvancedjwt://success/done|' android/app/src/main/res/values/bootconfig.xml
+   ```
+
+4. Build and run in Xcode / Android Studio. Verify: login screen appears → login succeeds → app main screen loads.
+
+5. After testing, revert credential files: `git checkout ios/<AppName>/Info.plist ios/<AppName>/bootconfig.plist` etc. Do NOT commit credentials.
 
 ---
 
