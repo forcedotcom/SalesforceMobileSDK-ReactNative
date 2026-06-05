@@ -77,37 +77,39 @@ abstract class BaseReactNativeTest {
         UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
     }
 
-    // Subclasses can override to specify test timeout in milliseconds (default: 30s)
+    // Subclasses can override to specify test timeout in milliseconds (default: 60s)
     open val testTimeoutMs: Long
-        get() = 30_000
+        get() = 60_000
 
     fun runTest(name: String) {
-        // Wait for test list to appear
-        val found = device.findObject(UiSelector().description("testList")).waitForExists(30_000)
+        // Wait for test list to appear (60s for slower Firebase ARM devices)
+        val found = device.findObject(UiSelector().description("testList")).waitForExists(60_000)
         assertTrue("Test list did not appear", found)
 
-        // Scroll to the test button if needed
-        val button = device.findObject(UiSelector().description("run_$name"))
+        // Give the RN app a moment to finish rendering all list items before scrolling
+        Thread.sleep(2_000)
 
+        // Scroll to the test button if needed.
+        // UiScrollable.scrollIntoView is unreliable on Firebase ARM devices because
+        // the React Native ScrollView may not register as scrollable in the
+        // accessibility tree. Use physical swipe gestures instead.
+        val button = device.findObject(UiSelector().description("run_$name"))
         if (!button.exists()) {
-            // Button not immediately visible, try scrolling
-            try {
-                val scrollable = androidx.test.uiautomator.UiScrollable(
-                    UiSelector().description("testList").scrollable(true)
-                )
-                scrollable.setAsVerticalList()
-                scrollable.setMaxSearchSwipes(20) // Allow more swipes to reach bottom
-                val scrolled = scrollable.scrollIntoView(UiSelector().description("run_$name"))
-                if (!scrolled) {
-                    Log.w(TAG, "scrollIntoView returned false for run_$name")
-                }
-            } catch (e: Exception) {
-                Log.w(TAG, "Scroll failed for run_$name: ${e.message}")
+            val screenHeight = device.displayHeight
+            val screenWidth = device.displayWidth
+            val swipeStartY = (screenHeight * 0.8).toInt()
+            val swipeEndY = (screenHeight * 0.2).toInt()
+            val swipeMidX = screenWidth / 2
+            for (i in 0 until 15) {
+                if (button.exists()) break
+                device.swipe(swipeMidX, swipeStartY, swipeMidX, swipeEndY, 20)
+                Thread.sleep(300)
             }
         }
 
         assertTrue("Button not found: run_$name - may need to scroll further", button.waitForExists(10_000))
-        button.click()
+        // Re-find before clicking to avoid stale element if accessibility tree refreshed
+        device.findObject(UiSelector().description("run_$name")).click()
 
         val passSelector = UiSelector().description("result_${name}_pass")
         val passed = device.findObject(passSelector).waitForExists(testTimeoutMs)

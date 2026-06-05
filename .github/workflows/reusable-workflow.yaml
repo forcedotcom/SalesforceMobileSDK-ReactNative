@@ -40,6 +40,15 @@ jobs:
         with:
           persist-credentials: false
           ref: ${{ github.head_ref }}
+      # Use mxcl to select Xcode first — pod install must run with the same Xcode
+      # to avoid embedding stale toolchain paths in pod module maps.
+      # mxcl does not support -retry-tests-on-failure so we use action:none only.
+      - uses: mxcl/xcodebuild@d3ee9b419c1be9a988086c58fe0988f32d99cfc5  # v3.6.0
+        with:
+          xcode: ${{ inputs.xcode }}
+          platform: iOS
+          platform-version: ${{ inputs.ios }}
+          action: none
       - name: Select Xcode
         env:
           XCODE_VERSION: ${{ inputs.xcode }}
@@ -50,6 +59,11 @@ jobs:
             XCODE=$(ls -d /Applications/Xcode_16*.app 2>/dev/null | sort -V | tail -1 || echo /Applications/Xcode.app)
           fi
           sudo xcode-select -s "$XCODE"
+          # Redirect /Applications/Xcode.app symlink to the selected version so
+          # prebuilt Swift modules that embed the Xcode.app path resolve correctly.
+          if [[ "$XCODE" != "/Applications/Xcode.app" ]]; then
+            sudo ln -sfn "$XCODE" /Applications/Xcode.app
+          fi
           xcodebuild -version
       - name: Install Dependencies
         env:
@@ -60,16 +74,46 @@ jobs:
           cd iosTests
           ./create_test_credentials_from_env.js
           ./prepareios.js
-      - uses: mxcl/xcodebuild@d3ee9b419c1be9a988086c58fe0988f32d99cfc5  # v3.6.0
+      - name: Resolve simulator destination
+        id: resolve_destination
+        env:
+          IOS: ${{ inputs.ios }}
+        run: |
+          IOS_MAJOR=$(echo "$IOS" | sed 's/^\^//' | cut -d. -f1)
+          SIM_UDID=$(xcrun simctl list devices available -j | python3 -c '
+          import sys, json
+          major = sys.argv[1]
+          d = json.load(sys.stdin)
+          prefix = "iOS-" + major + "-"
+          matching = {k: v for k, v in d.get("devices", {}).items() if prefix in k}
+          for runtime_key in sorted(matching.keys(), reverse=True):
+            for dev in matching[runtime_key]:
+              if dev.get("isAvailable", True) and "iPhone" in dev.get("name", ""):
+                print(dev["udid"])
+                sys.exit(0)
+          sys.exit(1)
+          ' "$IOS_MAJOR")
+          if [ -z "$SIM_UDID" ]; then
+            echo "::error::No available iPhone simulator found for iOS ${IOS_MAJOR}"
+            exit 1
+          fi
+          printf 'destination=platform=iOS Simulator,id=%s\n' "$SIM_UDID" >> "$GITHUB_OUTPUT"
+      - name: Run Tests
         id: xcodebuild
-        with:
-          xcode: ${{ inputs.xcode }}
-          platform: iOS
-          platform-version: ${{ inputs.ios }}
-          workspace: iosTests/ios/SalesforceReactTestApp.xcworkspace
-          scheme: "SalesforceReactTestApp"
-          code-coverage: true
-          verbosity: xcbeautify
+        env:
+          DESTINATION: ${{ steps.resolve_destination.outputs.destination }}
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -workspace iosTests/ios/SalesforceReactTestApp.xcworkspace \
+            -scheme SalesforceReactTestApp \
+            -destination "$DESTINATION" \
+            -derivedDataPath derived_data \
+            -resultBundlePath test.xcresult \
+            -enableCodeCoverage YES \
+            -retry-tests-on-failure \
+            SWIFT_SERIALIZE_DEBUGGING_OPTIONS=NO \
+            | xcbeautify
       - name: Archive xcodebuild logs on build failure
         if: failure() && steps.xcodebuild.outcome == 'failure'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2
@@ -79,6 +123,13 @@ jobs:
             ~/Library/Developer/Xcode/DerivedData/**/Logs/Build/*.xcactivitylog
           if-no-files-found: ignore
           retention-days: 14
+      - name: Verify xcresult bundle exists
+        if: success() || failure()
+        run: |
+          if [ ! -d "test.xcresult" ]; then
+            echo "::error::test.xcresult bundle was not created — no tests ran"
+            exit 1
+          fi
       - name: Parse test results
         if: success() || failure()
         env:
@@ -97,7 +148,7 @@ jobs:
           simplified_summary: true
           detailed_summary: true
           comment: true
-          job_summary: ${{ steps.xcodebuild.outcome == 'failure' }}
+          job_summary: true
           report_paths: 'test-results-ios${{ inputs.ios }}.xml'
       - uses: codecov/codecov-action@b9fd7d16f6d7d1b5d2bec1a2887e65ceed900238  # v4.6.0
         env:

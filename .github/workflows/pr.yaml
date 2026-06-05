@@ -44,6 +44,7 @@ jobs:
       pull-requests: write
     needs: [permission-check]
     strategy:
+      fail-fast: false
       matrix:
         ios: [^26, ^18]
         include:
