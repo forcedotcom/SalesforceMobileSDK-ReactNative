@@ -1,0 +1,79 @@
+{
+  "docs": [
+    {
+      "doc": "README.md",
+      "scope": ".",
+      "description": "Salesforce Mobile SDK for React Native - Overview, features, and getting started guide"
+    },
+    {
+      "doc": "CLAUDE.md",
+      "scope": ".",
+      "description": "AI-specific instructions for working with the React Native SDK codebase"
+    },
+    {
+      "doc": "docs/README.md",
+      "scope": ".",
+      "description": "Documentation structure and navigation for the React Native SDK"
+    },
+    {
+      "doc": "docs/ARCHITECTURE.md",
+      "scope": ".",
+      "description": "Technical architecture of the three-layer bridge pattern and data flow"
+    },
+    {
+      "doc": "docs/javascript/README.md",
+      "scope": "src",
+      "description": "JavaScript/TypeScript API module organization and patterns"
+    },
+    {
+      "doc": "docs/javascript/API_REFERENCE.md",
+      "scope": "src",
+      "description": "Complete API reference for JavaScript/TypeScript modules"
+    },
+    {
+      "doc": "docs/ios/README.md",
+      "scope": "ios",
+      "description": "iOS native bridge implementation and CocoaPods integration"
+    },
+    {
+      "doc": "docs/ios/API_REFERENCE.md",
+      "scope": "ios",
+      "description": "iOS native classes and bridging details"
+    },
+    {
+      "doc": "docs/ios-tests/README.md",
+      "scope": "iosTests",
+      "description": "iOS test application structure and setup"
+    },
+    {
+      "doc": "docs/ios-tests/PREPAREIOS_DETAILED.md",
+      "scope": "iosTests",
+      "description": "Detailed iOS test setup and configuration"
+    },
+    {
+      "doc": "docs/android-tests/README.md",
+      "scope": "androidTests",
+      "description": "Android test application structure and setup"
+    },
+    {
+      "doc": "docs/android-tests/PREPAREANDROID_DETAILED.md",
+      "scope": "androidTests",
+      "description": "Detailed Android test setup and configuration"
+    },
+    {
+      "doc": "test/README.md",
+      "scope": "test",
+      "description": "JavaScript tests for React Native modules and test credentials setup"
+    },
+    {
+      "doc": "iosTests/README.md",
+      "scope": "iosTests",
+      "description": "iOS bridge tests using XCTest framework"
+    },
+    {
+      "doc": "androidTests/README.md",
+      "scope": "androidTests",
+      "description": "Android bridge tests using UIAutomator"
+    }
+  ]
+}
