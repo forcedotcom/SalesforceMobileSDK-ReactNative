@@ -10,26 +10,27 @@ permissions:
   contents: read
 
 jobs:
-  ios-nightly:
-    permissions:
-      contents: read
-      pull-requests: write
-    strategy:
-      fail-fast: false
-      matrix:
-        ios: [^26, ^18]
-        include:
-          - ios: ^26
-            xcode: ^26
-          - ios: ^18
-            xcode: ^16
-    uses: ./.github/workflows/reusable-workflow.yaml
-    with:
-      ios: ${{ matrix.ios }}
-      xcode: ${{ matrix.xcode }}
-    secrets:
-      TEST_CREDENTIALS: ${{ secrets.TEST_CREDENTIALS }}
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+  # ios-nightly temporarily disabled while debugging Android CI (W-22857717)
+  # ios-nightly:
+  #   permissions:
+  #     contents: read
+  #     pull-requests: write
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       ios: [^26, ^18]
+  #       include:
+  #         - ios: ^26
+  #           xcode: ^26
+  #         - ios: ^18
+  #           xcode: ^16
+  #   uses: ./.github/workflows/reusable-workflow.yaml
+  #   with:
+  #     ios: ${{ matrix.ios }}
+  #     xcode: ${{ matrix.xcode }}
+  #   secrets:
+  #     TEST_CREDENTIALS: ${{ secrets.TEST_CREDENTIALS }}
+  #     CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   android-nightly:
     permissions:
