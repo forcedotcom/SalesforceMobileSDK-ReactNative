@@ -140,7 +140,14 @@ node prepareandroid.js
 
 This runs yarn install, clones SalesforceMobileSDK-Android, patches Gradle files, and builds the JS bundle.
 
-**Run Android tests** in Android Studio on emulator. Expect 35/35.
+**Run Android tests** from the command line. Use `numShards=1` to prevent the parallelism-induced `NetworkOnMainThreadException` flake in `testCleanResyncGhosts`:
+
+```bash
+cd android
+./gradlew connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.numShards=1
+```
+
+Expect 35/35. Without `numShards=1`, `testCleanResyncGhosts` may timeout due to token refresh on the main thread under parallel load — passes in isolation, so this is a pre-existing emulator flake, not a regression.
 
 ---
 
@@ -257,6 +264,7 @@ GH_HOST=git.soma.salesforce.com gh pr create --repo SalesforceMobileSDK/Salesfor
 
 | RN Version | React Version | Hermes | Notable Changes |
 |------------|---------------|--------|-----------------|
+| 0.86.0 | 19.2.3 | — | No breaking changes; Android edge-to-edge fixes for API 36+; Metro 0.84.4; `PODFILE_DIR` added to pbxproj by pod install; use `numShards=1` for Android tests |
 | 0.85.3 | 19.2.3 | 250829098.0.10 | `StyleSheet.absoluteFillObject` removed (not used by us); Yoga migrated to Kotlin on Android (no impact); `rimraf` no longer transitive |
 | 0.84.1 | 19.2.3 | 250829098.0.9 | New Architecture default; bridgeless mode |
 | 0.83.9 | 19.2.6 | — | Black screen after login fix needed (Android `recreate()` in `onResume`) |
