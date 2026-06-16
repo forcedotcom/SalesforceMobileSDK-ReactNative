@@ -64,7 +64,7 @@ npm install react-native-force
 
 - **Node.js**: 22 or higher
 - **React Native**: 0.85.3 (see `package.json` for current version)
-- **iOS Development**: Xcode 15+, macOS (for iOS builds)
+- **iOS Development**: Xcode 16+, macOS (for iOS builds)
 - **Android Development**: Android Studio, Java 17+ (for Android builds)
 
 ### Creating a New App

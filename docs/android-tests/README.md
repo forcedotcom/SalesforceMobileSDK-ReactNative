@@ -433,7 +433,7 @@ jobs:
     - name: Setup Node
       uses: actions/setup-node@v3
       with:
-        node-version: '20'
+        node-version: '22'
     
     - name: Setup Java
       uses: actions/setup-java@v3

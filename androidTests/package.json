@@ -26,7 +26,6 @@
     "@react-native/metro-config": "0.86.0",
     "@react-native/typescript-config": "0.86.0",
     "babel-jest": "^30.0.0",
-    "metro-react-native-babel-preset": "0.77.0",
     "typescript": "^5.8.3"
   },
   "engines": {
