@@ -27,7 +27,7 @@ jobs:
         if: ${{ ! inputs.is_pr }}
         with:
           persist-credentials: false
-          ref: ${{ github.head_ref }}
+          ref: ${{ github.ref_name }}
       - name: Setup Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4.4.0
         with:
@@ -85,8 +85,10 @@ jobs:
             --test "$TEST_APK" \
             --device model=MediumPhone.arm,version=36,locale=en,orientation=portrait \
             --timeout 40m \
-            --results-bucket "cloud-test-${REPO_OWNER}" \
+            --results-bucket "cloud-test-forcedotcom" \
             --results-dir "SalesforceReactNative/${RUN_ID}" \
+            --no-auto-google-login \
+            --no-performance-metrics \
             --no-record-video \
             --num-flaky-test-attempts=1
       - name: Copy Test Results
