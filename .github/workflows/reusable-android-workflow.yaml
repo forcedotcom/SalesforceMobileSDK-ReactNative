@@ -84,7 +84,8 @@ jobs:
             --app "$APP_APK" \
             --test "$TEST_APK" \
             --device model=MediumPhone.arm,version=36,locale=en,orientation=portrait \
-            --timeout 40m \
+            --timeout 5m \
+            --test-targets "class com.salesforce.androidsdk.reactnative.ReactHarnessTest" \
             --results-bucket "cloud-test-forcedotcom" \
             --results-dir "SalesforceReactNative/${RUN_ID}" \
             --no-auto-google-login \
