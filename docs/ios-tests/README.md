@@ -127,8 +127,8 @@ iosTests/
 
 ### Prerequisites
 
-- **Xcode**: 15 or later
-- **Node.js**: 20 or later
+- **Xcode**: 16 or later
+- **Node.js**: 22 or later
 - **CocoaPods**: 1.10 or later
 - **Salesforce Org**: For authentication tests
 
@@ -793,7 +793,7 @@ jobs:
     - name: Setup Node
       uses: actions/setup-node@v3
       with:
-        node-version: '20'
+        node-version: '22'
     
     - name: Setup Test Credentials
       env:

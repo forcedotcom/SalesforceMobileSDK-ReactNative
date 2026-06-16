@@ -83,6 +83,6 @@ The `app/build.gradle.kts` includes a `copyTestCredentials` task that runs befor
 | Issue | Cause | Fix |
 |-------|-------|-----|
 | `Failed to read test_credentials.json` at runtime | Missing or empty credentials file | Place valid credentials at `shared/test/test_credentials.json` |
-| `yarn install` fails | Network issue or incompatible Node version | Ensure Node 20+, check network |
+| `yarn install` fails | Network issue or incompatible Node version | Ensure Node 22+, check network |
 | Gradle build fails with dependency errors | Stale `mobile_sdk/` clone | Delete `mobile_sdk/` and re-run |
 | Bundle fails with Metro error | Incompatible babel config | Delete `node_modules/` and re-run |
