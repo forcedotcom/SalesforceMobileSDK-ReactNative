@@ -27,7 +27,7 @@ jobs:
         if: ${{ ! inputs.is_pr }}
         with:
           persist-credentials: false
-          ref: ${{ github.head_ref }}
+          ref: ${{ github.ref_name }}
       - name: Setup Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4.4.0
         with:
@@ -78,7 +78,7 @@ jobs:
         run: |
           APP_APK="androidTests/android/app/build/outputs/apk/debug/app-debug.apk"
           TEST_APK="androidTests/android/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk"
-          gcloud firebase test android run \
+          gcloud --quiet beta firebase test android run \
             --project mobile-apps-firebase-test \
             --type instrumentation \
             --app "$APP_APK" \
@@ -87,6 +87,8 @@ jobs:
             --timeout 40m \
             --results-bucket "cloud-test-${REPO_OWNER}" \
             --results-dir "SalesforceReactNative/${RUN_ID}" \
+            --no-auto-google-login \
+            --no-performance-metrics \
             --no-record-video \
             --num-flaky-test-attempts=1
       - name: Copy Test Results
