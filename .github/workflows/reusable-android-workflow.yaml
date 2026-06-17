@@ -85,6 +85,7 @@ jobs:
             --device model=MediumPhone.arm,version=36,locale=en,orientation=portrait \
             --timeout 10m \
             --test-targets "class com.salesforce.androidsdk.reactnative.ReactHarnessTest" \
+            --results-bucket "cloud-test-forcedotcom" \
             --results-dir "SalesforceReactNative/${RUN_ID}" \
             --no-auto-google-login \
             --no-performance-metrics \
@@ -95,7 +96,7 @@ jobs:
         env:
           RUN_ID: ${{ github.run_id }}
         run: |
-          BUCKET_PATH="gs://test-lab-w87i9sz6q175u-kwp8ium6js0zw/SalesforceReactNative/${RUN_ID}"
+          BUCKET_PATH="gs://cloud-test-forcedotcom/SalesforceReactNative/${RUN_ID}"
           mkdir -p firebase_results
           gsutil -m cp -r "${BUCKET_PATH}/*/test_result_1.xml" firebase_results/ 2>/dev/null || true
       - name: Test Report
