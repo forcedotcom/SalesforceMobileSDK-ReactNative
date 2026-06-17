@@ -5,8 +5,6 @@
 
     <!-- Remove POST_NOTIFICATIONS permission from SDK debug manifest to suppress notification popup in tests -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" tools:node="remove" />
-    <!-- Remove SYSTEM_ALERT_WINDOW (RN dev overlay) — Firebase API 34 cannot grant this permission -->
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" tools:node="remove" />
 
     <application android:label="@string/app_name"
         android:name="com.salesforce.androidsdk.reactnative.util.SalesforceReactTestApp"

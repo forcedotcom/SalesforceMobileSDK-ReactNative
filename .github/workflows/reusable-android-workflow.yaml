@@ -70,7 +70,7 @@ jobs:
           credentials_json: '${{ secrets.GCLOUD_SERVICE_KEY }}'
       - uses: 'google-github-actions/setup-gcloud@e427ad8a34f8676edf47cf7d7925499adf3eb74f'  # v2.2.1
         if: success() || failure()
-      - name: Run Tests on Firebase Test Lab
+      - name: Run Tests on Firebase Test Lab (batch 1 - Harness/OAuth/SmartStore)
         if: success() || failure()
         env:
           RUN_ID: ${{ github.run_id }}
@@ -82,10 +82,32 @@ jobs:
             --type instrumentation \
             --app "$APP_APK" \
             --test "$TEST_APK" \
-            --device model=MediumPhone.arm,version=34,locale=en,orientation=portrait \
-            --timeout 40m \
+            --device model=MediumPhone.arm,version=36,locale=en,orientation=portrait \
+            --timeout 15m \
+            --test-targets "class com.salesforce.androidsdk.reactnative.ReactHarnessTest,com.salesforce.androidsdk.reactnative.ReactOAuthTest,com.salesforce.androidsdk.reactnative.ReactSmartStoreTest" \
             --results-bucket "cloud-test-forcedotcom" \
-            --results-dir "SalesforceReactNative/${RUN_ID}" \
+            --results-dir "SalesforceReactNative/${RUN_ID}/batch1" \
+            --no-auto-google-login \
+            --no-performance-metrics \
+            --no-record-video \
+            --num-flaky-test-attempts=1
+      - name: Run Tests on Firebase Test Lab (batch 2 - Net/MobileSync)
+        if: success() || failure()
+        env:
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          APP_APK="androidTests/android/app/build/outputs/apk/debug/app-debug.apk"
+          TEST_APK="androidTests/android/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk"
+          gcloud --quiet beta firebase test android run \
+            --project mobile-apps-firebase-test \
+            --type instrumentation \
+            --app "$APP_APK" \
+            --test "$TEST_APK" \
+            --device model=MediumPhone.arm,version=36,locale=en,orientation=portrait \
+            --timeout 15m \
+            --test-targets "class com.salesforce.androidsdk.reactnative.ReactNetTest,com.salesforce.androidsdk.reactnative.ReactMobileSyncTest" \
+            --results-bucket "cloud-test-forcedotcom" \
+            --results-dir "SalesforceReactNative/${RUN_ID}/batch2" \
             --no-auto-google-login \
             --no-performance-metrics \
             --no-record-video \
@@ -97,7 +119,8 @@ jobs:
         run: |
           BUCKET_PATH="gs://cloud-test-forcedotcom/SalesforceReactNative/${RUN_ID}"
           mkdir -p firebase_results
-          gsutil -m cp -r "${BUCKET_PATH}/*/test_result_1.xml" firebase_results/ 2>/dev/null || true
+          gsutil -m cp -r "${BUCKET_PATH}/batch1/*/test_result_1.xml" firebase_results/ 2>/dev/null || true
+          gsutil -m cp -r "${BUCKET_PATH}/batch2/*/test_result_1.xml" firebase_results/ 2>/dev/null || true
       - name: Test Report
         uses: mikepenz/action-junit-report@3a81627bfac62268172037048872e8ebd4207e6d  # v6.4.1
         if: success() || failure()
