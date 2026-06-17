@@ -88,7 +88,6 @@ jobs:
             --test-targets "class com.salesforce.androidsdk.reactnative.ReactHarnessTest" \
             --results-bucket "cloud-test-forcedotcom" \
             --results-dir "SalesforceReactNative/${RUN_ID}" \
-            --environment-variables clearPackageData=true \
             --no-auto-google-login \
             --no-performance-metrics \
             --no-record-video \
