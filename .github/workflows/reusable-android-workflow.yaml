@@ -84,7 +84,7 @@ jobs:
             --test "$TEST_APK" \
             --device model=MediumPhone.arm,version=36,locale=en,orientation=portrait \
             --timeout 15m \
-            --test-targets "class com.salesforce.androidsdk.reactnative.ReactHarnessTest,com.salesforce.androidsdk.reactnative.ReactOAuthTest,com.salesforce.androidsdk.reactnative.ReactSmartStoreTest" \
+            --test-targets "class com.salesforce.androidsdk.reactnative.ReactHarnessTest class com.salesforce.androidsdk.reactnative.ReactOAuthTest class com.salesforce.androidsdk.reactnative.ReactSmartStoreTest" \
             --results-bucket "cloud-test-forcedotcom" \
             --results-dir "SalesforceReactNative/${RUN_ID}/batch1" \
             --no-auto-google-login \
@@ -105,7 +105,7 @@ jobs:
             --test "$TEST_APK" \
             --device model=MediumPhone.arm,version=36,locale=en,orientation=portrait \
             --timeout 15m \
-            --test-targets "class com.salesforce.androidsdk.reactnative.ReactNetTest,com.salesforce.androidsdk.reactnative.ReactMobileSyncTest" \
+            --test-targets "class com.salesforce.androidsdk.reactnative.ReactNetTest class com.salesforce.androidsdk.reactnative.ReactMobileSyncTest" \
             --results-bucket "cloud-test-forcedotcom" \
             --results-dir "SalesforceReactNative/${RUN_ID}/batch2" \
             --no-auto-google-login \
