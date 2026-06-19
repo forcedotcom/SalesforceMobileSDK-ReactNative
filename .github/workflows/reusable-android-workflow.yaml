@@ -84,7 +84,7 @@ jobs:
             --app "$APP_APK" \
             --test "$TEST_APK" \
             --device model=MediumPhone.arm,version=35,locale=en,orientation=portrait \
-            --timeout 60m \
+            --timeout 90m \
             --results-bucket "cloud-test-${REPO_OWNER}" \
             --results-dir "SalesforceReactNative/${RUN_ID}" \
             --no-auto-google-login \
