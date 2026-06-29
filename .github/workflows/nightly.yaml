@@ -23,10 +23,12 @@ jobs:
             xcode: ^26
           - ios: ^18
             xcode: ^16
+            macos: macos-15
     uses: ./.github/workflows/reusable-workflow.yaml
     with:
       ios: ${{ matrix.ios }}
       xcode: ${{ matrix.xcode }}
+      macos: ${{ matrix.macos }}
     secrets:
       TEST_CREDENTIALS: ${{ secrets.TEST_CREDENTIALS }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
