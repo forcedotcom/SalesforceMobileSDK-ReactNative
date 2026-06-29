@@ -96,7 +96,8 @@ RCT_EXPORT_METHOD(authenticate:(NSDictionary *)args callback:(RCTResponseSenderB
         NSString *instanceUrl = creds.instanceUrl.absoluteString;
         NSString *loginUrl = [NSString stringWithFormat:@"%@://%@", creds.protocol, creds.domain];
         NSString *communityUrl = creds.communityUrl ? creds.communityUrl.absoluteString : nil;
-        NSString *uaString = [SalesforceSDKManager sharedManager].userAgentString(@"");
+        SFUserAccount *currentUser = [SFUserAccountManager sharedInstance].currentUser;
+        NSString *uaString = [[SalesforceSDKManager sharedManager] userAgentString:@"" forUser:currentUser];
         NSDictionary* credentialsDict = @{kAccessTokenCredentialsDictKey: creds.accessToken,
                                           kRefreshTokenCredentialsDictKey: creds.refreshToken,
                                           kClientIdCredentialsDictKey: creds.clientId,
