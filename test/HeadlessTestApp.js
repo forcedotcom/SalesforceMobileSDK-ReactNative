@@ -77,6 +77,7 @@ function emit(line) {
 
 async function runOne(suiteName, testName) {
   const cap = SUITE_TIMEOUTS[suiteName] || DEFAULT_TIMEOUT;
+  lastUnhandledRejection = null;
   // IMPORTANT: the timer MUST be cleared once the race settles. Promise.race does
   // not cancel the loser, so a timer left running after the test wins would fire
   // later and call testDone() on WHATEVER test is running then — corrupting an
@@ -84,7 +85,12 @@ async function runOne(suiteName, testName) {
   let timer;
   const timeout = new Promise((resolve) => {
     timer = setTimeout(() => {
-      const err = new Error('timeout after ' + cap + 'ms');
+      const err = new Error(
+        'timeout after ' + cap + 'ms' +
+          (lastUnhandledRejection
+            ? ' (unhandled rejection during test: ' + lastUnhandledRejection + ')'
+            : '')
+      );
       // Clear testRunner's singleton resolver so the NEXT test starts clean.
       testDone(err);
       resolve(err);
@@ -102,6 +108,25 @@ async function runOne(suiteName, testName) {
 function toMessage(error) {
   if (!error) return '';
   return String(error.message || error).replace(/\s+/g, ' ').slice(0, 500);
+}
+
+// Surface promise rejections that tests swallow. Several tests are promise
+// chains with no .catch, so a failed assertion never reaches testDone and the
+// test silently stalls until the suite cap fires. Hermes drops unhandled
+// rejections without a trace in non-dev bundles unless a tracker is installed.
+// The last rejection seen is folded into the timeout error message (attribution
+// only — a stale rejection from an earlier test must not fail the current one,
+// same lesson as the leaked-timer bug above).
+let lastUnhandledRejection = null;
+if (global.HermesInternal && global.HermesInternal.enablePromiseRejectionTracker) {
+  global.HermesInternal.enablePromiseRejectionTracker({
+    allRejections: true,
+    onUnhandled: (id, rejection) => {
+      lastUnhandledRejection = toMessage(rejection) || 'unknown rejection';
+      emit('SFTESTUNHANDLED::' + lastUnhandledRejection);
+    },
+    onHandled: () => {},
+  });
 }
 
 async function runAllHeadless() {
