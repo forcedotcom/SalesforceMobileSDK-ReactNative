@@ -90,7 +90,7 @@ jobs:
             --no-auto-google-login \
             --no-performance-metrics \
             --no-record-video \
-            --num-uniform-shards=2 \
+            --num-uniform-shards=1 \
             --num-flaky-test-attempts=1
       - name: Copy Test Results
         if: success() || failure()
