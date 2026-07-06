@@ -221,7 +221,13 @@ export const retrieve: RetrieveOverload = <T>(
     errorCB = z as ExecErrorCallback;
   }
 
-  const fields = fieldlist ? { fields: fieldlist } : null;
+  // `fields` must cross the bridge as a comma-separated string. A raw string[]
+  // (the documented/typed form) would be URL-encoded as its Array toString
+  // (e.g. "[Name, Industry]") and rejected by Salesforce, so join it here. A
+  // string is passed through unchanged for the legacy pre-joined caller.
+  const fields = fieldlist
+    ? { fields: Array.isArray(fieldlist) ? fieldlist.join(",") : fieldlist }
+    : null;
   return sendRequest("/services/data", `/${apiVersion}/sobjects/${objtype}/${id}`, successCB, errorCB, "GET", fields);
 };
 

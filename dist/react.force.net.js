@@ -161,7 +161,9 @@ const retrieve = (objtype, id, x, y, z) => {
         successCB = y;
         errorCB = z;
     }
-    const fields = fieldlist ? { fields: fieldlist } : null;
+    const fields = fieldlist
+        ? { fields: Array.isArray(fieldlist) ? fieldlist.join(",") : fieldlist }
+        : null;
     return (0, exports.sendRequest)("/services/data", `/${apiVersion}/sobjects/${objtype}/${id}`, successCB, errorCB, "GET", fields);
 };
 exports.retrieve = retrieve;
