@@ -47,7 +47,7 @@
 
 import React, { useEffect } from 'react';
 import { View, Text } from 'react-native';
-import { getSuites, runTest, testDone } from './testRunner';
+import { getSuites, runTest, abandonActiveTest } from './testRunner';
 
 // Register all suites via import side-effects (same set as TestApp.js).
 import './harness.test';
@@ -91,8 +91,9 @@ async function runOne(suiteName, testName) {
             ? ' (unhandled rejection during test: ' + lastUnhandledRejection + ')'
             : '')
       );
-      // Clear testRunner's singleton resolver so the NEXT test starts clean.
-      testDone(err);
+      // Advance testRunner's generation and settle the active resolver so the
+      // abandoned run cannot clobber or run concurrently with the NEXT test.
+      abandonActiveTest(err);
       resolve(err);
     }, cap);
   });
@@ -107,7 +108,18 @@ async function runOne(suiteName, testName) {
 
 function toMessage(error) {
   if (!error) return '';
-  return String(error.message || error).replace(/\s+/g, ' ').slice(0, 500);
+  // Bridge errors reject with plain objects/strings, not Error instances, so
+  // error.message is usually absent. String({...}) would yield "[object Object]"
+  // and gut the attribution this file exists to provide — JSON-stringify those.
+  let msg = error.message;
+  if (typeof msg !== 'string' || msg.length === 0) {
+    if (typeof error === 'string') {
+      msg = error;
+    } else {
+      try { msg = JSON.stringify(error); } catch (e) { msg = String(error); }
+    }
+  }
+  return String(msg).replace(/\s+/g, ' ').slice(0, 500);
 }
 
 // Surface promise rejections that tests swallow. Several tests are promise

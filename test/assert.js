@@ -30,7 +30,21 @@ assert.containsAllKeys = (obj, keys, message) => {
     assert(missing.length === 0, message || `Missing keys: ${missing.join(', ')}`);
 };
 assert.sameDeepMembers = (arr1, arr2, message) => {
-    const sortedStringify = (obj) => JSON.stringify(obj, Object.keys(obj).sort());
+    // NB: a JSON.stringify *array* replacer whitelists property names at EVERY
+    // depth, so nested keys absent from the top level get silently dropped from
+    // both sides — comparing {cfg:{k:1}} equal to {cfg:{k:2}} (a false pass).
+    // Canonicalize recursively instead: sort object keys at every level while
+    // preserving array order.
+    const canonical = (v) => {
+        if (Array.isArray(v)) return v.map(canonical);
+        if (v && typeof v === 'object') {
+            const out = {};
+            Object.keys(v).sort().forEach(k => { out[k] = canonical(v[k]); });
+            return out;
+        }
+        return v;
+    };
+    const sortedStringify = (obj) => JSON.stringify(canonical(obj));
     const s1 = arr1.map(i => sortedStringify(i)).sort();
     const s2 = arr2.map(i => sortedStringify(i)).sort();
     assert(JSON.stringify(s1) === JSON.stringify(s2), message || 'Arrays do not have same deep members');
