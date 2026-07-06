@@ -91,9 +91,13 @@ abstract class BaseReactNativeTest {
  */
 object HeadlessResults {
 
+    private const val BEGIN_PREFIX = "SFTESTBEGIN::"
     private const val RESULT_PREFIX = "SFTESTRESULT::"
     private const val DONE_PREFIX = "SFTESTDONE::"
     private const val DEFAULT_MAX_RUN_MS = 45L * 60 * 1000 // < Firebase --timeout 60m
+    // App must launch and mount HeadlessTestApp (emit BEGIN) within this, else fail
+    // fast with a real cause instead of blocking the whole run on a silent no-mount.
+    private const val DEFAULT_BEGIN_TIMEOUT_MS = 3L * 60 * 1000
 
     private val results = ConcurrentHashMap<String, TestResult>()
     private val lock = Object()
@@ -103,6 +107,11 @@ object HeadlessResults {
 
     @Volatile
     private var runError: String? = null
+
+    // Best-effort: a FATAL EXCEPTION for our process captured from logcat, folded
+    // into the failure message so a crash reads as its real cause, not a timeout.
+    @Volatile
+    private var crashHint: String? = null
 
     fun resultFor(name: String): TestResult {
         ensureCollected()
@@ -129,17 +138,44 @@ object HeadlessResults {
         // Clear logcat so we only read this run's output.
         UiDevice.getInstance(instrumentation).executeShellCommand("logcat -c")
 
+        val beginTimeoutMs = InstrumentationRegistry.getArguments()
+            .getString("beginTimeoutMs")?.toLongOrNull() ?: DEFAULT_BEGIN_TIMEOUT_MS
+        val targetPackage = context.packageName
+
+        val begun = CountDownLatch(1)
         val done = CountDownLatch(1)
         // Stream logcat from the shell uid (which holds READ_LOGS). Start reading
-        // BEFORE launching so no early sentinel is missed.
-        val pfd = instrumentation.uiAutomation.executeShellCommand("logcat -v raw -s ReactNativeJS:I")
+        // BEFORE launching so no early sentinel is missed. AndroidRuntime:E is
+        // included so a FATAL crash in the app can be captured as the real cause.
+        val pfd = instrumentation.uiAutomation
+            .executeShellCommand("logcat -v raw -s ReactNativeJS:I AndroidRuntime:E")
         val reader = BufferedReader(InputStreamReader(ParcelFileDescriptor.AutoCloseInputStream(pfd)))
         val readerThread = Thread {
+            // Capture the FATAL EXCEPTION block only when it belongs to our process.
+            val fatalBuf = StringBuilder()
+            var fatalLinesLeft = 0
             try {
                 reader.forEachLine { line ->
                     when {
-                        line.contains(RESULT_PREFIX) -> parseResult(line)
+                        line.contains(BEGIN_PREFIX) -> begun.countDown()
+                        // One malformed line must not kill the reader (the sole DONE
+                        // consumer) — guard the parse.
+                        line.contains(RESULT_PREFIX) -> runCatching { parseResult(line) }
                         line.contains(DONE_PREFIX) -> done.countDown()
+                        line.contains("FATAL EXCEPTION") -> {
+                            fatalBuf.setLength(0)
+                            fatalBuf.append(line).append('\n')
+                            fatalLinesLeft = 25
+                        }
+                        fatalLinesLeft > 0 -> {
+                            fatalBuf.append(line).append('\n')
+                            fatalLinesLeft--
+                            // The "Process:" line tells us whose crash this is.
+                            if (line.contains("Process:") && line.contains(targetPackage)) {
+                                crashHint = fatalBuf.toString().take(1500)
+                                fatalLinesLeft = 0
+                            }
+                        }
                     }
                 }
             } catch (_: Throwable) {
@@ -157,10 +193,25 @@ object HeadlessResults {
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         )
 
+        // Fast-fail if the app never mounts HeadlessTestApp (no BEGIN): bad/missing
+        // creds, a JS bundle load failure, or a release variant would otherwise block
+        // the whole maxRunMs and then report a misleading "no DONE". (A crash that
+        // kills the shared instrumentation process is already reported quickly by
+        // `am instrument` as "Process crashed"; this covers the alive-but-silent case.)
+        if (!begun.await(beginTimeoutMs, TimeUnit.MILLISECONDS)) {
+            runError = "Headless run did not emit BEGIN within ${beginTimeoutMs}ms — " +
+                "app launched but HeadlessTestApp never mounted " +
+                "(check test_credentials.json and the JS bundle)." +
+                (crashHint?.let { "\nApp FATAL:\n$it" } ?: "")
+            runCatching { pfd.close() }
+            return
+        }
+
         // Condition-wait on the DONE sentinel — no Thread.sleep / polling.
         val finished = done.await(maxRunMs, TimeUnit.MILLISECONDS)
         if (!finished) {
-            runError = "Headless run did not emit DONE within ${maxRunMs}ms"
+            runError = "Headless run did not emit DONE within ${maxRunMs}ms" +
+                (crashHint?.let { " — app FATAL:\n$it" } ?: "")
         }
         runCatching { pfd.close() }
     }
