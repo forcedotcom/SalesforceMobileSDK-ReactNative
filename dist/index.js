@@ -58,7 +58,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.smartstore = exports.oauth = exports.net = exports.mobilesync = exports.forceUtil = exports.forceTest = exports.forceLog = exports.forceClient = void 0;
+exports.smartstore = exports.oauth = exports.net = exports.mobilesync = exports.forceUtil = exports.forceLog = exports.forceClient = void 0;
 const forceLog = __importStar(require("./react.force.log"));
 exports.forceLog = forceLog;
 const mobilesync = __importStar(require("./react.force.mobilesync"));
@@ -69,9 +69,8 @@ const oauth = __importStar(require("./react.force.oauth"));
 exports.oauth = oauth;
 const smartstore = __importStar(require("./react.force.smartstore"));
 exports.smartstore = smartstore;
-const forceTest = __importStar(require("./react.force.test"));
-exports.forceTest = forceTest;
 const forceUtil = __importStar(require("./react.force.util"));
 exports.forceUtil = forceUtil;
 const forceClient = net;
 exports.forceClient = forceClient;
+//# sourceMappingURL=index.js.map

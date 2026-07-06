@@ -221,7 +221,13 @@ export const retrieve: RetrieveOverload = <T>(
     errorCB = z as ExecErrorCallback;
   }
 
-  const fields = fieldlist ? { fields: fieldlist } : null;
+  // The REST API expects fields as a comma-separated string (e.g. "Name,Industry").
+  // Passing a raw string[] across the native bridge produces "[Name, Industry]" on
+  // Android (ArrayList.toString) or similar on iOS, both rejected by Salesforce.
+  // Join here so the documented string[] signature actually works; a pre-joined string
+  // is passed through unchanged for backward compatibility.
+  const fieldsValue = Array.isArray(fieldlist) ? fieldlist.join(",") : fieldlist;
+  const fields = fieldsValue ? { fields: fieldsValue } : null;
   return sendRequest("/services/data", `/${apiVersion}/sobjects/${objtype}/${id}`, successCB, errorCB, "GET", fields);
 };
 

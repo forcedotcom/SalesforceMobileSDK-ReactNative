@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "outDir": "dist",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "customConditions": null,
+    "declaration": true,
+    "declarationMap": false,
+    "sourceMap": true,
+    "allowImportingTsExtensions": false
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["**/node_modules", "**/Pods", "src/specs"]
+}

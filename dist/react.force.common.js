@@ -33,7 +33,7 @@ const react_force_log_1 = require("./react.force.log");
  * callback(error, result) where error is null on success.
  */
 const exec = (moduleIOSName, moduleAndroidName, moduleIOS, moduleAndroid, successCB, errorCB, methodName, args) => {
-    const module = moduleIOS !== null && moduleIOS !== void 0 ? moduleIOS : moduleAndroid;
+    const module = moduleIOS ?? moduleAndroid;
     const moduleName = moduleIOS ? moduleIOSName : moduleAndroidName;
     if (!module) {
         react_force_log_1.sdkConsole.error(`No native module found for ${moduleIOSName}/${moduleAndroidName}`);
@@ -70,3 +70,4 @@ const safeJSONparse = (str) => {
     }
 };
 exports.safeJSONparse = safeJSONparse;
+//# sourceMappingURL=react.force.common.js.map

@@ -30,11 +30,9 @@ const react_native_1 = require("react-native");
 const react_force_common_1 = require("./react.force.common");
 // New architecture: TurboModuleRegistry first, fall back to NativeModules.
 // Lazy lookup - bridgeless mode doesn't have modules ready at import time.
-const getSFNetReactBridge = () => { var _a; return (_a = react_native_1.TurboModuleRegistry.get("SFNetReactBridge")) !== null && _a !== void 0 ? _a : react_native_1.NativeModules.SFNetReactBridge; };
-const getSalesforceNetReactBridge = () => {
-    var _a;
-    return (_a = react_native_1.TurboModuleRegistry.get("SalesforceNetReactBridge")) !== null && _a !== void 0 ? _a : react_native_1.NativeModules.SalesforceNetReactBridge;
-};
+const getSFNetReactBridge = () => react_native_1.TurboModuleRegistry.get("SFNetReactBridge") ?? react_native_1.NativeModules.SFNetReactBridge;
+const getSalesforceNetReactBridge = () => react_native_1.TurboModuleRegistry.get("SalesforceNetReactBridge") ??
+    react_native_1.NativeModules.SalesforceNetReactBridge;
 var apiVersion = 'v66.0';
 /**
  * Set apiVersion to be used
@@ -161,7 +159,13 @@ const retrieve = (objtype, id, x, y, z) => {
         successCB = y;
         errorCB = z;
     }
-    const fields = fieldlist ? { fields: fieldlist } : null;
+    // The REST API expects fields as a comma-separated string (e.g. "Name,Industry").
+    // Passing a raw string[] across the native bridge produces "[Name, Industry]" on
+    // Android (ArrayList.toString) or similar on iOS, both rejected by Salesforce.
+    // Join here so the documented string[] signature actually works; a pre-joined string
+    // is passed through unchanged for backward compatibility.
+    const fieldsValue = Array.isArray(fieldlist) ? fieldlist.join(",") : fieldlist;
+    const fields = fieldsValue ? { fields: fieldsValue } : null;
     return (0, exports.sendRequest)("/services/data", `/${apiVersion}/sobjects/${objtype}/${id}`, successCB, errorCB, "GET", fields);
 };
 exports.retrieve = retrieve;
@@ -296,3 +300,4 @@ exports.collectionRetrieve = collectionRetrieve;
  */
 const collectionDelete = (allOrNone, ids, successCB, errorCB) => (0, exports.sendRequest)("/services/data", `/${apiVersion}/composite/sobjects?allOrNone=${allOrNone}&ids=${ids.join(',')}`, successCB, errorCB, "DELETE");
 exports.collectionDelete = collectionDelete;
+//# sourceMappingURL=react.force.net.js.map
