@@ -28,7 +28,7 @@ jobs:
     with:
       ios: ${{ matrix.ios }}
       xcode: ${{ matrix.xcode }}
-      macos: ${{ matrix.macos }}
+      macos: ${{ matrix.macos || 'macos-latest' }}
     secrets:
       TEST_CREDENTIALS: ${{ secrets.TEST_CREDENTIALS }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
