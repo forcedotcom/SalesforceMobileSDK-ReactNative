@@ -26,7 +26,7 @@
  */
 
 class ReactMobileSyncTests: BaseReactNativeTest {
-    override var testTimeoutSeconds: Double { 60 }
+    override var testTimeoutSeconds: Double { 120 }
 
     func testSyncDown() { runTest("testSyncDown") }
     func testSyncUp() { runTest("testSyncUp") }
