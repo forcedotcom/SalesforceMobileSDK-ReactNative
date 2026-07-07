@@ -231,15 +231,14 @@ function testCleanResyncGhosts() {
     // Delete record from server (cleanup)
 
     registerSoup(storeConfig, soupName, indexSpecs)
-        .then((result) => {
-            return netCreate('contact', {FirstName: firstName, LastName: 'Last' + uniq});
-        })
-        .then((result) => {
-            contactId = result.id;
-            return netCreate('contact', {FirstName: otherFirstName, LastName: 'Last' + uniq});
-        })
-        .then((result) => {
-            otherContactId = result.id;
+        // Parallel creates: the two records are independent, so no need to serialize
+        .then(() => Promise.all([
+            netCreate('contact', {FirstName: firstName, LastName: 'Last' + uniq}),
+            netCreate('contact', {FirstName: otherFirstName, LastName: 'Last' + uniq}),
+        ]))
+        .then(([r1, r2]) => {
+            contactId = r1.id;
+            otherContactId = r2.id;
             return syncDown(storeConfig,
                             {'type':'soql', 'query':"SELECT Id, FirstName, LastName FROM Contact WHERE Id IN ('" + contactId + "', '" + otherContactId + "')"},
                             soupName,
@@ -248,7 +247,7 @@ function testCleanResyncGhosts() {
         })
         .then((result) => {
             syncId = result._soupEntryId;
-            assert.equal(result.totalSize, 2, 'Total size should be 1');
+            assert.equal(result.totalSize, 2, 'Total size should be 2');
             assert.equal(result.status, 'DONE', 'Status should be done');
             // order by needed: without it row order follows the SQLite plan (Id-index
             // order), and Salesforce Ids are not assigned in creation order.
@@ -257,24 +256,18 @@ function testCleanResyncGhosts() {
         })
         .then((result) => {
             assert.deepEqual(result.currentPageOrderedEntries, [[firstName],[otherFirstName]]);
-
             return netDel('contact', otherContactId);
         })
-        .then((result) => {
-            return cleanResyncGhosts(storeConfig, syncId);
-        })
-        .then(() => {
-            return runSmartQuery(storeConfig, querySpec);
-        })
+        // Brief pause so the deletion propagates before cleanResyncGhosts queries the server
+        .then(() => timeoutPromiser(1000))
+        .then(() => cleanResyncGhosts(storeConfig, syncId))
+        .then(() => runSmartQuery(storeConfig, querySpec))
         .then((result) => {
             assert.deepEqual(result.currentPageOrderedEntries, [[firstName]]);
-
-            // Cleanup
             return netDel('contact', contactId);
         })
-        .then((result) => { 
-            testDone();
-        });
+        .then(() => { testDone(); })
+        .catch((err) => { testDone(err); });
 };
 
 function testGetSyncStatusDeleteSync() {
