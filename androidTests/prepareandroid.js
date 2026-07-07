@@ -26,9 +26,13 @@ var destCredentials = path.join(assetsDir, 'test_credentials.json');
 if (fs.existsSync(credsSrc)) {
     fs.copyFileSync(credsSrc, destCredentials);
 } else {
-    console.warn('WARNING: shared/test/test_credentials.json not found. Tests will fail at runtime.');
-    console.warn('         Copy shared/test/test_credentials.json.sample and fill in your credentials.');
-    fs.writeFileSync(destCredentials, '{}', 'utf8');
+    // Fail the build rather than writing an empty '{}' asset: '{}' produces a
+    // green build that crashes in TestAuthenticationActivity.onCreate at runtime
+    // (JSONException: no value for organization_id), which the harness can only
+    // surface as a delayed, misleading timeout. Fail loudly here instead.
+    console.error('ERROR: shared/test/test_credentials.json not found — cannot build the test app.');
+    console.error('       Copy shared/test/test_credentials.json.sample and fill in your credentials.');
+    process.exit(1);
 }
 
 console.log('=== Creating index.android.bundle');
