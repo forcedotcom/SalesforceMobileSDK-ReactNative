@@ -7,6 +7,6 @@ import TestApp from './node_modules/react-native-force/test/TestApp';
 // avoid the UIAutomator scroll flakiness on Firebase Test Lab's slow ARM
 // emulators, so the primary mount is HeadlessTestApp. iOS keeps mounting the
 // interactive TestApp (via iosTests/index.js) so XCUITest stays green.
-// For manual local UI debugging, point MainActivity at 'SalesforceReactTestAppInteractive'.
+// For manual local UI debugging, launch the app directly (Android Studio / adb / icon tap) — no instrumentation needed.
 AppRegistry.registerComponent('SalesforceReactTestApp', () => HeadlessTestApp);
 AppRegistry.registerComponent('SalesforceReactTestAppInteractive', () => TestApp);

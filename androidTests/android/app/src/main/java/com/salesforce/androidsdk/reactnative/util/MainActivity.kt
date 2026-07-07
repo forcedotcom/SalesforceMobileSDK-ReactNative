@@ -39,7 +39,18 @@ class MainActivity : SalesforceReactActivity() {
         super.onCreate(null)
     }
 
-    override fun getMainComponentName() = "SalesforceReactTestApp"
+    // Under connectedAndroidTest the test APK and app APK share a classloader, so
+    // InstrumentationRegistry is resolvable. On a direct launch (Android Studio,
+    // icon tap, adb) the test runner is absent → ClassNotFoundException → interactive.
+    override fun getMainComponentName(): String =
+        if (isRunningUnderInstrumentation()) "SalesforceReactTestApp"
+        else "SalesforceReactTestAppInteractive"
+
+    private fun isRunningUnderInstrumentation(): Boolean = runCatching {
+        Class.forName("androidx.test.platform.app.InstrumentationRegistry")
+            .getMethod("getInstrumentation").invoke(null)
+        true
+    }.getOrDefault(false)
 
     override fun createReactActivityDelegate(): ReactActivityDelegate =
         DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled)
