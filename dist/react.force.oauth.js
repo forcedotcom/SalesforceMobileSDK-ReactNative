@@ -29,11 +29,9 @@ exports.logout = exports.getAuthCredentials = exports.authenticate = void 0;
 const react_native_1 = require("react-native");
 const react_force_common_1 = require("./react.force.common");
 // Lazy module lookup: modules may not be available at import time in bridgeless mode.
-const getSFOauthReactBridge = () => { var _a; return (_a = react_native_1.TurboModuleRegistry.get("SFOauthReactBridge")) !== null && _a !== void 0 ? _a : react_native_1.NativeModules.SFOauthReactBridge; };
-const getSalesforceOauthReactBridge = () => {
-    var _a;
-    return (_a = react_native_1.TurboModuleRegistry.get("SalesforceOauthReactBridge")) !== null && _a !== void 0 ? _a : react_native_1.NativeModules.SalesforceOauthReactBridge;
-};
+const getSFOauthReactBridge = () => react_native_1.TurboModuleRegistry.get("SFOauthReactBridge") ?? react_native_1.NativeModules.SFOauthReactBridge;
+const getSalesforceOauthReactBridge = () => react_native_1.TurboModuleRegistry.get("SalesforceOauthReactBridge") ??
+    react_native_1.NativeModules.SalesforceOauthReactBridge;
 const exec = (successCB, errorCB, methodName, args) => {
     (0, react_force_common_1.exec)("SFOauthReactBridge", "SalesforceOauthReactBridge", getSFOauthReactBridge(), getSalesforceOauthReactBridge(), successCB, errorCB, methodName, args);
 };
@@ -86,3 +84,4 @@ const logout = (success, fail) => {
     exec(success, fail, "logoutCurrentUser", {});
 };
 exports.logout = logout;
+//# sourceMappingURL=react.force.oauth.js.map

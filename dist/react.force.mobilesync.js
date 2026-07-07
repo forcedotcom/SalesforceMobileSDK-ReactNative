@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MERGE_MODE = exports.deleteSync = exports.getSyncStatus = exports.syncUp = exports.cleanResyncGhosts = exports.reSync = exports.syncDown = void 0;
+exports.resetSyncManager = exports.MERGE_MODE = exports.deleteSync = exports.getSyncStatus = exports.syncUp = exports.cleanResyncGhosts = exports.reSync = exports.syncDown = void 0;
 /*
  * Copyright (c) 2015-present, salesforce.com, inc.
  * All rights reserved.
@@ -30,8 +30,8 @@ const react_native_1 = require("react-native");
 const react_force_common_1 = require("./react.force.common");
 // New architecture: TurboModuleRegistry first, fall back to NativeModules.
 // Lazy lookup - bridgeless mode doesn't have modules ready at import time.
-const getSFMobileSyncReactBridge = () => { var _a; return (_a = react_native_1.TurboModuleRegistry.get("SFMobileSyncReactBridge")) !== null && _a !== void 0 ? _a : react_native_1.NativeModules.SFMobileSyncReactBridge; };
-const getMobileSyncReactBridge = () => { var _a; return (_a = react_native_1.TurboModuleRegistry.get("MobileSyncReactBridge")) !== null && _a !== void 0 ? _a : react_native_1.NativeModules.MobileSyncReactBridge; };
+const getSFMobileSyncReactBridge = () => react_native_1.TurboModuleRegistry.get("SFMobileSyncReactBridge") ?? react_native_1.NativeModules.SFMobileSyncReactBridge;
+const getMobileSyncReactBridge = () => react_native_1.TurboModuleRegistry.get("MobileSyncReactBridge") ?? react_native_1.NativeModules.MobileSyncReactBridge;
 // If param is a storeconfig return the same storeconfig
 // If param is a boolean, returns a storeconfig object  {'isGlobalStore': boolean}
 // Otherwise, returns a default storeconfig object
@@ -145,3 +145,12 @@ exports.MERGE_MODE = {
     OVERWRITE: "OVERWRITE",
     LEAVE_IF_CHANGED: "LEAVE_IF_CHANGED",
 };
+const resetSyncManager = (storeConfig, successCB, errorCB) => {
+    storeConfig = checkFirstArg(storeConfig);
+    exec(successCB, errorCB, "resetSyncManager", {
+        isGlobalStore: storeConfig.isGlobalStore,
+        storeName: storeConfig.storeName,
+    });
+};
+exports.resetSyncManager = resetSyncManager;
+//# sourceMappingURL=react.force.mobilesync.js.map

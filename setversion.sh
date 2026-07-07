@@ -87,7 +87,7 @@ update_podspec "./SalesforceReact.podspec" "${OPT_VERSION}"
 
 echo "*** Updating dist ***"
 npm install
-npm run build
+npx tsc --project tsconfig.build.json
 
 echo "*** Updating Android codegen ***"
 rm -rf android/generated/source/codegen

@@ -30,8 +30,8 @@ const react_native_1 = require("react-native");
 const react_force_common_1 = require("./react.force.common");
 // New architecture: TurboModuleRegistry first, fall back to NativeModules.
 // Lazy lookup - bridgeless mode doesn't have modules ready at import time.
-const getSFSmartStoreReactBridge = () => { var _a; return (_a = react_native_1.TurboModuleRegistry.get("SFSmartStoreReactBridge")) !== null && _a !== void 0 ? _a : react_native_1.NativeModules.SFSmartStoreReactBridge; };
-const getSmartStoreReactBridge = () => { var _a; return (_a = react_native_1.TurboModuleRegistry.get("SmartStoreReactBridge")) !== null && _a !== void 0 ? _a : react_native_1.NativeModules.SmartStoreReactBridge; };
+const getSFSmartStoreReactBridge = () => react_native_1.TurboModuleRegistry.get("SFSmartStoreReactBridge") ?? react_native_1.NativeModules.SFSmartStoreReactBridge;
+const getSmartStoreReactBridge = () => react_native_1.TurboModuleRegistry.get("SmartStoreReactBridge") ?? react_native_1.NativeModules.SmartStoreReactBridge;
 const exec = (successCB, errorCB, methodName, args) => {
     (0, react_force_common_1.exec)("SFSmartStoreReactBridge", "SmartStoreReactBridge", getSFSmartStoreReactBridge(), getSmartStoreReactBridge(), successCB, errorCB, methodName, args);
 };
@@ -39,6 +39,8 @@ const exec = (successCB, errorCB, methodName, args) => {
  * StoreConfig class
  */
 class StoreConfig {
+    storeName;
+    isGlobalStore;
     constructor(storeName, isGlobalStore) {
         this.storeName = storeName;
         this.isGlobalStore = isGlobalStore;
@@ -49,6 +51,8 @@ exports.StoreConfig = StoreConfig;
  * SoupIndexSpec class
  */
 class SoupIndexSpec {
+    path;
+    type;
     constructor(path, type) {
         this.path = path;
         this.type = type;
@@ -59,14 +63,31 @@ exports.SoupIndexSpec = SoupIndexSpec;
  * QuerySpec class
  */
 class QuerySpec {
+    // the kind of query, one of: "exact","range", "like" or "smart":
+    // "exact" uses matchKey, "range" uses beginKey and endKey, "like" uses likeKey, "smart" uses smartSql
+    queryType = "exact";
+    // path for the original IndexSpec you wish to use for search: may be a compound path eg Account.Owner.Name
+    indexPath;
+    // for queryType "exact" and "match"
+    matchKey;
+    // for queryType "like"
+    likeKey;
+    // for queryType "range"
+    // the value at which query results may begin
+    beginKey;
+    // the value at which query results may end
+    endKey;
+    // for queryType "smart"
+    smartSql;
+    // path to sort by : optional
+    orderPath;
+    // "ascending" or "descending" : optional
+    order = "ascending";
+    // the number of entries to copy from native to javascript per each cursor page
+    pageSize = 10;
+    // selectPaths - null means return soup elements
+    selectPaths;
     constructor(path) {
-        // the kind of query, one of: "exact","range", "like" or "smart":
-        // "exact" uses matchKey, "range" uses beginKey and endKey, "like" uses likeKey, "smart" uses smartSql
-        this.queryType = "exact";
-        // "ascending" or "descending" : optional
-        this.order = "ascending";
-        // the number of entries to copy from native to javascript per each cursor page
-        this.pageSize = 10;
         this.indexPath = path;
     }
 }
@@ -75,18 +96,19 @@ exports.QuerySpec = QuerySpec;
  * StoreCursor class
  */
 class StoreCursor {
-    constructor() {
-        // the maximum number of entries returned per page
-        this.pageSize = 0;
-        // the total number of results
-        this.totalEntries = 0;
-        // the total number of pages of results available
-        this.totalPages = 0;
-        // the current page index among all the pages available
-        this.currentPageIndex = 0;
-        // the list of current page entries, ordered as requested in the querySpec
-        this.currentPageOrderedEntries = [];
-    }
+    // a unique identifier for this cursor, used by plugin
+    cursorId;
+    // the maximum number of entries returned per page
+    pageSize = 0;
+    // the total number of results
+    totalEntries = 0;
+    // the total number of pages of results available
+    totalPages = 0;
+    // the current page index among all the pages available
+    currentPageIndex = 0;
+    // the list of current page entries, ordered as requested in the querySpec
+    currentPageOrderedEntries = [];
+    constructor() { }
 }
 exports.StoreCursor = StoreCursor;
 // ====== querySpec factory methods
@@ -443,3 +465,4 @@ const removeAllStores = (successCB, errorCB) => {
     exec(successCB, errorCB, "removeAllStores", {});
 };
 exports.removeAllStores = removeAllStores;
+//# sourceMappingURL=react.force.smartstore.js.map
