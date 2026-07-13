@@ -16,6 +16,10 @@ Welcome to the comprehensive documentation for the Salesforce Mobile SDK for Rea
 - **[ios/README.md](ios/README.md)** - Overview of iOS bridge implementation
 - **[ios/API_REFERENCE.md](ios/API_REFERENCE.md)** - iOS native classes and bridging details
 
+### Android Implementation
+- **[android/README.md](android/README.md)** - Overview of Android bridge implementation
+- **[android/API_REFERENCE.md](android/API_REFERENCE.md)** - Android native classes and bridging details
+
 ### Testing
 - **[ios-tests/README.md](ios-tests/README.md)** - iOS test app structure and running tests
 - **[android-tests/README.md](android-tests/README.md)** - Android test app structure and running tests
@@ -36,7 +40,8 @@ If you're contributing to the SDK itself:
 
 1. Read [ARCHITECTURE.md](ARCHITECTURE.md) to understand the three-layer architecture
 2. Review [ios/README.md](ios/README.md) for iOS bridge implementation details
-3. See [ios-tests/README.md](ios-tests/README.md) and [android-tests/README.md](android-tests/README.md) for testing guidelines
+3. Review [android/README.md](android/README.md) for Android bridge implementation details
+4. See [ios-tests/README.md](ios-tests/README.md) and [android-tests/README.md](android-tests/README.md) for testing guidelines
 4. Check [../CLAUDE.md](../CLAUDE.md) for development standards and workflow
 
 ## Key Concepts
@@ -260,4 +265,5 @@ import type {
 - **New to the SDK?** Start with [JavaScript API Reference](javascript/API_REFERENCE.md)
 - **Understanding architecture?** Read [ARCHITECTURE.md](ARCHITECTURE.md)
 - **Working on iOS bridge?** See [ios/README.md](ios/README.md)
+- **Working on Android bridge?** See [android/README.md](android/README.md)
 - **Contributing?** Check [../CLAUDE.md](../CLAUDE.md) for guidelines
