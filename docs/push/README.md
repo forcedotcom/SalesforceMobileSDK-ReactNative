@@ -229,32 +229,18 @@ Salesforce Notification Builder payloads are encrypted end-to-end. To decrypt th
 }
 ```
 
-The extension must share the same **App Group** as the main app to access the Keychain RSA key. Add the App Group capability to both targets.
+The extension must share the same **Keychain Access Group** as the main app (add the Keychain Sharing capability to both targets with a matching group identifier) to access the RSA private key.
 
 ---
 
 ## Forwarding Push Payloads to JavaScript
 
-There is no built-in JS push API. To route incoming push data to the JavaScript layer, implement a simple React Native event emitter.
+There is no built-in JS push API. To route incoming push data to the JavaScript layer, you must write a native React Native event emitter module. The approach differs between the New Architecture (bridgeless/TurboModules) and the legacy bridge:
 
-### Android
+- **New Architecture (React Native 0.74+)**: Implement `RCTEventEmitter` on iOS and `EventEmitter` from `com.facebook.react.modules.core` on Android using the `DeviceEventManagerModule.RCTDeviceEventEmitter` pattern. You must hold a reference to the `ReactApplicationContext` (injected into your module constructor) and call `reactContext.emitDeviceEvent(...)` — do not cache `currentReactContext` from `ReactInstanceManager`, which is deprecated.
+- **Legacy bridge**: The `ReactInstanceManager.currentReactContext` approach was common in older tutorials but is not supported in New Architecture mode.
 
-In your `PushNotificationInterface.onPushMessageReceived`:
-
-```kotlin
-override fun onPushMessageReceived(data: Map<String?, String?>?) {
-    val reactContext = SalesforceReactSDKManager.getInstance()
-        .reactInstanceManager
-        ?.currentReactContext ?: return
-
-    val params = Arguments.createMap()
-    data?.forEach { (key, value) -> params.putString(key ?: "", value ?: "") }
-
-    reactContext
-        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
-        .emit("SalesforcePushNotification", params)
-}
-```
+Refer to the [React Native documentation on native modules](https://reactnative.dev/docs/native-modules-intro) and the [New Architecture migration guide](https://reactnative.dev/docs/new-architecture-intro) for the recommended event emitter pattern for your React Native version.
 
 ### iOS
 
@@ -303,24 +289,6 @@ PushService.pushNotificationsRegistrationType =
 // Control which users re-register on foreground (relevant for Publisher billing)
 PushService.foregroundRegistrationMode =
     PushService.PushNotificationForegroundRegistrationMode.CURRENT_USER  // default: ALL_USERS
-```
-
-### Android: Custom PushService Subclass
-
-Subclass `PushService` to customize registration payloads or react to status changes:
-
-```kotlin
-class MyPushService : PushService() {
-    override fun onPushNotificationRegistrationStatus(status: Int, userAccount: UserAccount?) {
-        when (status) {
-            REGISTRATION_STATUS_SUCCEEDED -> { /* log, analytics */ }
-            REGISTRATION_STATUS_FAILED -> { /* alert */ }
-        }
-    }
-}
-
-// Register it:
-SalesforceReactSDKManager.getInstance().pushServiceType = MyPushService::class.java
 ```
 
 ### iOS: Re-registration Mode and Custom Registration Body
