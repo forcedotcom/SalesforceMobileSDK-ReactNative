@@ -362,15 +362,19 @@ UserAccountManager.shared.filterSupportedNotificationTypes = { types in
 To invoke a server-side action when the user taps an action button, add this to `userNotificationCenter(_:didReceive:withCompletionHandler:)`:
 
 ```swift
-// nid is nested under the "sfdc" key in userInfo, not at the top level
-if let sfdc = response.notification.request.content.userInfo["sfdc"] as? [String: Any],
-   let nid = sfdc["nid"] as? String {
-    Task {
-        try? await PushNotificationManager.shared.invokeServerNotificationAction(
-            client: SFRestAPI.sharedInstance(),
-            notificationId: nid,
-            actionIdentifier: response.actionIdentifier
-        )
-    }
+// nid is nested under userInfo["sfdc"]["nid"] — NOT at the top level of userInfo
+let sfdc = response.notification.request.content.userInfo["sfdc"] as? [String: Any]
+guard actionIdentifier != UNNotificationDefaultActionIdentifier,
+      actionIdentifier != UNNotificationDismissActionIdentifier,
+      let nid = sfdc?["nid"] as? String else {
+    completionHandler()
+    return
+}
+Task {
+    try? await PushNotificationManager.shared.invokeServerNotificationAction(
+        notificationId: nid,
+        actionIdentifier: actionIdentifier
+    )
+    completionHandler()
 }
 ```
