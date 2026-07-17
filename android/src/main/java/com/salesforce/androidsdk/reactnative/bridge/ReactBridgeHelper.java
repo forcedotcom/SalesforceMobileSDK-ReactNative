@@ -156,6 +156,7 @@ public class ReactBridgeHelper  {
 
     public static List<Object> toJavaList(ReadableArray array) {
         List<Object> result = new ArrayList<>();
+        if (array == null) return result;
         for (int i = 0; i<array.size(); i++) {
             switch (array.getType(i)) {
                 case Null:
