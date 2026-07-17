@@ -20,6 +20,10 @@ For cross-platform architecture, see the [workspace-level push doc](../../../doc
 4. [iOS Setup](#ios-setup)
 5. [Forwarding Push Payloads to JavaScript](#forwarding-push-payloads-to-javascript)
 6. [Advanced Configuration](#advanced-configuration)
+   - [Android: Re-registration Modes](#android-re-registration-modes)
+   - [Android: Actionable Notifications](#android-actionable-notifications-api-v640)
+   - [iOS: Re-registration Mode and Custom Registration Body](#ios-re-registration-mode-and-custom-registration-body)
+   - [iOS: Actionable Notifications](#ios-actionable-notifications-api-v640)
 
 ---
 
@@ -48,6 +52,8 @@ Native layer (MainApplication.kt / AppDelegate.swift)
 There is no `mobilesync.push` or `oauth.push` JavaScript module. If you need to surface push payloads to the JavaScript layer (e.g., to navigate to a screen on tap), you must implement a custom React Native event emitter in the native code — see [Forwarding Push Payloads to JavaScript](#forwarding-push-payloads-to-javascript).
 
 The SDK registers your app's device with the Salesforce `MobilePushServiceDevice` endpoint automatically at the end of the OAuth login flow. You do not need to call any JavaScript API to trigger this.
+
+**Platform opt-in asymmetry:** iOS APNs registration is active by default in the SDK templates — the permission prompt fires on first launch. Android push is **opt-in**: you must set `pushNotificationReceiver` in `MainApplication.kt` and supply `google-services.json` for any push to work.
 
 ---
 
@@ -115,7 +121,8 @@ SalesforceReactSDKManager.getInstance().pushNotificationReceiver =
         override fun onPushMessageReceived(data: Map<String?, String?>?) {
             // data contains the push payload as key/value pairs.
             // The SDK has already decrypted any encrypted payload before calling this.
-            // Example: data["sfdc.content"] contains the Salesforce notification body.
+            // data["content"] contains the Salesforce notification body JSON (parse with
+            // SalesforceActionableNotificationContent.fromJson if handling actionable notifications).
             //
             // To forward to JS, emit a React Native event here — see section below.
         }
@@ -175,7 +182,7 @@ func application(_ application: UIApplication,
                  didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
     PushNotificationManager.shared.didRegisterForRemoteNotifications(withDeviceToken: deviceToken)
     if UserAccountManager.shared.currentUserAccount?.credentials.accessToken != nil {
-        PushNotificationManager.shared.registerForSalesforceNotifications { _ in }
+        PushNotificationManager.shared.registerSalesforceNotifications(completionBlock: nil, failBlock: nil)
     }
     // If not yet logged in, the SDK auto-registers after login
 }
@@ -186,9 +193,9 @@ func application(_ application: UIApplication,
 }
 ```
 
-### 4. Handle Incoming Notifications (Optional)
+### 4. Handle Incoming Notifications
 
-Add `UNUserNotificationCenterDelegate` to control foreground display and handle taps:
+Add `UNUserNotificationCenterDelegate` to control foreground display and handle taps. This is **required** for actionable notifications and recommended for all apps:
 
 ```swift
 extension AppDelegate: UNUserNotificationCenterDelegate {
@@ -201,15 +208,18 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     func userNotificationCenter(_ center: UNUserNotificationCenter,
                                 didReceive response: UNNotificationResponse,
                                 withCompletionHandler handler: @escaping () -> Void) {
-        // Handle notification tap — forward to JS if needed (see section below)
+        // Handle notification tap or action button tap — forward payload to JS if needed
+        let userInfo = response.notification.request.content.userInfo
+        // For actionable notifications, invoke the server action (see Actionable Notifications below)
         handler()
     }
 }
 ```
 
-Set the delegate early in `didFinishLaunchingWithOptions`:
+Set the delegate **before** `registerForRemotePushNotifications()` in `didFinishLaunchingWithOptions`:
 ```swift
 UNUserNotificationCenter.current().delegate = self
+registerForRemotePushNotifications()
 ```
 
 ### 5. Encrypted Push: Notification Service Extension
@@ -303,12 +313,64 @@ PushNotificationManager.shared.customPushRegistrationBody = [
 ]
 ```
 
+### Android: Actionable Notifications (API v64.0+)
+
+The SDK automatically creates `NotificationChannel` objects for each Salesforce notification type after registration. To display notifications with action buttons and invoke server-side actions on tap, implement the full `PushNotificationInterface` pattern:
+
+1. **Parse the payload** — the Salesforce notification body is in `data["content"]` (not `data["sfdc.content"]`):
+
+```kotlin
+import com.salesforce.androidsdk.push.SalesforceActionableNotificationContent
+
+override fun onPushMessageReceived(data: Map<String?, String?>?) {
+    val sfdc = data?.get("content")
+        ?.let { SalesforceActionableNotificationContent.fromJson(it) }
+        ?.sfdc ?: return
+
+    // Look up notification type (fetched automatically after registration)
+    val notifType = sfdc.notifType?.let {
+        SalesforceReactSDKManager.getInstance().getNotificationsType(it)
+    } ?: return
+
+    // Build notification — channel ID = notifType.type
+    // Action buttons come from notifType.actionGroups matched by sfdc.act?.group
+    // See SalesforceMobileSDK-Android/docs/push for the full pattern
+}
+```
+
+2. **Handle taps** — use a `BroadcastReceiver` (registered with `RECEIVER_NOT_EXPORTED`) and call:
+
+```kotlin
+SalesforceReactSDKManager.getInstance()
+    .invokeServerNotificationAction(notificationId = nid, actionKey = actionKey)
+```
+
+See the [Android push doc](https://github.com/forcedotcom/SalesforceMobileSDK-Android/tree/dev/docs/push) for the complete `BroadcastReceiver` pattern and `NotificationCompat.Builder` setup.
+
 ### iOS: Actionable Notifications (API v64.0+)
 
-Filter which notification types your app supports:
+After registration, the SDK automatically calls `fetchAndStoreNotificationTypes()`, which fetches `GET /vXX.0/connect/notifications/types` and registers `UNNotificationCategory` objects for each type. Your app receives action buttons automatically in push notifications — no additional setup is needed beyond the `UNUserNotificationCenterDelegate` wired in step 4 above.
+
+To filter which notification types your app supports:
 
 ```swift
 UserAccountManager.shared.filterSupportedNotificationTypes = { types in
     types.filter { $0.apiName == "approval_request" }
+}
+```
+
+To invoke a server-side action when the user taps an action button, add this to `userNotificationCenter(_:didReceive:withCompletionHandler:)`:
+
+```swift
+// nid is nested under the "sfdc" key in userInfo, not at the top level
+if let sfdc = response.notification.request.content.userInfo["sfdc"] as? [String: Any],
+   let nid = sfdc["nid"] as? String {
+    Task {
+        try? await PushNotificationManager.shared.invokeServerNotificationAction(
+            client: SFRestAPI.sharedInstance(),
+            notificationId: nid,
+            actionIdentifier: response.actionIdentifier
+        )
+    }
 }
 ```
