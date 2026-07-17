@@ -308,14 +308,41 @@ function sendRequest<T>(
 - `returnBinary` - Return binary data (base64 encoded) [default: false]
 - `doesNotRequireAuthentication` - Skip authentication [default: false]
 
-**Example**:
+**Example (callback)**:
 ```typescript
-import { net, forceUtil } from 'react-native-force';
+import { net } from 'react-native-force';
 
-const sendRequest = forceUtil.promiser(net.sendRequest);
+// Callback-based (always correct)
+net.sendRequest(
+  '/services/apexrest',
+  '/MyCustomAPI/process',
+  (response) => console.log('Success:', response),
+  (error) => console.error('Error:', error),
+  'POST',
+  { data: 'value' },
+  { 'Content-Type': 'application/json' }
+);
+```
 
-// Custom API call
-const response = await sendRequest(
+**Example (promise)**:
+```typescript
+import { net } from 'react-native-force';
+
+// Manual Promise wrapper — use this instead of forceUtil.promiser() for sendRequest,
+// because promiser() appends callbacks at the end but sendRequest expects them at positions 2 and 3.
+const sendRequestAsync = <T>(
+  endPoint: string,
+  path: string,
+  method?: string,
+  payload?: Record<string, unknown> | null,
+  headerParams?: Record<string, unknown> | null
+): Promise<T> =>
+  new Promise((resolve, reject) =>
+    net.sendRequest(endPoint, path, resolve, reject, method, payload, headerParams)
+  );
+
+// Usage
+const response = await sendRequestAsync(
   '/services/apexrest',
   '/MyCustomAPI/process',
   'POST',
@@ -323,6 +350,8 @@ const response = await sendRequest(
   { 'Content-Type': 'application/json' }
 );
 ```
+
+> **Note**: `forceUtil.promiser()` works for SDK functions that take `successCB`/`errorCB` as their **last two arguments** (e.g. `versions`, `resources`, `query`). `sendRequest` is an exception — it takes callbacks at positions 2 and 3, so use the manual wrapper above.
 
 ### Metadata Operations
 
