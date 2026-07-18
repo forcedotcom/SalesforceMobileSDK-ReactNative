@@ -170,6 +170,10 @@ class SmartStoreReactBridge(reactContext: ReactApplicationContext) :
         }
         val entriesList = ReactBridgeHelper.toJavaList(args.getArray(ENTRIES))
         val externalIdPath = args.getString(EXTERNAL_ID_PATH)
+        if (entriesList.isEmpty()) {
+            ReactBridgeHelper.invokeSuccess(callback, JSONArray().toString())
+            return
+        }
         val entries = entriesList.map { JSONObject(it as Map<*, *>) }
 
         // Run upsert
