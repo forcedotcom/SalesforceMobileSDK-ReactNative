@@ -333,7 +333,7 @@ import { net } from 'react-native-force';
 const sendRequestAsync = <T>(
   endPoint: string,
   path: string,
-  method?: string,
+  method?: 'POST' | 'GET' | 'PUT' | 'PATCH' | 'DELETE',
   payload?: Record<string, unknown> | null,
   headerParams?: Record<string, unknown> | null
 ): Promise<T> =>
