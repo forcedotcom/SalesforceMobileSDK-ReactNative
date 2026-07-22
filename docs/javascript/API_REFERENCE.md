@@ -190,8 +190,12 @@ import { oauth } from 'react-native-force';
 
 oauth.logout(
   () => {
-    console.log('Logged out successfully');
-    // Navigate to login screen
+    // The SDK does NOT automatically redirect to the login screen after logout.
+    // You must call oauth.authenticate() to show the login screen again.
+    oauth.authenticate(
+      () => console.log('Re-authenticated'),
+      (error) => console.error('Authentication failed:', error.message)
+    );
   },
   (error) => {
     console.error('Logout failed:', error.message);
@@ -204,13 +208,15 @@ oauth.logout(
 import { oauth, forceUtil } from 'react-native-force';
 
 const logout = forceUtil.promiser(oauth.logout);
+const authenticate = forceUtil.promiser(oauth.authenticate);
 
 try {
   await logout();
-  console.log('Logged out successfully');
-  // Navigate to login screen
+  // The SDK does NOT automatically redirect to the login screen after logout.
+  // You must call authenticate() to show the login screen again.
+  await authenticate();
 } catch (error) {
-  console.error('Logout failed:', error);
+  console.error('Logout or re-authentication failed:', error);
 }
 ```
 
@@ -220,9 +226,9 @@ try {
 - Clear session after inactivity
 
 **Notes**:
-- Revokes OAuth tokens on Salesforce server
-- Clears local token storage
-- Triggers app restart/reload in some configurations
+- Revokes OAuth tokens on Salesforce server and clears local token storage
+- **After `logout()` resolves, the app remains on the current screen.** The SDK does not automatically navigate to the login screen in React Native. Always call `oauth.authenticate()` after logout to present the login screen to the user.
+- On Android, a brief activity recreation is expected during the re-authentication flow in New Architecture (bridgeless) mode — this is not a crash.
 
 ---
 
