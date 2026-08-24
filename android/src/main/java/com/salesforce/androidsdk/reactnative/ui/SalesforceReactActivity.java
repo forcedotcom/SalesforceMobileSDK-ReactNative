@@ -34,12 +34,14 @@ import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.bridge.Callback;
+import com.salesforce.androidsdk.app.SalesforceSDKManager;
+import com.salesforce.androidsdk.app.SalesforceSDKManager.RestClientCallback;
+import com.salesforce.androidsdk.auth.OAuth2;
 import com.salesforce.androidsdk.reactnative.R;
 import com.salesforce.androidsdk.reactnative.app.SalesforceReactSDKManager;
 import com.salesforce.androidsdk.reactnative.bridge.ReactBridgeHelper;
 import com.salesforce.androidsdk.reactnative.util.SalesforceReactLogger;
 import com.salesforce.androidsdk.rest.ClientManager;
-import com.salesforce.androidsdk.rest.ClientManager.RestClientCallback;
 import com.salesforce.androidsdk.rest.RestClient;
 import com.salesforce.androidsdk.ui.SalesforceActivityDelegate;
 import com.salesforce.androidsdk.ui.SalesforceActivityInterface;
@@ -173,7 +175,7 @@ public abstract class SalesforceReactActivity extends ReactActivity implements S
 
     protected void login() {
         SalesforceReactLogger.i(TAG, "login called");
-        clientManager.getRestClient(this, new RestClientCallback() {
+        SalesforceSDKManager.getInstance().getRestClient(this, new RestClientCallback() {
 
             @Override
             public void authenticatedRestClient(RestClient client) {
@@ -195,7 +197,7 @@ public abstract class SalesforceReactActivity extends ReactActivity implements S
      */
     public void logout(final Callback callback) {
         SalesforceReactLogger.i(TAG, "logout called");
-        SalesforceReactSDKManager.getInstance().logout(this);
+        SalesforceSDKManager.getInstance().logout(null, this, true, OAuth2.LogoutReason.UNKNOWN);
         if (callback != null) {
             ReactBridgeHelper.invokeSuccess(callback, "Logout complete");
         }
@@ -210,7 +212,7 @@ public abstract class SalesforceReactActivity extends ReactActivity implements S
         SalesforceReactLogger.i(TAG, "authenticate called");
         pendingAuthCallback = callback;
 
-        clientManager.getRestClient(this, new RestClientCallback() {
+        SalesforceSDKManager.getInstance().getRestClient(this, new RestClientCallback() {
 
             @Override
             public void authenticatedRestClient(RestClient client) {

@@ -33,6 +33,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.turbomodule.core.interfaces.TurboModule
+import com.salesforce.androidsdk.app.SalesforceSDKManager
 import com.salesforce.androidsdk.reactnative.ui.SalesforceReactActivity
 import com.salesforce.androidsdk.reactnative.util.SalesforceReactLogger
 import com.salesforce.androidsdk.rest.RestClient
@@ -228,7 +229,7 @@ open class SalesforceNetReactBridge(
     protected open fun getRestClient(doesNotRequireAuth: Boolean): RestClient? {
         val currentActivity = getCurrentActivity() as? SalesforceReactActivity ?: return null
         return if (doesNotRequireAuth) {
-            currentActivity.buildClientManager().peekUnauthenticatedRestClient()
+            SalesforceSDKManager.getInstance().getUnauthenticatedRestClient()
         } else {
             currentActivity.restClient
         }
