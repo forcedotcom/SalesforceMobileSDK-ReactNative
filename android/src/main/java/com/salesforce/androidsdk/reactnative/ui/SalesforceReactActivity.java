@@ -103,10 +103,14 @@ public abstract class SalesforceReactActivity extends ReactActivity implements S
 
     @Override
     public void onResume(RestClient c) {
-        try {
-            setRestClient(clientManager.peekRestClient());
-        } catch (ClientManager.AccountInfoNotFoundException e) {
-            setRestClient(client);
+        clientManager = buildClientManager();
+        if (clientManager != null) {
+            final RestClient restClient = clientManager.peekRestClient();
+            if (restClient == null) {
+                logout(null);
+                return;
+            }
+            setRestClient(restClient);
         }
 
         // Not logged in.
