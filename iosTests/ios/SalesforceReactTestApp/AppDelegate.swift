@@ -12,11 +12,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   var reactNativeDelegate: ReactNativeDelegate?
   var reactNativeFactory: RCTReactNativeFactory?
-
-  override init() {
-    super.init()
-    SalesforceReactSDKManager.initializeSDK()
-  }
+  private var startReactNative: (() -> Void)?
 
   func application(
     _ application: UIApplication,
@@ -33,7 +29,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     window = UIWindow(frame: UIScreen.main.bounds)
 
-    AuthHelper.loginIfRequired() {
+    startReactNative = {
       factory.startReactNative(
         withModuleName: "SalesforceReactTestApp",
         in: self.window,
@@ -42,6 +38,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     return true
+  }
+
+  func applicationDidBecomeActive(_ application: UIApplication) {
+    guard let startReactNative else { return }
+    self.startReactNative = nil
+
+    // With -creds, SDK initialization performs a synchronous OAuth refresh.
+    // Run it only after UIKit has completed initial scene activation; re-entering
+    // the main run loop from the application initializer crashes iOS 18.
+    SalesforceReactSDKManager.initializeSDK()
+
+    // The SDK has already completed the UI-test login while consuming -creds.
+    if ProcessInfo.processInfo.arguments.contains("-creds") {
+      startReactNative()
+    } else {
+      AuthHelper.loginIfRequired() {
+        startReactNative()
+      }
+    }
+
   }
 }
 
