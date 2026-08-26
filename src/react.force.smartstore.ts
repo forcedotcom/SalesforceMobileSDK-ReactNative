@@ -24,11 +24,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { NativeModules } from "react-native";
+import { NativeModules, TurboModuleRegistry } from "react-native";
 import { exec as forceExec, ExecErrorCallback, ExecSuccessCallback, safeJSONparse } from "./react.force.common";
 import { QuerySpecType, StoreOrder } from "./typings";
 import { SmartStoreMethod } from "./typings/smartstore";
-const { SmartStoreReactBridge, SFSmartStoreReactBridge } = NativeModules;
+
+// New architecture: TurboModuleRegistry first, fall back to NativeModules.
+// Lazy lookup - bridgeless mode doesn't have modules ready at import time.
+const getSFSmartStoreReactBridge = () =>
+  TurboModuleRegistry.get<any>("SFSmartStoreReactBridge") ?? NativeModules.SFSmartStoreReactBridge;
+const getSmartStoreReactBridge = () =>
+  TurboModuleRegistry.get<any>("SmartStoreReactBridge") ?? NativeModules.SmartStoreReactBridge;
 
 const exec = <T>(
   successCB: ExecSuccessCallback<T>,
@@ -39,8 +45,8 @@ const exec = <T>(
   forceExec(
     "SFSmartStoreReactBridge",
     "SmartStoreReactBridge",
-    SFSmartStoreReactBridge,
-    SmartStoreReactBridge,
+    getSFSmartStoreReactBridge(),
+    getSmartStoreReactBridge(),
     successCB,
     errorCB,
     methodName,

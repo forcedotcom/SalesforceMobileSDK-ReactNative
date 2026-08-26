@@ -29,7 +29,8 @@ npm-debug.log
 package-lock.json.*
 test_credentials.json
 index.ios.bundle
-RCTTest/
+RCTTest/FBSnapshotTestCase/
+RCTTest/RCTSnapshotManager.*
 clangReport/
 yarn-error.log
 

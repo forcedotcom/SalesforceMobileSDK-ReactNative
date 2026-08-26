@@ -24,10 +24,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { assert } from 'chai';
+import { assert } from './assert';
 import * as smartstore from '../src/react.force.smartstore';
-import { registerTest, testDone } from '../src/react.force.test';
+import { registerSuite, registerTest, testDone } from './testRunner';
 import { promiser } from '../src/react.force.util';
+
+registerSuite('SmartStore', {
+  setUp: () => promiser(smartstore.removeAllStores)(),
+});
 
 // Promised based bridge functions for more readable tests
 getDatabaseSize = promiser(smartstore.getDatabaseSize);
@@ -52,7 +56,7 @@ closeCursor = promiser(smartstore.closeCursor);
 
 const storeConfig = {isGlobalStore:false};
 
-testGetDatabaseSize = () => {
+function testGetDatabaseSize() {
     getDatabaseSize(storeConfig)
         .then((result) => {
             assert.isNumber(result, 'Expected number');
@@ -60,7 +64,7 @@ testGetDatabaseSize = () => {
         });
 };
 
-testRegisterExistsRemoveExists = () => {
+function testRegisterExistsRemoveExists() {
     const uniq = Math.floor(Math.random() * 1000000);
     const soupName = 'soup_' + uniq;
     const indexSpecs = [{path:'Name', type:'string'}, {path:'Id', type:'string'}];    
@@ -82,7 +86,7 @@ testRegisterExistsRemoveExists = () => {
         });
 };
 
-testGetSoupIndexSpecs = () => {
+function testGetSoupIndexSpecs() {
     const uniq = Math.floor(Math.random() * 1000000);
     const soupName = 'soup_' + uniq;
     const indexSpecs = [{path:'Name', type:'string'}, {path:'Id', type:'string'}];
@@ -97,7 +101,7 @@ testGetSoupIndexSpecs = () => {
         });
 };
 
-testUpsertRetrieve = () => {
+function testUpsertRetrieve() {
     const uniq = Math.floor(Math.random() * 1000000);
     const soupName = 'soup_' + uniq;
     const indexSpecs = [{path:'Name', type:'string'}];
@@ -122,7 +126,7 @@ testUpsertRetrieve = () => {
         });
 };
 
-testQuerySoup = () => {
+function testQuerySoup() {
     const uniq = Math.floor(Math.random() * 1000000);
     const soupName = 'soup_' + uniq;
     const indexSpecs = [{path:'Name', type:'string'}];
@@ -145,7 +149,7 @@ testQuerySoup = () => {
         });
 };
 
-testMoveCursor = () => {
+function testMoveCursor() {
     const uniq = Math.floor(Math.random() * 1000000);
     const soupName = 'soup_' + uniq;
     const indexSpecs = [{path:'Name', type:'string'}];
@@ -192,7 +196,7 @@ testMoveCursor = () => {
 };
 
 
-testSmartQuerySoup = () => {
+function testSmartQuerySoup() {
     const uniq = Math.floor(Math.random() * 1000000);
     const soupName = 'soup_' + uniq;
     const indexSpecs = [{path:'Name', type:'string'}];
@@ -214,7 +218,7 @@ testSmartQuerySoup = () => {
         });
 };
 
-testRemoveFromSoup = () => {
+function testRemoveFromSoup() {
     const uniq = Math.floor(Math.random() * 1000000);
     const soupName = 'soup_' + uniq;
     const indexSpecs = [{path:'Name', type:'string'}];
@@ -235,7 +239,7 @@ testRemoveFromSoup = () => {
         });
 };
 
-testClearSoup = () => {
+function testClearSoup() {
     const uniq = Math.floor(Math.random() * 1000000);
     const soupName = 'soup_' + uniq;
     const indexSpecs = [{path:'Name', type:'string'}];
@@ -256,16 +260,18 @@ testClearSoup = () => {
         });
 };
 
-testGetRemoveStores = () => {
+function testGetRemoveStores() {
     const uniq = Math.floor(Math.random() * 1000000);
     const firstStoreConfig = {isGlobalStore:false, storeName:'store_1_' + uniq};
     const secondStoreConfig = {isGlobalStore:false, storeName:'store_2_' + uniq};
     const thirdStoreConfig = {isGlobalStore:false, storeName:'store_3_' + uniq};
     const soupName = 'soup_' + uniq;
     const indexSpecs = [{path:'Name', type:'string'}];
-    Promise.all([registerSoup(firstStoreConfig, soupName, indexSpecs),
+    removeAllStores()
+        .then(() => Promise.all([registerSoup(firstStoreConfig, soupName, indexSpecs),
                  registerSoup(secondStoreConfig, soupName, indexSpecs),
                  registerSoup(thirdStoreConfig, soupName, indexSpecs)])
+        )
         .then((result) => {
             assert.deepEqual(result, [soupName, soupName, soupName]);
             return getAllStores();
@@ -287,19 +293,21 @@ testGetRemoveStores = () => {
         .then((result) => {
             assert.deepEqual(result, []);
             testDone();
-        });
+        })
+;
 };
 
-testGetRemoveGlobalStores = () => {
+function testGetRemoveGlobalStores() {
     const uniq = Math.floor(Math.random() * 1000000);
     const firstStoreConfig = {isGlobalStore:true, storeName:'store_1_' + uniq};
     const secondStoreConfig = {isGlobalStore:true, storeName:'store_2_' + uniq};
     const thirdStoreConfig = {isGlobalStore:true, storeName:'store_3_' + uniq};
     const soupName = 'soup_' + uniq;
     const indexSpecs = [{path:'Name', type:'string'}];
-    Promise.all([registerSoup(firstStoreConfig, soupName, indexSpecs),
+    removeAllGlobalStores()
+        .then(() => Promise.all([registerSoup(firstStoreConfig, soupName, indexSpecs),
                  registerSoup(secondStoreConfig, soupName, indexSpecs),
-                 registerSoup(thirdStoreConfig, soupName, indexSpecs)])
+                 registerSoup(thirdStoreConfig, soupName, indexSpecs)]))
         .then((result) => {
             assert.deepEqual(result, [soupName, soupName, soupName]);
             return getAllGlobalStores();
@@ -321,7 +329,8 @@ testGetRemoveGlobalStores = () => {
         .then((result) => {
             assert.deepEqual(result, []);
             testDone();
-        });
+        })
+;
 };
 
 

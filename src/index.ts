@@ -29,7 +29,6 @@ import * as mobilesync from "./react.force.mobilesync";
 import * as net from "./react.force.net";
 import * as oauth from "./react.force.oauth";
 import * as smartstore from "./react.force.smartstore";
-import * as forceTest from "./react.force.test";
 import * as forceUtil from "./react.force.util";
 
 const forceClient = net;
@@ -37,7 +36,6 @@ const forceClient = net;
 export {
   forceClient,
   forceLog,
-  forceTest,
   forceUtil,
   mobilesync,
   net,

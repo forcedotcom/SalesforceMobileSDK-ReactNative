@@ -4,4 +4,31 @@ node_modules/
 package-lock.json
 Podfile.lock
 yarn.lock
+.DS_Store
 
+# Test credentials (contains real Salesforce org credentials)
+shared/test/test_credentials.json
+iosTests/ios/SalesforceReactTests/test_credentials.json
+androidTests/android/app/src/main/assets/test_credentials.json
+
+# iOS test generated files
+iosTests/ios/index.ios.bundle
+iosTests/mobile_sdk/
+
+# Android test generated files
+androidTests/android/app/src/main/assets/index.android.bundle
+androidTests/android/app/src/main/assets/drawable-mdpi/
+androidTests/mobile_sdk/
+
+# Gradle build output
+androidTests/android/.gradle/
+androidTests/android/app/build/
+androidTests/android/build/
+androidTests/android/.kotlin/
+androidTests/android/app/.cxx/
+androidTests/android/local.properties
+
+# Android library build output
+android/.gradle/
+android/build/
+.xcode.env.local

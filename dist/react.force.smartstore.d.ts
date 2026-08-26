@@ -1,15 +1,24 @@
 import { ExecErrorCallback, ExecSuccessCallback } from "./react.force.common";
 import { QuerySpecType, StoreOrder } from "./typings";
+/**
+ * StoreConfig class
+ */
 export declare class StoreConfig {
     storeName?: string;
     isGlobalStore?: boolean;
     constructor(storeName: string, isGlobalStore: boolean);
 }
+/**
+ * SoupIndexSpec class
+ */
 export declare class SoupIndexSpec {
     path: string;
     type: string;
     constructor(path: string, type: string);
 }
+/**
+ * QuerySpec class
+ */
 export declare class QuerySpec {
     queryType: QuerySpecType;
     indexPath?: string;
@@ -24,6 +33,9 @@ export declare class QuerySpec {
     selectPaths?: string[];
     constructor(path?: string);
 }
+/**
+ * StoreCursor class
+ */
 export declare class StoreCursor<T> {
     cursorId?: string;
     pageSize: number;

@@ -2,6 +2,21 @@
 
 #set -x
 
+# SCOPE: This script only stamps the Mobile SDK *version* number — the
+# package.json "version" field, the SalesforceMobileSDK git tag in the test
+# apps' package.json, and s.version in SalesforceReact.podspec — then rebuilds
+# dist/ and the Android codegen.
+#
+# It does NOT update the React Native platform/toolchain values. Those must be
+# bumped MANUALLY on each upgrade and kept in sync with the "Version
+# Compatibility" table in README.md:
+#   - react-native / react / @react-native-* / @react-native-community/cli
+#     versions in package.json, iosTests/package.json, androidTests/package.json,
+#     and react-android/hermes-android in androidTests/android/app/build.gradle.kts
+#   - iOS minimum deployment target: SalesforceReact.podspec (s.platform),
+#     iosTests/ios/Podfile, and IPHONEOS_DEPLOYMENT_TARGET in project.pbxproj
+#   - Android minSdk: android/build.gradle and androidTests/android build files
+
 OPT_VERSION=""
 RED='\033[0;31m'
 YELLOW='\033[0;33m'
@@ -65,10 +80,17 @@ echo -e "${YELLOW}*** POINTING TO SDK TAG ${SDK_TAG} ***${NC}"
 echo "*** Updating package.json ***"
 update_package_json "./package.json" "${OPT_VERSION}" "${SDK_TAG}"
 update_package_json "./iosTests/package.json" "${OPT_VERSION}" "${SDK_TAG}"
+update_package_json "./androidTests/package.json" "${OPT_VERSION}" "${SDK_TAG}"
 
 echo "*** Updating podspecs ***"
 update_podspec "./SalesforceReact.podspec" "${OPT_VERSION}"
 
 echo "*** Updating dist ***"
 npm install
-npm run build
+npx tsc --project tsconfig.build.json
+
+echo "*** Updating Android codegen ***"
+rm -rf android/generated/source/codegen
+npx react-native codegen --path . --outputPath . --platform android
+mv android/app/build/generated/source/codegen android/generated/source/codegen
+rm -rf android/app

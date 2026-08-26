@@ -19,4 +19,5 @@ export declare const MERGE_MODE: {
     readonly OVERWRITE: "OVERWRITE";
     readonly LEAVE_IF_CHANGED: "LEAVE_IF_CHANGED";
 };
+export declare const resetSyncManager: (storeConfig: StoreConfig | boolean, successCB: ExecSuccessCallback<string>, errorCB: ExecErrorCallback) => void;
 export {};

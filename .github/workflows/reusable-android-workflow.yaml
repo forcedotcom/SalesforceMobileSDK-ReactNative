@@ -1,0 +1,121 @@
+on:
+  workflow_call:
+    inputs:
+      is_pr:
+        type: boolean
+        default: false
+    secrets:
+      TEST_CREDENTIALS:
+        required: true
+      GCLOUD_SERVICE_KEY:
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  test-android:
+    runs-on: forcedotcom-ubuntu  # forks: use ubuntu-latest (org-scoped runner)
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4.3.1
+        if: ${{ inputs.is_pr }}
+        with:
+          persist-credentials: false
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4.3.1
+        if: ${{ ! inputs.is_pr }}
+        with:
+          persist-credentials: false
+          ref: ${{ github.ref_name }}
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4.4.0
+        with:
+          node-version: 22
+      - name: Install Dependencies
+        env:
+          TEST_CREDENTIALS: ${{ secrets.TEST_CREDENTIALS }}
+        run: |
+          npm install -g typescript
+          cd androidTests
+          ./create_test_credentials_from_env.js
+          ./prepareandroid.js
+      - uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9  # v4.8.0
+        with:
+          distribution: 'zulu'
+          java-version: '21'
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407  # v3.2.2
+      - uses: gradle/actions/setup-gradle@748248ddd2a24f49513d8f472f81c3a07d4d50e1  # v4.4.4
+        with:
+          add-job-summary: on-failure
+      - name: Build for Testing
+        id: build
+        run: |
+          mkdir -p build_logs
+          set -o pipefail
+          cd androidTests/android
+          ./gradlew :app:assembleDebug :app:assembleAndroidTest 2>&1 | tee "../../build_logs/build.log"
+      - name: Archive build logs on failure
+        if: failure() && steps.build.outcome == 'failure'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2
+        with:
+          name: build-logs-rn-android
+          path: build_logs/
+          if-no-files-found: ignore
+          retention-days: 14
+      - uses: 'google-github-actions/auth@c200f3691d83b41bf9bbd8638997a462592937ed'  # v2.1.13
+        if: success() || failure()
+        with:
+          credentials_json: '${{ secrets.GCLOUD_SERVICE_KEY }}'
+      - uses: 'google-github-actions/setup-gcloud@e427ad8a34f8676edf47cf7d7925499adf3eb74f'  # v2.2.1
+        if: success() || failure()
+      - name: Run Tests on Firebase Test Lab
+        if: success() || failure()
+        env:
+          REPO_OWNER: ${{ github.repository_owner }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          APP_APK="androidTests/android/app/build/outputs/apk/debug/app-debug.apk"
+          TEST_APK="androidTests/android/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk"
+          gcloud --quiet beta firebase test android run \
+            --project mobile-apps-firebase-test \
+            --type instrumentation \
+            --app "$APP_APK" \
+            --test "$TEST_APK" \
+            --device model=MediumPhone.arm,version=35,locale=en,orientation=portrait \
+            --timeout 60m \
+            --results-bucket "cloud-test-${REPO_OWNER}" \
+            --results-dir "SalesforceReactNative/${RUN_ID}" \
+            --no-auto-google-login \
+            --no-performance-metrics \
+            --no-record-video \
+            --num-uniform-shards=1 \
+            --num-flaky-test-attempts=1
+      - name: Copy Test Results
+        if: success() || failure()
+        env:
+          REPO_OWNER: ${{ github.repository_owner }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          BUCKET_PATH="gs://cloud-test-${REPO_OWNER}/SalesforceReactNative/${RUN_ID}"
+          mkdir -p firebase_results
+          if gsutil ls "${BUCKET_PATH}/*test_results_merged.xml" > /dev/null 2>&1; then
+            gsutil cp "${BUCKET_PATH}/*test_results_merged.xml" firebase_results/test_result.xml
+          else
+            gsutil -m cp -r "${BUCKET_PATH}/*/test_result_1.xml" firebase_results/ 2>/dev/null || true
+          fi
+      - name: Test Report
+        uses: mikepenz/action-junit-report@3a81627bfac62268172037048872e8ebd4207e6d  # v6.4.1
+        if: success() || failure()
+        with:
+          check_name: Android Test Results
+          require_tests: true
+          fail_on_failure: true
+          report_paths: 'firebase_results/**.xml'
+      - name: Archive Test Results
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2
+        if: success() || failure()
+        with:
+          name: test-results-android
+          path: 'firebase_results/**.xml'

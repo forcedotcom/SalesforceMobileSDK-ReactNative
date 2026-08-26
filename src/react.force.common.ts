@@ -28,21 +28,6 @@ import { sdkConsole } from "./react.force.log";
 import { ModuleAndroidName, ModuleIOSName } from "./typings";
 
 /**
- * Represents an iOS Module callback
- */
-export type iOSModuleCallback<T> = (err: Error, result: T) => void;
-
-/**
- * Represents an Android Module success callback
- */
-export type AndroidSuccessCallback = (result: string) => void;
-
-/**
- * Represents an Android Module error callback
- */
-export type AndroidErrorCallback = (err: string) => void;
-
-/**
  * Represents an exec() success callback
  */
 export type ExecSuccessCallback<T> = (result: T) => void;
@@ -53,87 +38,53 @@ export type ExecSuccessCallback<T> = (result: T) => void;
 export type ExecErrorCallback = (err: Error) => void;
 
 /**
- * Represents a Mobile SDK iOS Module
- *
- * @interface ModuleIOS
- * @template T
+ * Represents a native module with unified single-callback pattern.
+ * Both iOS and Android now use: module.method(args, (error, result) => {...})
  */
-interface ModuleIOS<T> {
-  [key: string]: (args: unknown, callback: iOSModuleCallback<T>) => void;
+interface NativeModule {
+  [key: string]: (args: unknown, callback: (error: any, result: any) => void) => void;
 }
 
 /**
- * Represents a Mobile SDK Android Module
- *
- * @interface ModuleAndroid
- */
-interface ModuleAndroid {
-  [key: string]: (args: unknown, successCB: AndroidSuccessCallback, errorCB: AndroidErrorCallback) => void;
-}
-
-/**
- * Executes an action using the React Native Mobile SDK Bridge
- *
- * @template T
- * @param {ModuleIOSName} moduleIOSName
- * @param {ModuleAndroidName} moduleAndroidName
- * @param {ModuleIOS<T>} moduleIOS
- * @param {ModuleAndroid<T>} moduleAndroid
- * @param {ExecSuccessCallback<T> | null} successCB
- * @param {ExecErrorCallback | null} errorCB
- * @param {string} methodName
- * @param {Record<string, unknown>} args
+ * Executes an action using the React Native Mobile SDK Bridge.
+ * Both iOS and Android use a unified single-callback pattern:
+ * callback(error, result) where error is null on success.
  */
 export const exec = <T>(
   moduleIOSName: ModuleIOSName,
   moduleAndroidName: ModuleAndroidName,
-  moduleIOS: ModuleIOS<T>,
-  moduleAndroid: ModuleAndroid,
+  moduleIOS: NativeModule,
+  moduleAndroid: NativeModule,
   successCB: ExecSuccessCallback<T> | null,
   errorCB: ExecErrorCallback | null,
   methodName: string,
   args: Record<string, unknown>,
 ): void => {
-  if (moduleIOS) {
-    const func = `${moduleIOSName}.${methodName}`;
-    sdkConsole.debug(`${func} called: ${JSON.stringify(args)}`);
+  const module = moduleIOS ?? moduleAndroid;
+  const moduleName = moduleIOS ? moduleIOSName : moduleAndroidName;
 
-    moduleIOS[methodName](args, (error: Error, result) => {
-      if (error) {
-        sdkConsole.error(`${func} failed: ${JSON.stringify(error)}`);
-        if (errorCB) errorCB(error);
-      } else {
-        sdkConsole.debug(`${func} succeeded`);
-        if (successCB) successCB(result);
-      }
-    });
+  if (!module) {
+    sdkConsole.error(`No native module found for ${moduleIOSName}/${moduleAndroidName}`);
+    if (errorCB) errorCB(new Error("Native module not available"));
+    return;
   }
-  // android
-  else if (moduleAndroid) {
-    const func = `${moduleAndroidName}.${methodName}`;
-    sdkConsole.debug(`${func} called: ${JSON.stringify(args)}`);
-    moduleAndroid[methodName](
-      args,
-      (result) => {
-        sdkConsole.debug(`${func} succeeded`);
-        if (successCB) {
-          successCB(safeJSONparse(result));
-        }
-      },
-      (error) => {
-        sdkConsole.error(`${func} failed: ${JSON.stringify(error)}`);
-        if (errorCB) errorCB(safeJSONparse(error));
-      },
-    );
-  }
+
+  const func = `${moduleName}.${methodName}`;
+  sdkConsole.debug(`${func} called: ${JSON.stringify(args)}`);
+
+  module[methodName](args, (error: any, result: any) => {
+    if (error) {
+      sdkConsole.error(`${func} failed: ${JSON.stringify(error)}`);
+      if (errorCB) errorCB(typeof error === "string" ? safeJSONparse(error) : error);
+    } else {
+      sdkConsole.debug(`${func} succeeded`);
+      if (successCB) successCB(typeof result === "string" ? safeJSONparse(result) : result);
+    }
+  });
 };
 
 /**
- * Returns a parsed JSON Android result
- *
- * @template T
- * @param {string} str
- * @returns {T}
+ * Parses a JSON string safely, returning the original value if parsing fails.
  */
 export const safeJSONparse = <T>(str: string): T => {
   try {

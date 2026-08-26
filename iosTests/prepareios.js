@@ -7,16 +7,12 @@ console.log('=== Installing npm dependencies');
 execSync('rm -rf node_modules', {stdio:[0,1,2]})
 execSync('rm -f yarn.lock', {stdio:[0,1,2]})
 execSync('yarn install', {stdio:[0,1,2]});
-var rimraf = require('rimraf');
 
-console.log('=== Getting react native git repo (for test runner classes)');
-const rnVersion = require(path.join(__dirname, '..', 'package.json')).peerDependencies['react-native']
-execSync('git clone --branch v' + rnVersion + ' --single-branch --depth 1 https://github.com/facebook/react-native', {stdio:[0,1,2]});
-execSync('rm -rf RCTTest', {stdio:[0,1,2]});
-execSync('mv react-native/packages/rn-tester/RCTTest .');
-execSync("gsed -i 's/^package = .*$/package = {}/g' RCTTest/React-RCTTest.podspec");
-execSync(`gsed -i 's/^version = .*$/version = "${rnVersion}"/g' RCTTest/React-RCTTest.podspec `);
-execSync('rm -rf react-native', {stdio:[0,1,2]});
+console.log("=== Removing nested node_modules from react-native-force (prevents duplicate React)");
+execSync("rm -rf node_modules/react-native-force/node_modules", {stdio:[0,1,2]});
+
+// RCTTest/ is now tracked in the repo (customized for RN 0.82+ bridgeless mode).
+// No longer cloned from react-native source.
 
 console.log('=== Installing sdk dependencies');
 execSync('node ./updatesdk.js', {stdio: [0,1,2]});
@@ -26,8 +22,16 @@ const nodePath = execSync('command -v node', { encoding: 'utf-8' }).trim();
 execSync(`echo export NODE_BINARY=${nodePath} > .xcode.env`, {stdio:[0,1,2], cwd:'ios'});
 execSync('pod update', {stdio:[0,1,2], cwd:'ios'});
 
-console.log('=== Creating test_credentials.json');
-execSync('touch test_credentials.json', {stdio:[0,1,2]});
+console.log('=== Copying test_credentials.json');
+var fs = require('fs');
+var credsSrc = '../shared/test/test_credentials.json';
+if (fs.existsSync(credsSrc)) {
+    fs.copyFileSync(credsSrc, "ios/SalesforceReactTests/test_credentials.json");
+} else {
+    console.warn('WARNING: shared/test/test_credentials.json not found. Tests will fail at runtime.');
+    console.warn('         Copy shared/test/test_credentials.json.sample and fill in your credentials.');
+    fs.writeFileSync('ios/test_credentials.json', '{}', 'utf8');
+}
 
 console.log('=== Creating index.ios.bundle');
 execSync('node ./updatebundle.js', {stdio: [0,1,2]});

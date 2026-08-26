@@ -9,8 +9,8 @@ JavaScript/TypeScript libraries and native bridge modules that enable React Nati
 This repository provides the `react-native-force` npm package, which includes:
 
 - **JavaScript/TypeScript API** - Modern, Promise-based interface to Salesforce Mobile SDK features
-- **iOS Native Bridge** - Objective-C modules that bridge to iOS Mobile SDK libraries
-- **Android Native Bridge** - Kotlin modules in [SalesforceMobileSDK-Android](https://github.com/forcedotcom/SalesforceMobileSDK-Android) repository
+- **iOS Native Bridge** - Objective-C modules that bridge to iOS Mobile SDK libraries (`ios/SalesforceReact/`)
+- **Android Native Bridge** - Kotlin modules that bridge to Android Mobile SDK libraries (`android/`)
 - **Type Definitions** - Full TypeScript support for type-safe development
 
 ## Features
@@ -62,9 +62,9 @@ npm install react-native-force
 
 ### Prerequisites
 
-- **Node.js**: 20 or higher
-- **React Native**: 0.81.5 (see `package.json` for current version)
-- **iOS Development**: Xcode 15+, macOS (for iOS builds)
+- **Node.js**: 22 or higher
+- **React Native**: 0.85.3 (see `package.json` for current version)
+- **iOS Development**: Xcode 16+, macOS (for iOS builds)
 - **Android Development**: Android Studio, Java 17+ (for Android builds)
 
 ### Creating a New App
@@ -226,11 +226,11 @@ This package is part of a larger SDK ecosystem:
         ▼                       ▼
 ┌───────────────┐      ┌────────────────────┐
 │ iOS Bridge    │      │ Android Bridge     │
-│ (this repo)   │      │ (Android repo)     │
+│ (this repo)   │      │ (this repo)        │
 │               │      │                    │
 │ Objective-C   │      │ Kotlin             │
 │ modules in    │      │ modules in         │
-│ ios/          │      │ libs/SalesforceReact│
+│ ios/          │      │ android/           │
 │ SalesforceReact│      │                    │
 └───────┬───────┘      └────────┬───────────┘
         │                       │
@@ -245,16 +245,13 @@ This package is part of a larger SDK ecosystem:
 └───────────────┘      └────────────────────┘
 ```
 
-### iOS Bridge Location
-**This repository** contains:
+### Bridge Locations
+**This repository** contains both platform bridges:
 - TypeScript/JavaScript source code (`src/`)
 - iOS bridge code (`ios/SalesforceReact/`)
+- Android bridge code (`android/`)
 - iOS tests (`iosTests/`)
-
-### Android Bridge Location
-The Android bridge code lives in a **separate repository**:
-- Repository: [SalesforceMobileSDK-Android](https://github.com/forcedotcom/SalesforceMobileSDK-Android)
-- Path: `libs/SalesforceReact/`
+- Android tests (`androidTests/`)
 
 ## Development
 
@@ -288,11 +285,11 @@ npm start  # Start Metro bundler
 ```
 
 #### Android Tests
-Android tests are run from the Android repository:
-
 ```bash
-cd /path/to/SalesforceMobileSDK-Android
-./gradlew :libs:SalesforceReact:connectedAndroidTest
+cd androidTests
+./prepareandroid.js
+cd android
+./gradlew :app:connectedDebugAndroidTest
 ```
 
 ### Code Structure
@@ -313,10 +310,10 @@ src/
     └── mobilesync.ts
 
 ios/SalesforceReact/
-├── SFOauthReactBridge.{h,m}     # OAuth bridge
-├── SFNetReactBridge.{h,m}       # REST API bridge
-├── SFSmartStoreReactBridge.{h,m} # SmartStore bridge
-├── SFMobileSyncReactBridge.{h,m} # MobileSync bridge
+├── SFOauthReactBridge.{h,mm}     # OAuth bridge
+├── SFNetReactBridge.{h,mm}       # REST API bridge
+├── SFSmartStoreReactBridge.{h,mm} # SmartStore bridge
+├── SFMobileSyncReactBridge.{h,mm} # MobileSync bridge
 └── SalesforceReactSDKManager.{h,m} # SDK configuration
 
 test/
@@ -347,9 +344,10 @@ The TypeScript definitions in `src/typings/` provide inline documentation for al
 
 | React Native SDK | React Native | iOS SDK | Android SDK | iOS Min | Android Min |
 |-----------------|--------------|---------|-------------|---------|-------------|
+| 14.0.0          | 0.85.3       | 14.0.0  | 14.0.0      | 18.0    | 31 (12.0)   |
 | 13.2.0          | 0.81.5       | 13.2.0  | 13.2.0      | 17.0    | 28 (9.0)    |
-| 13.1.0          | 0.76.5       | 13.1.0  | 13.1.0      | 16.0    | 26 (8.0)    |
-| 13.0.0          | 0.76.1       | 13.0.0  | 13.0.0      | 16.0    | 26 (8.0)    |
+| 13.1.0          | 0.79.3       | 13.1.0  | 13.1.0      | 17.0    | 28 (9.0)    |
+| 13.0.0          | 0.74.7       | 13.0.0  | 13.0.0      | 17.0    | 28 (9.0)    |
 
 See [release notes](https://github.com/forcedotcom/SalesforceMobileSDK-ReactNative/releases) for detailed version history and migration guides.
 

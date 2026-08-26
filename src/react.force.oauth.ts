@@ -24,10 +24,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { NativeModules } from "react-native";
+import { NativeModules, TurboModuleRegistry } from "react-native";
 import { exec as forceExec, ExecSuccessCallback, ExecErrorCallback } from "./react.force.common";
 import { OAuthMethod, UserAccount } from "./typings/oauth";
-const { SalesforceOauthReactBridge, SFOauthReactBridge } = NativeModules;
+
+// Lazy module lookup: modules may not be available at import time in bridgeless mode.
+const getSFOauthReactBridge = () =>
+  TurboModuleRegistry.get<any>("SFOauthReactBridge") ?? NativeModules.SFOauthReactBridge;
+const getSalesforceOauthReactBridge = () =>
+  TurboModuleRegistry.get<any>("SalesforceOauthReactBridge") ??
+  NativeModules.SalesforceOauthReactBridge;
 
 const exec = <T>(
   successCB: ExecSuccessCallback<T>,
@@ -38,8 +44,8 @@ const exec = <T>(
   forceExec(
     "SFOauthReactBridge",
     "SalesforceOauthReactBridge",
-    SFOauthReactBridge,
-    SalesforceOauthReactBridge,
+    getSFOauthReactBridge(),
+    getSalesforceOauthReactBridge(),
     successCB,
     errorCB,
     methodName,

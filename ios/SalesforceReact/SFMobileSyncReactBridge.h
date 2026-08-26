@@ -25,9 +25,17 @@
 
 #import <React/RCTBridgeModule.h>
 
+#ifdef RCT_NEW_ARCH_ENABLED
+#import <RNSalesforceReactSpec/RNSalesforceReactSpec.h>
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 
+#ifdef RCT_NEW_ARCH_ENABLED
+@interface SFMobileSyncReactBridge : NSObject <RCTBridgeModule, NativeSFMobileSyncReactBridgeSpec>
+#else
 @interface SFMobileSyncReactBridge : NSObject <RCTBridgeModule>
+#endif
 
 @end
 

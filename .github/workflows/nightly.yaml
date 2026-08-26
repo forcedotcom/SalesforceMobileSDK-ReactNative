@@ -2,25 +2,41 @@ name: Nightly Tests
 
 on:
   schedule:
-    - cron: "0 5 * * 0"  # cron is UTC, this translates to 10 PM PST Sunday.
+    - cron: "30 5 * * 2,4,6"  # cron is UTC; 9:30 PM PT Mon/Wed/Fri.
   # This lets us trigger the workflow from a browser.
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   ios-nightly:
+    permissions:
+      contents: read
+      pull-requests: write
     strategy:
       fail-fast: false
       matrix:
-        ios: [^26, ^18, ^17]
+        ios: [^26, ^18]
         include:
           - ios: ^26
             xcode: ^26
           - ios: ^18
             xcode: ^16
-          - ios: ^17
-            xcode: ^16
+            macos: macos-15
     uses: ./.github/workflows/reusable-workflow.yaml
     with:
       ios: ${{ matrix.ios }}
       xcode: ${{ matrix.xcode }}
-    secrets: inherit
+      macos: ${{ matrix.macos || 'macos-latest' }}
+    secrets:
+      TEST_CREDENTIALS: ${{ secrets.TEST_CREDENTIALS }}
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  android-nightly:
+    permissions:
+      contents: read
+    uses: ./.github/workflows/reusable-android-workflow.yaml
+    secrets:
+      TEST_CREDENTIALS: ${{ secrets.TEST_CREDENTIALS }}
+      GCLOUD_SERVICE_KEY: ${{ secrets.GCLOUD_SERVICE_KEY }}
