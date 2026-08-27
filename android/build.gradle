@@ -1,6 +1,12 @@
 apply plugin: 'com.android.library'
 apply plugin: 'org.jetbrains.kotlin.android'
 
+// Single source of truth for the SDK version: package.json (stamped by
+// setversion.sh).  Read it here so the MobileSync dependency and the Maven
+// publish version always match the SalesforceReact library version, in every
+// build context (React Native autolinking, androidTests, and standalone
+// publishing).  package.json always sits one level above this android/ dir.
+def sdkVersion = new groovy.json.JsonSlurper().parse(file("../package.json")).version
 
 android {
     namespace "com.salesforce.androidsdk.reactnative"
@@ -40,8 +46,22 @@ kotlin {
 }
 
 dependencies {
-    api 'com.salesforce.mobilesdk:MobileSync:14.0.0'
+    api "com.salesforce.mobilesdk:MobileSync:${sdkVersion}"
     api 'com.facebook.react:react-android:0.86.0'
     implementation 'androidx.core:core-ktx:1.18.0'
+}
+
+// --- Maven Central publishing ---------------------------------------------
+// Only wire up publishing when this library is being built from this repo's own
+// Gradle root (see settings.gradle.kts).  When the library is consumed by an app
+// via React Native autolinking, rootProject.name is the app, so this whole block
+// is skipped and the publish-module convention plugin (which lives in buildSrc,
+// unavailable to consumers) is never referenced.
+if (rootProject.name == "SalesforceMobileSDK-ReactNative") {
+    rootProject.ext["PUBLISH_GROUP_ID"] = "com.salesforce.mobilesdk"
+    rootProject.ext["PUBLISH_VERSION"] = sdkVersion
+    rootProject.ext["PUBLISH_ARTIFACT_ID"] = "SalesforceReact"
+
+    apply plugin: 'publish-module'
 }
 
