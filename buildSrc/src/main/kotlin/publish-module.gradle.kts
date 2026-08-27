@@ -1,0 +1,85 @@
+import com.android.build.api.dsl.LibraryExtension
+
+plugins {
+    `android-library`
+    `maven-publish`
+    signing
+}
+
+if (rootProject.name == "SalesforceMobileSDK-ReactNative") {
+    pluginManager.withPlugin("com.android.library") {
+        extensions.configure<LibraryExtension>("android") {
+            publishing {
+                singleVariant("release") {
+                    withSourcesJar()
+                }
+            }
+        }
+
+        afterEvaluate {
+            publishing {
+                publications {
+                    create<MavenPublication>("release") {
+                        artifactId = rootProject.ext["PUBLISH_ARTIFACT_ID"] as? String
+                        groupId = rootProject.ext["PUBLISH_GROUP_ID"] as? String
+                        version = rootProject.ext["PUBLISH_VERSION"] as? String
+                        from(components.getByName("release"))
+
+                        pom {
+                            name.set(rootProject.ext["PUBLISH_ARTIFACT_ID"] as? String)
+                            description.set("Official Salesforce Mobile SDK for React Native")
+                            url.set("https://github.com/forcedotcom/SalesforceMobileSDK-ReactNative")
+                            licenses {
+                                license {
+                                    name.set("The Apache Software License, Version 2.0")
+                                    url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                                }
+                            }
+                            developers {
+                                developer {
+                                    id.set("bpage")
+                                    name.set("Brandon Page")
+                                    email.set("bpage@salesforce.com")
+                                }
+                                developer {
+                                    id.set("wmathurin")
+                                    name.set("Wolfgang Mathurin")
+                                    email.set("wmathurin@salesforce.com ")
+                                }
+                                developer {
+                                    id.set("brianna.birman")
+                                    name.set("Brianna Birman")
+                                    email.set("brianna.birman@salesforce.com")
+                                }
+                                developer {
+                                    id.set("JohnsonEricAtSalesforce")
+                                    name.set("Eric C. Johnson")
+                                    email.set("Johnson.Eric@Salesforce.com")
+                                }
+                                developer {
+                                    id.set("sfdctaka")
+                                    name.set("Takashi Arai")
+                                    email.set("T.Arai@Salesforce.com")
+                                }
+                                scm {
+                                    connection.set("https://github.com/forcedotcom/SalesforceMobileSDK-ReactNative.git")
+                                    developerConnection.set("https://github.com/forcedotcom/SalesforceMobileSDK-ReactNative.git")
+                                    url.set("https://github.com/forcedotcom/SalesforceMobileSDK-ReactNative")
+                                }
+                            }
+                        }
+                    }
+                }
+
+                signing {
+                    useInMemoryPgpKeys(
+                        rootProject.ext["signing.keyId"] as? String,
+                        rootProject.ext["signing.key"] as? String,
+                        rootProject.ext["signing.password"] as? String
+                    )
+                    sign(publishing.publications)
+                }
+            }
+        }
+    }
+}
