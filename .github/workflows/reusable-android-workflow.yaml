@@ -16,6 +16,11 @@ permissions:
 jobs:
   test-android:
     runs-on: forcedotcom-ubuntu  # forks: use ubuntu-latest (org-scoped runner)
+    env:
+      # Most used according to https://gs.statcounter.com/android-version-market-share/mobile-tablet/worldwide
+      PR_API_VERSION: "36"
+      FULL_API_RANGE: "31 32 33 34 35 36 37"
+      PS16K_MIN_API_VERSION: "36"
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4.3.1
         if: ${{ inputs.is_pr }}
@@ -73,38 +78,68 @@ jobs:
       - name: Run Tests on Firebase Test Lab
         if: success() || failure()
         env:
+          IS_PR: ${{ inputs.is_pr }}
           REPO_OWNER: ${{ github.repository_owner }}
           RUN_ID: ${{ github.run_id }}
         run: |
           APP_APK="androidTests/android/app/build/outputs/apk/debug/app-debug.apk"
           TEST_APK="androidTests/android/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk"
-          gcloud --quiet beta firebase test android run \
-            --project mobile-apps-firebase-test \
-            --type instrumentation \
-            --app "$APP_APK" \
-            --test "$TEST_APK" \
-            --device model=MediumPhone.arm,version=35,locale=en,orientation=portrait \
-            --timeout 60m \
-            --results-bucket "cloud-test-${REPO_OWNER}" \
-            --results-dir "SalesforceReactNative/${RUN_ID}" \
-            --no-auto-google-login \
-            --no-performance-metrics \
-            --no-record-video \
-            --num-uniform-shards=1 \
-            --num-flaky-test-attempts=1
+          LEVELS_TO_TEST=$FULL_API_RANGE
+          if [ "$IS_PR" = "true" ]; then
+            LEVELS_TO_TEST=$PR_API_VERSION
+          fi
+
+          TEST_EXIT_CODE=0
+          for LEVEL in $LEVELS_TO_TEST; do
+            DEVICE_MODEL="MediumPhone.arm"
+            if [ "$PS16K_MIN_API_VERSION" -le "$LEVEL" ]; then
+              DEVICE_MODEL="MediumPhone_ps16k.arm"
+            fi
+
+            gcloud --quiet beta firebase test android run \
+              --project mobile-apps-firebase-test \
+              --type instrumentation \
+              --app "$APP_APK" \
+              --test "$TEST_APK" \
+              --device "model=${DEVICE_MODEL},version=${LEVEL},locale=en,orientation=portrait" \
+              --timeout 60m \
+              --results-bucket "cloud-test-${REPO_OWNER}" \
+              --results-dir "SalesforceReactNative/${RUN_ID}/api-${LEVEL}" \
+              --no-auto-google-login \
+              --no-performance-metrics \
+              --no-record-video \
+              --num-uniform-shards=1 \
+              --num-flaky-test-attempts=1 || TEST_EXIT_CODE=1
+          done
+
+          exit "$TEST_EXIT_CODE"
       - name: Copy Test Results
         if: success() || failure()
         env:
+          IS_PR: ${{ inputs.is_pr }}
           REPO_OWNER: ${{ github.repository_owner }}
           RUN_ID: ${{ github.run_id }}
         run: |
-          BUCKET_PATH="gs://cloud-test-${REPO_OWNER}/SalesforceReactNative/${RUN_ID}"
           mkdir -p firebase_results
-          if gsutil ls "${BUCKET_PATH}/*test_results_merged.xml" > /dev/null 2>&1; then
-            gsutil cp "${BUCKET_PATH}/*test_results_merged.xml" firebase_results/test_result.xml
-          else
-            gsutil -m cp -r "${BUCKET_PATH}/*/test_result_1.xml" firebase_results/ 2>/dev/null || true
+          LEVELS_TO_TEST=$FULL_API_RANGE
+          if [ "$IS_PR" = "true" ]; then
+            LEVELS_TO_TEST=$PR_API_VERSION
           fi
+
+          for LEVEL in $LEVELS_TO_TEST; do
+            BUCKET_PATH="gs://cloud-test-${REPO_OWNER}/SalesforceReactNative/${RUN_ID}/api-${LEVEL}"
+            if gsutil ls "${BUCKET_PATH}" > /dev/null 2>&1; then
+              if gsutil ls "${BUCKET_PATH}/*test_results_merged.xml" > /dev/null 2>&1; then
+                # Sharded runs produce test_results_merged.xml at the top level.
+                gsutil cp "${BUCKET_PATH}/*test_results_merged.xml" "firebase_results/api_${LEVEL}_test_result.xml"
+              else
+                # Fall back to the original non-rerun result.
+                for RESULT_FILE in $(gsutil ls "${BUCKET_PATH}/*/test_result_1.xml" 2>/dev/null | grep -v "rerun"); do
+                  gsutil cp "${RESULT_FILE}" "firebase_results/api_${LEVEL}_test_result.xml"
+                done
+              fi
+            fi
+          done
       - name: Test Report
         uses: mikepenz/action-junit-report@3a81627bfac62268172037048872e8ebd4207e6d  # v6.4.1
         if: success() || failure()
