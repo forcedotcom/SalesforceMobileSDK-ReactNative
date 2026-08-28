@@ -53,7 +53,9 @@ jobs:
         env:
           XCODE_VERSION: ${{ inputs.xcode }}
         run: |
-          if [[ "$XCODE_VERSION" == "^26" ]]; then
+          if [[ "$XCODE_VERSION" == "^27" ]]; then
+            XCODE=$(ls -d /Applications/Xcode_27*.app 2>/dev/null | sort -V | tail -1)
+          elif [[ "$XCODE_VERSION" == "^26" ]]; then
             XCODE=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | tail -1)
           else
             XCODE=$(ls -d /Applications/Xcode_16*.app 2>/dev/null | sort -V | tail -1 || echo /Applications/Xcode.app)
