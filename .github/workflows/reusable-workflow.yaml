@@ -122,7 +122,7 @@ jobs:
         with:
           name: xcodebuild-logs-rn-ios${{ inputs.ios }}
           path: |
-            ~/Library/Developer/Xcode/DerivedData/**/Logs/Build/*.xcactivitylog
+            derived_data/Logs/Build/*.xcactivitylog
           if-no-files-found: ignore
           retention-days: 14
       - name: Verify xcresult bundle exists
