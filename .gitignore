@@ -31,4 +31,13 @@ androidTests/android/local.properties
 # Android library build output
 android/.gradle/
 android/build/
+
+# Root Gradle publish build (Maven Central)
+/.gradle/
+/build/
+/.kotlin/
+buildSrc/build/
+buildSrc/.gradle/
+# Maven Central / signing credentials (see publish/publish-root.gradle)
+local.properties
 .xcode.env.local
