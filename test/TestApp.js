@@ -108,6 +108,7 @@ export default function TestApp() {
 
           {suite.tests.map(({ name }) => {
             const { status, error } = getStatus(suiteName, name);
+            const errorMessage = error ? String(error.message || error) : '';
             return (
               <View key={name} style={styles.testRow}>
                 <View style={styles.testInfo}>
@@ -125,8 +126,8 @@ export default function TestApp() {
                   </TouchableOpacity>
                 </View>
                 {status === STATUS_FAIL && error && (
-                  <Text testID={`error_${name}`} accessibilityLabel={`error_${name}`} style={styles.errorText}>
-                    {String(error.message || error)}
+                  <Text testID={`error_${name}`} accessibilityLabel={errorMessage} style={styles.errorText}>
+                    {errorMessage}
                   </Text>
                 )}
               </View>

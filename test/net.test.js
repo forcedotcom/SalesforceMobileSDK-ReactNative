@@ -327,6 +327,9 @@ function testCollectionCreateDeleteRetrieve() {
     const otherLastName = lastName + '_2'
     var contactId;
     var otherContactId;
+    var phase = 'collectionCreate';
+
+    console.log('[testCollectionCreateDeleteRetrieve] phase=' + phase);
 
     netCollectionCreate(true, [
             {FirstName: firstName, LastName: lastName, attributes: {type: 'Contact'}},
@@ -337,6 +340,8 @@ function testCollectionCreateDeleteRetrieve() {
             contactId = response[0].id;
             assert.isTrue(response[1].success, 'Second create failed');
             otherContactId = response[1].id;
+            phase = 'collectionDelete';
+            console.log('[testCollectionCreateDeleteRetrieve] phase=' + phase);
             return netCollectionDelete(true, [contactId, otherContactId]);
         })
         .then((response) => {
@@ -344,12 +349,25 @@ function testCollectionCreateDeleteRetrieve() {
             assert.equal(response[0].id, contactId, 'Wrong id');
             assert.isTrue(response[1].success, 'Second delete failed');
             assert.equal(response[1].id, otherContactId);
+            phase = 'collectionRetrieve';
+            console.log('[testCollectionCreateDeleteRetrieve] phase=' + phase);
             return netCollectionRetrieve('contact', [contactId, otherContactId], ['FirstName', 'LastName']);
         })
         .then((response) => {
             assert.isNull(response[0], 'First subresponse should be null');
             assert.isNull(response[1], 'First subresponse should be null');
             testDone();
+        })
+        .catch((error) => {
+            const response = error && (error.response || (error.details && error.details.response));
+            const status = response && (response.statusCode || response.status);
+            const body = response && response.body;
+            const firstError = Array.isArray(body) ? body[0] : body;
+            const errorCode = firstError && firstError.errorCode;
+            const message = error && error.message ? error.message : String(error);
+            const diagnostic = 'phase=' + phase + ' message=' + message + ' status=' + (status || 'unknown') + ' errorCode=' + (errorCode || 'unknown');
+            console.error('[testCollectionCreateDeleteRetrieve] ' + diagnostic);
+            testDone(new Error(diagnostic));
         });
 };
 

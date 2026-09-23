@@ -23,6 +23,7 @@
  */
 
 #import "SFNetReactBridge.h"
+#import "SFSDKReactLogger.h"
 #import <React/RCTUtils.h>
 // NOTE: We use individual #import directives instead of @import here because
 // @import inside an Objective-C++ (.mm) translation unit pulls C++ module
@@ -54,6 +55,16 @@ static NSString * const kContentType     = @"contentType";
 static NSString * const kHttpContentType = @"content-type";
 static NSString * const kDoesNotRequireAuthentication = @"doesNotRequireAuthentication";
 
+static NSString *SFSalesforceErrorCode(id response)
+{
+    id errorPayload = [response isKindOfClass:[NSArray class]] ? [(NSArray *)response firstObject] : response;
+    if (![errorPayload isKindOfClass:[NSDictionary class]]) {
+        return @"<none>";
+    }
+    NSString *errorCode = [errorPayload sfsdk_nonNullObjectForKey:@"errorCode"];
+    return errorCode ?: @"<none>";
+}
+
 
 @implementation SFNetReactBridge
 
@@ -63,7 +74,8 @@ RCT_EXPORT_MODULE();
 
 RCT_EXPORT_METHOD(sendRequest:(NSDictionary *)argsDict callback:(RCTResponseSenderBlock)callback)
 {
-    SFRestMethod method = [SFRestRequest sfRestMethodFromHTTPMethod:[argsDict sfsdk_nonNullObjectForKey:kMethodArg]];
+    NSString *methodName = [argsDict sfsdk_nonNullObjectForKey:kMethodArg];
+    SFRestMethod method = [SFRestRequest sfRestMethodFromHTTPMethod:methodName];
     NSString* endPoint = [argsDict sfsdk_nonNullObjectForKey:kEndPointArg];
     NSString* path = [argsDict sfsdk_nonNullObjectForKey:kPathArg];
     NSDictionary* queryParams = [argsDict sfsdk_nonNullObjectForKey:kQueryParams];
@@ -110,11 +122,35 @@ RCT_EXPORT_METHOD(sendRequest:(NSDictionary *)argsDict callback:(RCTResponseSend
         request.parseResponse = NO;
     }
     SFRestAPI *restApiInstance = doesNotRequireAuthentication ? [SFRestAPI sharedGlobalInstance] : [SFRestAPI sharedInstance];
+    NSString *traceId = [NSUUID UUID].UUIDString;
+    NSTimeInterval startTime = [NSDate timeIntervalSinceReferenceDate];
+    NSArray *payloadKeys = [[queryParams allKeys] sortedArrayUsingSelector:@selector(compare:)];
+    [SFSDKReactLogger d:[self class]
+                 format:@"[SFNet:%@] start method=%@ authenticated=%@ payloadKeys=%@ fileCount=%lu binary=%@",
+                        traceId,
+                        methodName,
+                        request.requiresAuthentication ? @"yes" : @"no",
+                        payloadKeys,
+                        (unsigned long)fileParams.count,
+                        returnBinary ? @"yes" : @"no"];
 
     __weak __typeof__(self) weakSelf = self;
     [restApiInstance sendRequest:request
                                       failureBlock:^(id response, NSError *e, NSURLResponse *rawResponse) {
                                           __strong __typeof__(self) strongSelf = weakSelf;
+                                          NSInteger statusCode = [rawResponse isKindOfClass:[NSHTTPURLResponse class]] ? ((NSHTTPURLResponse *)rawResponse).statusCode : 0;
+                                          NSTimeInterval elapsedMs = ([NSDate timeIntervalSinceReferenceDate] - startTime) * 1000.0;
+                                          [SFSDKReactLogger e:[self class]
+                                                       format:@"[SFNet:%@] failure elapsedMs=%.0f status=%ld mime=%@ length=%lld errorDomain=%@ errorCode=%ld salesforceErrorCode=%@ responseClass=%@",
+                                                              traceId,
+                                                              elapsedMs,
+                                                              (long)statusCode,
+                                                              rawResponse.MIMEType ?: @"<none>",
+                                                              rawResponse.expectedContentLength,
+                                                              e.domain ?: @"<none>",
+                                                              (long)e.code,
+                                                              SFSalesforceErrorCode(response),
+                                                              response ? NSStringFromClass([response class]) : @"<nil>"];
                                           NSMutableDictionary *responseDictionary = [[rawResponse sfsdk_asDictionary] mutableCopy];
                                           responseDictionary[@"body"] = [strongSelf serializableResponse:response rawResponse:rawResponse];
                                           NSMutableDictionary *errorDictionary = [NSMutableDictionary new];
@@ -123,6 +159,16 @@ RCT_EXPORT_METHOD(sendRequest:(NSDictionary *)argsDict callback:(RCTResponseSend
                                           callback(@[RCTMakeError(@"sendRequest failed", nil, errorDictionary)]);
                                       }
                                   successBlock:^(id response, NSURLResponse *rawResponse) {
+                                      NSInteger statusCode = [rawResponse isKindOfClass:[NSHTTPURLResponse class]] ? ((NSHTTPURLResponse *)rawResponse).statusCode : 0;
+                                      NSTimeInterval elapsedMs = ([NSDate timeIntervalSinceReferenceDate] - startTime) * 1000.0;
+                                      [SFSDKReactLogger d:[self class]
+                                                   format:@"[SFNet:%@] success elapsedMs=%.0f status=%ld mime=%@ length=%lld responseClass=%@",
+                                                          traceId,
+                                                          elapsedMs,
+                                                          (long)statusCode,
+                                                          rawResponse.MIMEType ?: @"<none>",
+                                                          rawResponse.expectedContentLength,
+                                                          response ? NSStringFromClass([response class]) : @"<nil>"];
                                       id result;
 
                                       // Binary response

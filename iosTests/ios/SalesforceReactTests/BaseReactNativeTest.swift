@@ -80,18 +80,26 @@ class BaseReactNativeTest: XCTestCase {
         let passElement = app.descendants(matching: .any).matching(identifier: passId).firstMatch
         let failElement = app.descendants(matching: .any).matching(identifier: failId).firstMatch
 
-        let passed = passElement.waitForExistence(timeout: testTimeoutSeconds)
+        let deadline = Date().addingTimeInterval(testTimeoutSeconds)
+        while Date() < deadline && !passElement.exists && !failElement.exists {
+            RunLoop.current.run(until: Date().addingTimeInterval(0.25))
+        }
 
-        if !passed {
-            let failed = failElement.waitForExistence(timeout: 5)
-            if failed {
-                let errorId = "error_\(name)"
-                let errorElement = app.descendants(matching: .any).matching(identifier: errorId).firstMatch
-                let message = errorElement.exists ? errorElement.label : "unknown error"
-                XCTFail("Test \(name) failed: \(message)")
-            } else {
-                XCTFail("Test \(name) did not complete in time")
-            }
+        if passElement.exists {
+            print("[SalesforceReactTests] \(name) passed")
+            return
+        }
+
+        if failElement.exists {
+            let errorId = "error_\(name)"
+            let errorElement = app.descendants(matching: .any).matching(identifier: errorId).firstMatch
+            _ = errorElement.waitForExistence(timeout: 2)
+            let message = errorElement.exists ? errorElement.label : "unknown error"
+            print("[SalesforceReactTests] \(name) failed: \(message)")
+            XCTFail("Test \(name) failed: \(message)")
+        } else {
+            print("[SalesforceReactTests] \(name) timed out after \(testTimeoutSeconds) seconds")
+            XCTFail("Test \(name) did not complete in time")
         }
     }
 }
