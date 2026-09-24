@@ -227,8 +227,6 @@ function testCleanResyncGhosts() {
     var querySpec;
     var phase = 'registerSoup';
 
-    console.log('[testCleanResyncGhosts] phase=' + phase);
-
     // Create two records remotely - do a sync down - check db
     // Delete one of the two records - do a cleanResyncGhosts - check db
     // Delete record from server (cleanup)
@@ -237,7 +235,6 @@ function testCleanResyncGhosts() {
         // Parallel creates: the two records are independent, so no need to serialize
         .then(() => {
             phase = 'createContacts';
-            console.log('[testCleanResyncGhosts] phase=' + phase);
             return Promise.all([
                 netCreate('contact', {FirstName: firstName, LastName: 'Last' + uniq}),
                 netCreate('contact', {FirstName: otherFirstName, LastName: 'Last' + uniq}),
@@ -247,7 +244,6 @@ function testCleanResyncGhosts() {
             contactId = r1.id;
             otherContactId = r2.id;
             phase = 'syncDown';
-            console.log('[testCleanResyncGhosts] phase=' + phase);
             return syncDown(storeConfig,
                             {'type':'soql', 'query':"SELECT Id, FirstName, LastName FROM Contact WHERE Id IN ('" + contactId + "', '" + otherContactId + "')"},
                             soupName,
@@ -266,21 +262,18 @@ function testCleanResyncGhosts() {
         .then((result) => {
             assert.deepEqual(result.currentPageOrderedEntries, [[firstName],[otherFirstName]]);
             phase = 'deleteGhostCandidate';
-            console.log('[testCleanResyncGhosts] phase=' + phase);
             return netDel('contact', otherContactId);
         })
         // Brief pause so the deletion propagates before cleanResyncGhosts queries the server
         .then(() => timeoutPromiser(1000))
         .then(() => {
             phase = 'cleanResyncGhosts';
-            console.log('[testCleanResyncGhosts] phase=' + phase);
             return cleanResyncGhosts(storeConfig, syncId);
         })
         .then(() => runSmartQuery(storeConfig, querySpec))
         .then((result) => {
             assert.deepEqual(result.currentPageOrderedEntries, [[firstName]]);
             phase = 'cleanupRemainingContact';
-            console.log('[testCleanResyncGhosts] phase=' + phase);
             return netDel('contact', contactId);
         })
         .then(() => { testDone(); })
@@ -292,7 +285,6 @@ function testCleanResyncGhosts() {
             const errorCode = firstError && firstError.errorCode;
             const message = error && error.message ? error.message : String(error);
             const diagnostic = 'phase=' + phase + ' message=' + message + ' status=' + (status || 'unknown') + ' errorCode=' + (errorCode || 'unknown');
-            console.error('[testCleanResyncGhosts] ' + diagnostic);
             testDone(new Error(diagnostic));
         });
 };

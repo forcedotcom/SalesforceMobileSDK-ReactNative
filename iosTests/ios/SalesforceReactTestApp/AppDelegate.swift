@@ -41,16 +41,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     guard !hasStartedReactNative, let factory = reactNativeFactory else { return }
     hasStartedReactNative = true
     let launchOptions = launchOptions
-    print("[SalesforceReactTestApp] active scene connected; initializing Salesforce SDK")
-
     // With -creds, SDK initialization performs a synchronous OAuth refresh.
     // SceneDelegate calls this only after the scene becomes active; re-entering
     // the main run loop earlier in application startup crashes iOS 18.
     SalesforceReactSDKManager.initializeSDK()
-    print("[SalesforceReactTestApp] Salesforce SDK initialization completed")
 
     let startReactNative = {
-      print("[SalesforceReactTestApp] starting React Native")
       factory.startReactNative(
         withModuleName: "SalesforceReactTestApp",
         in: window,
@@ -60,12 +56,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // The SDK has already completed the UI-test login while consuming -creds.
     if ProcessInfo.processInfo.arguments.contains("-creds") {
-      print("[SalesforceReactTestApp] using UI-test instant login")
       startReactNative()
     } else {
-      print("[SalesforceReactTestApp] waiting for interactive login")
       AuthHelper.loginIfRequired(scene) {
-        print("[SalesforceReactTestApp] interactive login completed")
         startReactNative()
       }
     }
