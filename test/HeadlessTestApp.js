@@ -150,6 +150,7 @@ async function runAllHeadless() {
     const suites = getSuites();
     for (const [suiteName, suite] of Object.entries(suites)) {
       for (const test of suite.tests) {
+        if (test.excludeFromRunAll) continue;
         total += 1;
         const error = await runOne(suiteName, test.name);
         if (error) {
