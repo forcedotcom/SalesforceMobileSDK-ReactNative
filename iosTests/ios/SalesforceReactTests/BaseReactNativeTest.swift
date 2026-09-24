@@ -28,6 +28,12 @@
 import XCTest
 
 class BaseReactNativeTest: XCTestCase {
+    private enum ReactNativeTestOutcome {
+        case passed
+        case failed(String)
+        case timedOut
+    }
+
     static var app: XCUIApplication!
 
     // Subclasses can override to specify test timeout in seconds (default: 15s)
@@ -63,7 +69,7 @@ class BaseReactNativeTest: XCTestCase {
         return BaseReactNativeTest.app
     }
 
-    func runTest(_ name: String) {
+    private func executeTest(_ name: String) -> ReactNativeTestOutcome {
         let runId = "run_\(name)"
         let element = app.descendants(matching: .any).matching(identifier: runId).firstMatch
 
@@ -72,7 +78,10 @@ class BaseReactNativeTest: XCTestCase {
             element.scrollToElement()
         }
 
-        XCTAssertTrue(element.waitForExistence(timeout: 10), "Button not found: \(runId)")
+        guard element.waitForExistence(timeout: 10) else {
+            XCTFail("Button not found: \(runId)")
+            return .timedOut
+        }
         element.tap()
 
         let passId = "result_\(name)_pass"
@@ -80,18 +89,64 @@ class BaseReactNativeTest: XCTestCase {
         let passElement = app.descendants(matching: .any).matching(identifier: passId).firstMatch
         let failElement = app.descendants(matching: .any).matching(identifier: failId).firstMatch
 
-        let passed = passElement.waitForExistence(timeout: testTimeoutSeconds)
+        let deadline = Date().addingTimeInterval(testTimeoutSeconds)
+        while Date() < deadline && !passElement.exists && !failElement.exists {
+            RunLoop.current.run(until: Date().addingTimeInterval(0.25))
+        }
 
-        if !passed {
-            let failed = failElement.waitForExistence(timeout: 5)
-            if failed {
-                let errorId = "error_\(name)"
-                let errorElement = app.descendants(matching: .any).matching(identifier: errorId).firstMatch
-                let message = errorElement.exists ? errorElement.label : "unknown error"
-                XCTFail("Test \(name) failed: \(message)")
-            } else {
-                XCTFail("Test \(name) did not complete in time")
-            }
+        if passElement.exists {
+            return .passed
+        }
+
+        if failElement.exists {
+            return .failed(failureMessage(for: name))
+        }
+
+        return .timedOut
+    }
+
+    private func failureMessage(for name: String) -> String {
+        let messageId = "error_message_\(name)"
+        let messageElement = app.descendants(matching: .any).matching(identifier: messageId).firstMatch
+        guard messageElement.waitForExistence(timeout: 2) else { return "unknown error" }
+
+        // React Native can expose testID on a container while placing the Text's
+        // accessibility label on a descendant static-text node.
+        let staticText = messageElement.descendants(matching: .staticText).firstMatch
+        if staticText.exists && !staticText.label.isEmpty && staticText.label != messageId {
+            return staticText.label
+        }
+        if !messageElement.label.isEmpty && messageElement.label != messageId {
+            return messageElement.label
+        }
+        if let value = messageElement.value as? String, !value.isEmpty && value != messageId {
+            return value
+        }
+        return "unknown error"
+    }
+
+    func runTest(_ name: String) {
+        switch executeTest(name) {
+        case .passed:
+            print("[SalesforceReactTests] \(name) passed")
+        case .failed(let message):
+            print("[SalesforceReactTests] \(name) failed: \(message)")
+            XCTFail("Test \(name) failed: \(message)")
+        case .timedOut:
+            print("[SalesforceReactTests] \(name) timed out after \(testTimeoutSeconds) seconds")
+            XCTFail("Test \(name) did not complete in time")
+        }
+    }
+
+    func runTestExpectingFailure(_ name: String, expectedMessage: String) {
+        switch executeTest(name) {
+        case .failed(let message):
+            XCTAssertEqual(message, expectedMessage)
+            print("[SalesforceReactTests] \(name) recovered expected failure: \(message)")
+        case .passed:
+            XCTFail("Test \(name) unexpectedly passed")
+        case .timedOut:
+            XCTFail("Test \(name) did not report its expected failure in time")
         }
     }
 }

@@ -28,4 +28,10 @@
 class ReactHarnessTests: BaseReactNativeTest {
     func testPassing() { runTest("testPassing") }
     func testAsyncPassing() { runTest("testAsyncPassing") }
+    func testExpectedFailureDiagnostic() {
+        runTestExpectingFailure(
+            "testExpectedFailureDiagnostic",
+            expectedMessage: "Expected harness JS failure diagnostic"
+        )
+    }
 }

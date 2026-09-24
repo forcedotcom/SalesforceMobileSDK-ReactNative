@@ -60,6 +60,7 @@ export default function TestApp() {
   const handleRunSuite = useCallback(async (suiteName) => {
     const suite = suites[suiteName];
     for (const test of suite.tests) {
+      if (test.excludeFromRunAll) continue;
       setTestResult(suiteName, test.name, STATUS_RUNNING, null);
       const error = await runTest(suiteName, test.name);
       setTestResult(suiteName, test.name, error ? STATUS_FAIL : STATUS_PASS, error);
@@ -108,6 +109,7 @@ export default function TestApp() {
 
           {suite.tests.map(({ name }) => {
             const { status, error } = getStatus(suiteName, name);
+            const errorMessage = error ? String(error.message || error) : '';
             return (
               <View key={name} style={styles.testRow}>
                 <View style={styles.testInfo}>
@@ -125,9 +127,11 @@ export default function TestApp() {
                   </TouchableOpacity>
                 </View>
                 {status === STATUS_FAIL && error && (
-                  <Text testID={`error_${name}`} accessibilityLabel={`error_${name}`} style={styles.errorText}>
-                    {String(error.message || error)}
-                  </Text>
+                  <View testID={`error_${name}`} accessible={false}>
+                    <Text testID={`error_message_${name}`} accessibilityLabel={errorMessage} style={styles.errorText}>
+                      {errorMessage}
+                    </Text>
+                  </View>
                 )}
               </View>
             );
