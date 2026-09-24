@@ -26,22 +26,14 @@
  */
 package com.salesforce.androidsdk.reactnative
 
-import android.Manifest
 import android.content.Intent
-import android.os.Build
-import android.os.ParcelFileDescriptor
+import android.os.SystemClock
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.rule.GrantPermissionRule
 import androidx.test.uiautomator.UiDevice
 import com.salesforce.androidsdk.util.test.TestAuthenticationActivity
 import org.json.JSONObject
 import org.junit.Assert.assertTrue
-import org.junit.Rule
-import java.io.BufferedReader
-import java.io.InputStreamReader
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
 
 data class TestResult(val success: Boolean, val message: String?)
 
@@ -56,26 +48,13 @@ data class TestResult(val success: Boolean, val message: String?)
  *
  * This version drives NO UI. It launches the app ONCE; the app mounts
  * HeadlessTestApp (see androidTests/index.js), which runs the whole shared suite
- * and emits one logcat line per result. [HeadlessResults] streams logcat, parses
- * those lines, and each @Test simply asserts on its parsed result. Because the run
- * happens once for the whole process, the ~70min (35 cold starts) runtime collapses
- * to a single launch while every @Test still reports independently in the JUnit XML.
+ * and emits one logcat line per result. [HeadlessResults] reads finite logcat
+ * snapshots, parses those lines, and each @Test simply asserts on its parsed result.
+ * Because the run happens once for the whole process, the ~70min (35 cold starts)
+ * runtime collapses to a single launch while every @Test still reports independently
+ * in the JUnit XML.
  */
 abstract class BaseReactNativeTest {
-
-    // Pre-grant POST_NOTIFICATIONS so no permission dialog can interrupt the run on
-    // API 33+. (The app manifest removes the permission; granting is a no-op if absent.)
-    @get:Rule
-    val permissionRule: GrantPermissionRule = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        GrantPermissionRule.grant(Manifest.permission.POST_NOTIFICATIONS)
-    } else {
-        GrantPermissionRule.grant()
-    }
-
-    // Vestigial: kept only so the two subclass overrides (ReactNetTest, ReactMobileSyncTest)
-    // still compile. Real per-test timeouts now live in HeadlessTestApp.js (SUITE_TIMEOUTS).
-    open val testTimeoutMs: Long
-        get() = 60_000
 
     fun runTest(name: String) {
         val result = HeadlessResults.resultFor(name)
@@ -91,13 +70,17 @@ abstract class BaseReactNativeTest {
  */
 object HeadlessResults {
 
-    private const val BEGIN_PREFIX = "SFTESTBEGIN::"
     private const val RESULT_PREFIX = "SFTESTRESULT::"
-    private const val DONE_PREFIX = "SFTESTDONE::"
     private const val DEFAULT_MAX_RUN_MS = 45L * 60 * 1000 // < Firebase --timeout 60m
     // App must launch and mount HeadlessTestApp (emit BEGIN) within this, else fail
     // fast with a real cause instead of blocking the whole run on a silent no-mount.
     private const val DEFAULT_BEGIN_TIMEOUT_MS = 3L * 60 * 1000
+    // Match HeadlessTestApp's per-test cap, but enforce it outside the JS event
+    // loop so a blocking native call cannot suppress the JavaScript timer.
+    private const val DEFAULT_PROGRESS_TIMEOUT_MS = 30_000L
+    private const val LOGCAT_POLL_INTERVAL_MS = 1_000L
+    private const val LOGCAT_SNAPSHOT_COMMAND =
+        "logcat -d -v raw -s ReactNativeJS:I AndroidRuntime:E"
 
     private val results = ConcurrentHashMap<String, TestResult>()
     private val lock = Object()
@@ -135,55 +118,15 @@ object HeadlessResults {
         val maxRunMs = InstrumentationRegistry.getArguments()
             .getString("maxRunMs")?.toLongOrNull() ?: DEFAULT_MAX_RUN_MS
 
-        // Clear logcat so we only read this run's output.
-        UiDevice.getInstance(instrumentation).executeShellCommand("logcat -c")
+        val device = UiDevice.getInstance(instrumentation)
+        // Clear logcat so every finite snapshot only contains this run's output.
+        device.executeShellCommand("logcat -c")
 
         val beginTimeoutMs = InstrumentationRegistry.getArguments()
             .getString("beginTimeoutMs")?.toLongOrNull() ?: DEFAULT_BEGIN_TIMEOUT_MS
+        val progressTimeoutMs = InstrumentationRegistry.getArguments()
+            .getString("progressTimeoutMs")?.toLongOrNull() ?: DEFAULT_PROGRESS_TIMEOUT_MS
         val targetPackage = context.packageName
-
-        val begun = CountDownLatch(1)
-        val done = CountDownLatch(1)
-        // Stream logcat from the shell uid (which holds READ_LOGS). Start reading
-        // BEFORE launching so no early sentinel is missed. AndroidRuntime:E is
-        // included so a FATAL crash in the app can be captured as the real cause.
-        val pfd = instrumentation.uiAutomation
-            .executeShellCommand("logcat -v raw -s ReactNativeJS:I AndroidRuntime:E")
-        val reader = BufferedReader(InputStreamReader(ParcelFileDescriptor.AutoCloseInputStream(pfd)))
-        val readerThread = Thread {
-            // Capture the FATAL EXCEPTION block only when it belongs to our process.
-            val fatalBuf = StringBuilder()
-            var fatalLinesLeft = 0
-            try {
-                reader.forEachLine { line ->
-                    when {
-                        line.contains(BEGIN_PREFIX) -> begun.countDown()
-                        // One malformed line must not kill the reader (the sole DONE
-                        // consumer) — guard the parse.
-                        line.contains(RESULT_PREFIX) -> runCatching { parseResult(line) }
-                        line.contains(DONE_PREFIX) -> done.countDown()
-                        line.contains("FATAL EXCEPTION") -> {
-                            fatalBuf.setLength(0)
-                            fatalBuf.append(line).append('\n')
-                            fatalLinesLeft = 25
-                        }
-                        fatalLinesLeft > 0 -> {
-                            fatalBuf.append(line).append('\n')
-                            fatalLinesLeft--
-                            // The "Process:" line tells us whose crash this is.
-                            if (line.contains("Process:") && line.contains(targetPackage)) {
-                                crashHint = fatalBuf.toString().take(1500)
-                                fatalLinesLeft = 0
-                            }
-                        }
-                    }
-                }
-            } catch (_: Throwable) {
-                // Stream closed after the run finished — expected.
-            }
-        }
-        readerThread.isDaemon = true
-        readerThread.start()
 
         // Launch once: TestAuthenticationActivity authenticates from the creds asset,
         // then starts MainActivity, which mounts HeadlessTestApp and runs the suite.
@@ -198,22 +141,120 @@ object HeadlessResults {
         // the whole maxRunMs and then report a misleading "no DONE". (A crash that
         // kills the shared instrumentation process is already reported quickly by
         // `am instrument` as "Process crashed"; this covers the alive-but-silent case.)
-        if (!begun.await(beginTimeoutMs, TimeUnit.MILLISECONDS)) {
+        var events = awaitEvents(device, targetPackage, beginTimeoutMs) { it.began || it.done }
+        if (!events.began) {
             runError = "Headless run did not emit BEGIN within ${beginTimeoutMs}ms — " +
                 "app launched but HeadlessTestApp never mounted " +
                 "(check test_credentials.json and the JS bundle)." +
                 (crashHint?.let { "\nApp FATAL:\n$it" } ?: "")
-            runCatching { pfd.close() }
             return
         }
 
-        // Condition-wait on the DONE sentinel — no Thread.sleep / polling.
-        val finished = done.await(maxRunMs, TimeUnit.MILLISECONDS)
-        if (!finished) {
-            runError = "Headless run did not emit DONE within ${maxRunMs}ms" +
-                (crashHint?.let { " — app FATAL:\n$it" } ?: "")
+        // Android 12L's long-running `logcat` pipe can retain the final buffered
+        // lines indefinitely. Read finite `logcat -d` snapshots instead: the
+        // command exits and flushes, so a tail-position DONE is observable.
+        if (!events.done) {
+            val completion = awaitCompletion(
+                device,
+                targetPackage,
+                events,
+                maxRunMs,
+                progressTimeoutMs
+            )
+            events = completion.events
+            if (!events.done) {
+                runError = completion.timeoutMessage +
+                    (crashHint?.let { " — app FATAL:\n$it" } ?: "")
+            }
         }
-        runCatching { pfd.close() }
+    }
+
+    private data class CompletionWait(
+        val events: HeadlessLogcatEvents,
+        val timeoutMessage: String
+    )
+
+    private fun awaitCompletion(
+        device: UiDevice,
+        targetPackage: String,
+        initialEvents: HeadlessLogcatEvents,
+        maxRunMs: Long,
+        progressTimeoutMs: Long
+    ): CompletionWait {
+        val startedAt = SystemClock.elapsedRealtime()
+        val overallDeadline = startedAt + maxRunMs
+        var lastProgressAt = startedAt
+        var lastResultCount = initialEvents.resultLines.size
+        var events = initialEvents
+
+        while (true) {
+            if (events.done) return CompletionWait(events, "")
+
+            val now = SystemClock.elapsedRealtime()
+            if (events.resultLines.size > lastResultCount) {
+                lastResultCount = events.resultLines.size
+                lastProgressAt = now
+            }
+
+            val idleMs = now - lastProgressAt
+            if (idleMs >= progressTimeoutMs) {
+                return CompletionWait(
+                    events,
+                    "Headless run made no progress for ${progressTimeoutMs}ms " +
+                        "after ${lastResultCount} result(s)"
+                )
+            }
+            if (now >= overallDeadline) {
+                return CompletionWait(
+                    events,
+                    "Headless run did not emit DONE within ${maxRunMs}ms"
+                )
+            }
+
+            SystemClock.sleep(
+                minOf(
+                    LOGCAT_POLL_INTERVAL_MS,
+                    overallDeadline - now,
+                    progressTimeoutMs - idleMs
+                )
+            )
+            events = readEvents(device, targetPackage)
+        }
+    }
+
+    private fun awaitEvents(
+        device: UiDevice,
+        targetPackage: String,
+        timeoutMs: Long,
+        finished: (HeadlessLogcatEvents) -> Boolean
+    ): HeadlessLogcatEvents {
+        val deadline = SystemClock.elapsedRealtime() + timeoutMs
+        var events: HeadlessLogcatEvents
+        do {
+            events = readEvents(device, targetPackage)
+            if (finished(events)) return events
+
+            val remainingMs = deadline - SystemClock.elapsedRealtime()
+            if (remainingMs > 0) {
+                SystemClock.sleep(minOf(LOGCAT_POLL_INTERVAL_MS, remainingMs))
+            }
+        } while (SystemClock.elapsedRealtime() < deadline)
+
+        // One last finite dump closes the race where DONE arrives at the deadline.
+        return readEvents(device, targetPackage)
+    }
+
+    private fun readEvents(
+        device: UiDevice,
+        targetPackage: String
+    ): HeadlessLogcatEvents {
+        val events = HeadlessLogcatParser.parse(
+            device.executeShellCommand(LOGCAT_SNAPSHOT_COMMAND),
+            targetPackage
+        )
+        events.resultLines.forEach { line -> runCatching { parseResult(line) } }
+        events.crashHint?.let { crashHint = it }
+        return events
     }
 
     private fun parseResult(line: String) {

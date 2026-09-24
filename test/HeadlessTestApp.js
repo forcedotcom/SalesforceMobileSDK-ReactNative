@@ -56,16 +56,9 @@ import './net.test';
 import './smartstore.test';
 import './mobilesync.test';
 
-// Per-suite hard caps (ms). testRunner has no internal timeout, so each test MUST
-// be bounded here or a single hung test would stall the whole run.
-const SUITE_TIMEOUTS = {
-  Harness: 30000,
-  OAuth: 90000,
-  Net: 120000,
-  SmartStore: 90000,
-  MobileSync: 240000,
-};
-const DEFAULT_TIMEOUT = 60000;
+// Every test gets the same hard cap. These tests normally complete in seconds;
+// letting one test run longer only hides a stalled bridge or network callback.
+const TEST_TIMEOUT = 30000;
 
 // Module-level guard so a StrictMode double-mount / remount runs the suite once.
 let started = false;
@@ -76,7 +69,7 @@ function emit(line) {
 }
 
 async function runOne(suiteName, testName) {
-  const cap = SUITE_TIMEOUTS[suiteName] || DEFAULT_TIMEOUT;
+  const cap = TEST_TIMEOUT;
   lastUnhandledRejection = null;
   // IMPORTANT: the timer MUST be cleared once the race settles. Promise.race does
   // not cancel the loser, so a timer left running after the test wins would fire
