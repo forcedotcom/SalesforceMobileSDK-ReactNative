@@ -12,6 +12,7 @@ permissions:
 jobs:
   ios-nightly:
     permissions:
+      checks: write
       contents: read
       pull-requests: write
     strategy:
