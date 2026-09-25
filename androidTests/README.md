@@ -37,11 +37,12 @@ class ReactNetTest : BaseReactNativeTest() {
 ## Timeouts
 
 Every headless test has a 30-second JavaScript timeout. The Android collector
-independently fails after 30 seconds without a new result, even if a blocking
-native call prevents the JavaScript timeout from running. Its 45-minute overall
-ceiling remains as a final guard for a suite that continues to make progress.
-The collector values can be overridden with the `progressTimeoutMs` and
-`maxRunMs` instrumentation arguments.
+independently fails after 35 seconds without a new result, including a final
+logcat snapshot at the timeout boundary. This provides polling and scheduling
+slack while still catching a blocking native call that suppresses the JavaScript
+timer. Its 45-minute overall ceiling remains as a final guard for a suite that
+continues to make progress. The collector values can be overridden with the
+`progressTimeoutMs` and `maxRunMs` instrumentation arguments.
 
 ## How It Works
 

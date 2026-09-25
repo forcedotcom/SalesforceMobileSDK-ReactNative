@@ -75,9 +75,10 @@ object HeadlessResults {
     // App must launch and mount HeadlessTestApp (emit BEGIN) within this, else fail
     // fast with a real cause instead of blocking the whole run on a silent no-mount.
     private const val DEFAULT_BEGIN_TIMEOUT_MS = 3L * 60 * 1000
-    // Match HeadlessTestApp's per-test cap, but enforce it outside the JS event
-    // loop so a blocking native call cannot suppress the JavaScript timer.
-    private const val DEFAULT_PROGRESS_TIMEOUT_MS = 30_000L
+    // HeadlessTestApp caps each test at 30 seconds. Enforce a slightly longer
+    // watchdog outside the JS event loop so polling and scheduling at the timeout
+    // boundary cannot discard the JavaScript timeout result.
+    private const val DEFAULT_PROGRESS_TIMEOUT_MS = 35_000L
     private const val LOGCAT_POLL_INTERVAL_MS = 1_000L
     private const val LOGCAT_SNAPSHOT_COMMAND =
         "logcat -d -v raw -s ReactNativeJS:I AndroidRuntime:E"
@@ -198,8 +199,18 @@ object HeadlessResults {
 
             val idleMs = now - lastProgressAt
             if (idleMs >= progressTimeoutMs) {
+                // Close the boundary race where the JavaScript timeout/result is
+                // emitted just after the snapshot used to calculate idleMs.
+                val finalEvents = readEvents(device, targetPackage)
+                if (finalEvents.done) return CompletionWait(finalEvents, "")
+                if (finalEvents.resultLines.size > lastResultCount) {
+                    events = finalEvents
+                    lastResultCount = finalEvents.resultLines.size
+                    lastProgressAt = SystemClock.elapsedRealtime()
+                    continue
+                }
                 return CompletionWait(
-                    events,
+                    finalEvents,
                     "Headless run made no progress for ${progressTimeoutMs}ms " +
                         "after ${lastResultCount} result(s)"
                 )

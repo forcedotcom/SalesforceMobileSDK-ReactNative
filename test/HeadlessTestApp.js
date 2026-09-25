@@ -36,10 +36,10 @@
  *   SFTESTRESULT::{"s":"<suite>","n":"<test>","ok":true|false,"e":"<error?>"}
  *   SFTESTDONE::{"total":N,"passed":N,"failed":N}
  *
- * The Kotlin harness (BaseReactNativeTest.kt) streams logcat (tag ReactNativeJS),
- * parses these lines into per-test results, and asserts. No UIAutomator, no
- * scrolling, no gesture guessing — which is what made the old harness flaky on
- * Firebase Test Lab's slow ARM emulators.
+ * The Kotlin harness (BaseReactNativeTest.kt) reads finite logcat snapshots (tag
+ * ReactNativeJS), parses these lines into per-test results, and asserts. No
+ * UIAutomator, no scrolling, no gesture guessing — which is what made the old
+ * harness flaky on Firebase Test Lab's slow ARM emulators.
  *
  * This file is imported ONLY by androidTests/index.js, so it is never bundled for
  * iOS. Do NOT import it from iosTests/index.js.
