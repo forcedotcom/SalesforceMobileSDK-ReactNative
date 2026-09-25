@@ -1,472 +1,282 @@
 # Android Test App Documentation
 
-This document describes the Android test application structure and how to run tests for the Salesforce Mobile SDK React Native bridge.
+The Android test app runs the shared React Native bridge tests through an
+AndroidX instrumentation suite. Android uses a headless JavaScript driver and
+logcat result protocol; it does not navigate the interactive test UI with
+UIAutomator.
 
-## Table of Contents
-
-- [Overview](#overview)
-- [Test Architecture](#test-architecture)
-- [Directory Structure](#directory-structure)
-- [Setup and Running Tests](#setup-and-running-tests)
-- [Writing Tests](#writing-tests)
-- [Test Utilities](#test-utilities)
-- [Troubleshooting](#troubleshooting)
-
-## Overview
-
-The Android test app is a React Native application that runs JavaScript tests through the AndroidX Test framework (instrumentation tests). This approach allows testing the complete bridge from JavaScript → React Native → Android Native → Android SDK.
-
-### Key Components
-
-1. **JavaScript Test Suite** (`test/`) - Shared test files for all platforms
-2. **Android Test App** (`androidTests/`) - React Native app that loads tests
-3. **AndroidX Test Suite** (`androidTests/android/app/src/androidTest/`) - Instrumentation test runner
-4. **Test Harness** (`src/react.force.test.tsx`) - Bridge between JS and native tests
-
-## Test Architecture
+## Architecture
 
 ```mermaid
-graph TB
-    subgraph "AndroidX Test (Kotlin/JUnit)"
-        A[ReactTestCase]
-        B[ReactOauthTests]
-        C[ReactNetTests]
-        D[ReactSmartStoreTests]
-        E[ReactMobileSyncTests]
-    end
-    
-    subgraph "React Native Runtime"
-        F[SalesforceReactActivity - bridgeless mode]
-    end
-    
-    subgraph "JavaScript Test Suite"
-        G[test/alltests.js]
-        H[test/oauth.test.js]
-        I[test/net.test.js]
-        J[test/smartstore.test.js]
-        K[test/mobilesync.test.js]
-    end
-    
-    subgraph "SDK Bridge Modules (TurboModules)"
-        L[SFOauthReactBridge]
-        M[SFNetReactBridge]
-        N[SFSmartStoreReactBridge]
-        O[SFMobileSyncReactBridge]
-    end
-    
-    subgraph "Android SDK"
-        P[SalesforceSDK]
-        Q[SmartStore]
-        R[MobileSync]
-    end
-    
-    B --> F
-    C --> F
-    D --> F
-    E --> F
-    
-    F --> H
-    F --> I
-    F --> J
-    F --> K
-    
-    H --> L
-    I --> M
-    J --> N
-    K --> O
-    
-    L --> P
-    M --> P
-    N --> Q
-    O --> R
+flowchart TD
+    A[AndroidJUnitRunner] --> B[BaseReactNativeTest]
+    B --> C[TestAuthenticationActivity]
+    C --> D[MainActivity]
+    D --> E[HeadlessTestApp]
+    E --> F[testRunner]
+    F --> G[Shared JavaScript suites]
+    G --> H[React Native bridge modules]
+    H --> I[Salesforce Android SDK]
+    E --> J[SFTEST logcat sentinels]
+    J --> K[HeadlessLogcatParser]
+    K --> B
 ```
 
-## Directory Structure
+The first JUnit method that requests a result launches the app and authenticates
+from `test_credentials.json`. `HeadlessTestApp` then runs every registered
+JavaScript test sequentially. The instrumentation collector reads the complete
+result set once and caches it; each JUnit method asserts the cached result with
+the matching JavaScript test name.
 
+Android intentionally differs from iOS here. `androidTests/index.js` mounts
+`HeadlessTestApp`, while the iOS test app keeps the interactive `TestApp` used by
+XCUITest.
+
+## Result Protocol
+
+The JavaScript driver writes one physical logcat line for each event:
+
+```text
+SFTESTBEGIN::
+SFTESTRESULT::{"s":"<suite>","n":"<test>","ok":true|false,"e":"<error>"}
+SFTESTDONE::{"total":35,"passed":35,"failed":0}
 ```
+
+`HeadlessResults` clears logcat before launch and polls finite `logcat -d`
+snapshots. Finite snapshots are important on Android 12L, where a long-lived
+logcat pipe can retain the final buffered `SFTESTDONE` line.
+
+If the app crashes, the parser also captures an `AndroidRuntime` fatal exception
+for the test package and adds it to the failure message when available.
+
+## Timeouts
+
+- Every JavaScript test has a 30-second timeout in `HeadlessTestApp.js`.
+- The instrumentation collector allows 35 seconds without a new result. The
+  extra five seconds covers polling and scheduling at the JavaScript timeout
+  boundary. It takes one final logcat snapshot before declaring no progress.
+- A 45-minute overall ceiling remains as a final guard while results continue to
+  arrive. Firebase Test Lab has its own 60-minute execution ceiling.
+
+The collector thresholds can be overridden with the `progressTimeoutMs`,
+`beginTimeoutMs`, and `maxRunMs` instrumentation arguments.
+
+## Key Files
+
+```text
+test/
+├── HeadlessTestApp.js             # Android-only headless driver and per-test timeout
+├── testRunner.js                  # Suite registration and test lifecycle
+├── harness.test.js
+├── oauth.test.js
+├── net.test.js
+├── smartstore.test.js
+└── mobilesync.test.js
+
 androidTests/
-├── android/                              # Android native project
-│   ├── app/
-│   │   ├── build.gradle.kts              # Gradle build config (includes copyTestCredentials task)
-│   │   └── src/
-│   │       ├── main/
-│   │       │   ├── AndroidManifest.xml
-│   │       │   ├── assets/
-│   │       │   │   └── test_credentials.json  # Copied at build time (gitignored)
-│   │       │   ├── java/.../
-│   │       │   │   └── MainApplication.kt     # App entry point
-│   │       │   └── res/
-│   │       └── androidTest/
-│   │           └── java/.../
-│   │               ├── ReactTestCase.kt       # Base test class
-│   │               ├── ReactOauthTests.kt     # OAuth tests
-│   │               ├── ReactNetTests.kt       # REST API tests
-│   │               ├── ReactSmartStoreTests.kt # SmartStore tests
-│   │               └── ReactMobileSyncTests.kt # MobileSync tests
-│   ├── build.gradle                       # Root Gradle config
-│   ├── settings.gradle                    # Project settings
-│   ├── gradle.properties
-│   └── gradlew                            # Gradle wrapper
-│
-├── mobile_sdk/                           # Cloned Android SDK (from updatesdk.js)
-│   └── SalesforceMobileSDK-Android/
-│
-├── index.js                              # React Native entry point
-├── package.json                          # npm dependencies
-├── metro.config.js                       # Metro bundler config
-├── babel.config.js                       # Babel config
-├── prepareandroid.js                     # Setup script
-├── updatebundle.js                       # Bundle update script
-├── updatesdk.js                          # SDK update script
-└── create_test_credentials_from_env.js   # CI credential generation
+├── index.js                       # Mounts HeadlessTestApp for Android
+├── prepareandroid.js              # Installs dependencies, SDK, credentials, bundle
+├── updatebundle.js                # Creates index.android.bundle
+├── updatesdk.js                   # Installs SalesforceMobileSDK-Android
+└── android/app/src/
+    ├── main/java/com/salesforce/androidsdk/reactnative/
+    │   ├── HeadlessLogcatParser.kt
+    │   └── util/SalesforceReactTestApp.kt
+    └── androidTest/java/com/salesforce/androidsdk/reactnative/
+        ├── BaseReactNativeTest.kt
+        ├── ReactHarnessTest.kt
+        ├── ReactOAuthTest.kt
+        ├── ReactNetTest.kt
+        ├── ReactSmartStoreTest.kt
+        └── ReactMobileSyncTest.kt
 ```
 
-## Setup and Running Tests
+The debuggable test app disables Salesforce SDK developer support. Its manifest
+removes `POST_NOTIFICATIONS`, so leaving developer support enabled would request
+an undeclared permission on every activity resume on API 33 and later.
+
+## Setup
 
 ### Prerequisites
 
-- **Android Studio**: Latest stable version
-- **Java**: JDK 17+
-- **Node.js**: 22 or later
-- **Android SDK**: API 31+ (compileSdk 36)
-- **Emulator or device**: API 31+ for running tests
-- **Salesforce Org**: For authentication tests
+- Node.js 22 or later
+- JDK 17 or later
+- Android SDK with API 31 or later
+- A connected emulator/device for local execution, or Firebase Test Lab access
+- Salesforce test-org credentials
 
-### Step 1: Setup Test Workspace
+### Credentials
 
-From the `androidTests` directory:
+Copy the shared sample and populate it:
+
+```bash
+cp shared/test/test_credentials.json.sample shared/test/test_credentials.json
+```
+
+Do not commit `test_credentials.json`. In CI,
+`create_test_credentials_from_env.js` writes the `TEST_CREDENTIALS` secret to
+the shared location.
+
+### Prepare the Test App
+
+From the repository root:
 
 ```bash
 cd androidTests
 ./prepareandroid.js
 ```
 
-**What it does** (4 phases):
-1. **Phase 1**: Installs npm dependencies (React Native, SDK, build tools)
-2. **Phase 2**: Clones Android SDK from configured repository branch (`updatesdk.js`)
-3. **Phase 3**: Copies `shared/test/test_credentials.json` into the app assets directory
-4. **Phase 4**: Bundles JavaScript tests into `index.android.bundle`
+The script:
 
-**For detailed explanation of each phase**, see [PREPAREANDROID_DETAILED.md](./PREPAREANDROID_DETAILED.md).
+1. Reinstalls the Android test app's JavaScript dependencies.
+2. Installs the configured Salesforce Android SDK dependency.
+3. Copies `shared/test/test_credentials.json` into the app assets. Preparation
+   fails immediately if the credential file is absent.
+4. Bundles the JavaScript tests into
+   `android/app/src/main/assets/index.android.bundle`.
 
-**Key files created**:
-- `node_modules/` - npm dependencies
-- `mobile_sdk/SalesforceMobileSDK-Android/` - Cloned Android SDK
-- `android/app/src/main/assets/test_credentials.json` - Test credentials (copied from shared)
-- `android/app/src/main/assets/index.android.bundle` - Bundled JavaScript tests
+See [PREPAREANDROID_DETAILED.md](./PREPAREANDROID_DETAILED.md) for preparation
+details.
 
-### Step 2: Configure Test Credentials
+## Running Tests
 
-Both iOS and Android tests share a single credentials source at `shared/test/test_credentials.json` (relative to the repo root). Copy the sample template and fill in your values:
-
-```bash
-cp shared/test/test_credentials.json.sample shared/test/test_credentials.json
-```
-
-See the [sample template](../../shared/test/test_credentials.json.sample) for the expected fields.
-
-**Note**: The `prepareandroid.js` script copies this file into `android/app/src/main/assets/test_credentials.json`. Additionally, the Gradle `copyTestCredentials` task re-copies it before each build, so credentials stay up to date even if you edit the source file later.
-
-**Alternative** (using environment variables in CI):
-
-```bash
-cd androidTests
-node create_test_credentials_from_env.js
-```
-
-### Step 3: Run Tests
-
-#### Via Gradle (command line)
-
-Ensure an emulator is running or a device is connected:
+### Connected Device or Emulator
 
 ```bash
 cd androidTests/android
 ./gradlew :app:connectedDebugAndroidTest
 ```
 
-#### Via Android Studio
+Running one JUnit method still starts the shared headless suite once; the selected
+method then asserts only its named result.
 
-1. Open the `androidTests/android` project in Android Studio
-2. Wait for Gradle sync to complete
-3. Navigate to `app/src/androidTest/java/`
-4. Right-click on the test class you want to run, then "Run"
+### Android Studio
 
-#### Via Firebase Test Lab
+1. Open `androidTests/android`.
+2. Wait for Gradle sync.
+3. Run a class or method under `app/src/androidTest/java`.
 
-For CI environments, tests can be run on Firebase Test Lab:
+Metro is not required because `prepareandroid.js` produces the bundled test
+application.
+
+### Firebase Test Lab
+
+Build both APKs:
 
 ```bash
 cd androidTests/android
-
-# Build the app APK and test APK
 ./gradlew :app:assembleDebug :app:assembleDebugAndroidTest
+```
 
-# Run on Firebase Test Lab (requires gcloud CLI configured)
-gcloud firebase test android run \
+Then run the instrumentation APK, for example:
+
+```bash
+gcloud --quiet beta firebase test android run \
+  --project mobile-apps-firebase-test \
   --type instrumentation \
   --app app/build/outputs/apk/debug/app-debug.apk \
   --test app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
-  --device model=Pixel2,version=30
+  --device model=MediumPhone.arm,version=34,locale=en,orientation=portrait \
+  --timeout 60m \
+  --no-auto-google-login \
+  --no-performance-metrics \
+  --no-record-video
 ```
 
-## The `copyTestCredentials` Gradle Task
-
-The `build.gradle.kts` for the test app includes a custom Gradle task that ensures test credentials are always available at build time:
-
-```kotlin
-// Copy test_credentials.json from shared/test/ into assets before each build
-tasks.register<Copy>("copyTestCredentials") {
-    from("${rootProject.projectDir}/../../shared/test/test_credentials.json")
-    into("src/main/assets")
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
-}
-tasks.matching { it.name.startsWith("merge") && it.name.contains("Assets") }.configureEach {
-    dependsOn("copyTestCredentials")
-}
-```
-
-This task:
-- Runs automatically before any asset-merging step (debug and androidTest builds)
-- Copies from the canonical location `shared/test/test_credentials.json`
-- Silently succeeds even if `prepareandroid.js` has not been run (the file must exist though)
-
-## The `prepareandroid.js` Script
-
-The setup script automates all steps needed to prepare the Android test environment.
-
-### Phase 1: Install npm Dependencies
-
-```bash
-rm -rf node_modules
-rm -f yarn.lock
-yarn install
-```
-
-Installs React Native, the SDK package (`react-native-force` via `file:../`), and build tools.
-
-### Phase 2: Clone Android SDK
-
-```bash
-node ./updatesdk.js
-```
-
-Reads `sdkDependencies` from `package.json` and shallow-clones the Android SDK into `mobile_sdk/SalesforceMobileSDK-Android/`. The Gradle build uses a composite build to include SDK libraries from this clone.
-
-### Phase 3: Copy Test Credentials
-
-Copies `../shared/test/test_credentials.json` into `android/app/src/main/assets/`. If the source file does not exist, writes an empty JSON object and prints a warning.
-
-### Phase 4: Bundle JavaScript Tests
-
-```bash
-node ./updatebundle.js
-```
-
-Runs Metro to create `android/app/src/main/assets/index.android.bundle` containing all JavaScript test code.
+The reusable Android workflow tests API 36 for pull requests and APIs 31–37 for
+full nightly runs. API 36 and later use the 16 KB page-size device model.
 
 ## Writing Tests
 
-### JavaScript Test Structure
+### JavaScript Suite
 
-Tests are shared between iOS and Android. They live in `test/` at the repo root and use a lightweight custom assert module (`test/assert.js`) plus the `registerTest`/`testDone` harness.
+Register a suite before its tests. Tests finish by calling `testDone()` with no
+argument on success or with an error on failure.
 
 ```javascript
-// test/oauth.test.js
-import { assert } from './assert';
-import * as oauth from '../src/react.force.oauth';
-import { registerTest, testDone } from '../src/react.force.test';
+import { registerSuite, registerTest, testDone } from './testRunner';
 
-testGetAuthCredentials = () => {
-    oauth.getAuthCredentials(
-        (creds) => {
-            assert.containsAllKeys(
-              creds,
-              ["accessToken","instanceUrl","loginUrl","orgId","refreshToken","userAgent","userId"],
-              'Wrong keys in credentials'
-            );
-            testDone();
-        },
-        (error) => { throw error; }
-    );
-    return false; // not done (async)
-};
+registerSuite('Example');
 
-registerTest(testGetAuthCredentials);
+function testExample() {
+  someAsyncOperation(
+    () => testDone(),
+    (error) => testDone(error),
+  );
+}
+
+registerTest(testExample);
 ```
 
-### Adding a New Test
+Suites may provide asynchronous setup and teardown functions:
 
-1. **Add JavaScript test function** in `test/<module>.test.js`
-2. **Register it** with `registerTest(testFunctionName);`
-3. **Add it to the Android test class** (Kotlin parameterized test list)
-4. **Run tests** (see [Setup and Running Tests](#setup-and-running-tests))
+```javascript
+registerSuite('Example', {
+  setUp: async () => resetState(),
+  tearDown: async () => resetState(),
+});
+```
 
-### Test Naming Convention
+Avoid throwing inside asynchronous callbacks; pass the exception to
+`testDone(error)` or reject a promise that the test chain handles. The headless
+driver records unhandled Hermes promise rejections in timeout diagnostics.
 
-JavaScript test function names start with `test` followed by the name in camelCase. The Android test runner extracts the name (without `test` prefix) and uses it as the React Native component name to mount.
+### JUnit Mapping
 
-Example mapping:
-| JavaScript Function | Registered Component | Android Parameterized Entry |
-|---------------------|---------------------|----------------------------|
-| `testGetAuthCredentials` | `GetAuthCredentials` | `"GetAuthCredentials"` |
-| `testRegisterSoup` | `RegisterSoup` | `"RegisterSoup"` |
+Add a JUnit method with exactly the same JavaScript function name:
 
-## Test Utilities
+```kotlin
+class ReactExampleTest : BaseReactNativeTest() {
+    @Test fun testExample() = runTest("testExample")
+}
+```
 
-### Test Credentials Loading
-
-At runtime, the test app loads `test_credentials.json` from the Android assets directory. This file is placed there by:
-1. `prepareandroid.js` Phase 3 (initial setup)
-2. The Gradle `copyTestCredentials` task (every subsequent build)
-
-### Test Harness (`react.force.test.tsx`)
-
-The `testDone()` function signals test completion to the native side via `NativeModules.SalesforceTestBridge.markTestCompleted()`. This is the Android-specific counterpart to iOS's `TestModule.markTestCompleted()`.
-
-## Test Categories
-
-### 1. OAuth Tests (`test/oauth.test.js`)
-- `testGetAuthCredentials` - Get current user credentials
-
-### 2. Net Tests (`test/net.test.js`)
-- `testGetApiVersion`, `testVersions`, `testResources`
-- `testDescribeGlobal`, `testMetaData`, `testDescribe`, `testDescribeLayout`
-- `testCreateRetrieve`, `testUpsertUpdateRetrieve`, `testCreateDelRetrieve`
-- `testQuery`, `testSearch`, `testPublicApiCall`
-- `testCollectionCreateRetrieve`, `testCollectionUpsertUpdateRetrieve`, `testCollectionCreateDeleteRetrieve`
-
-### 3. SmartStore Tests (`test/smartstore.test.js`)
-- `testGetDatabaseSize`, `testRegisterExistsRemoveExists`
-- `testGetSoupIndexSpecs`, `testUpsertRetrieve`
-- `testQuerySoup`, `testMoveCursor`, `testSmartQuerySoup`
-- `testRemoveFromSoup`, `testClearSoup`
-- `testGetRemoveStores`, `testGetRemoveGlobalStores`
-
-### 4. MobileSync Tests (`test/mobilesync.test.js`)
-- `testSyncUp`, `testSyncDown`, `testReSync`
-- `testCleanResyncGhosts`, `testGetSyncStatusDeleteSync`
-
-### 5. Harness Tests (`test/harness.test.js`)
-- `testPassing`, `testAsyncPassing`
+Tests registered with `excludeFromRunAll: true` are not executed by the Android
+headless suite and should not have an Android JUnit mapping.
 
 ## Troubleshooting
 
-### Tests Don't Run
+### No `SFTESTBEGIN`
 
-**Problem**: Instrumentation tests fail to start or timeout
+Check that:
 
-**Solutions**:
-1. Ensure an emulator is running (`adb devices` should show a device)
-2. Check that the JavaScript bundle was created: `ls android/app/src/main/assets/index.android.bundle`
-3. Verify credentials exist: `ls android/app/src/main/assets/test_credentials.json`
-4. Clean and rebuild: `cd android && ./gradlew clean :app:assembleDebug`
+- `shared/test/test_credentials.json` exists and is populated.
+- `prepareandroid.js` completed successfully.
+- `android/app/src/main/assets/index.android.bundle` exists.
+- The app did not crash during authentication or bundle loading.
 
-### Authentication Failures
+### No Progress or Missing `SFTESTDONE`
 
-**Problem**: OAuth tests fail with "Not authenticated"
+Search logcat for the sentinel sequence and fatal exceptions:
 
-**Solutions**:
-1. Verify `shared/test/test_credentials.json` is valid and populated
-2. Check that the credentials were copied: `cat android/app/src/main/assets/test_credentials.json`
-3. Ensure the Connected App allows the configured redirect URI
-4. Check logcat for detailed error messages: `adb logcat | grep -i salesforce`
-
-### Build Errors
-
-**Problem**: Gradle build fails
-
-**Solutions**:
 ```bash
-cd androidTests/android
-./gradlew clean
-./gradlew :app:assembleDebug --info
+adb logcat -d -v raw -s ReactNativeJS:I AndroidRuntime:E
 ```
 
-If SDK dependencies are missing:
-```bash
-cd androidTests
-node updatesdk.js
-```
+A no-progress failure reports how many results arrived before the 35-second
+watchdog expired. A JavaScript test timeout should instead produce a failed
+`SFTESTRESULT` and allow the suite to continue to `SFTESTDONE`.
 
-### Metro Bundler Issues
+### Stale JavaScript Bundle
 
-**Problem**: JavaScript bundle is outdated or missing
-
-**Solutions**:
 ```bash
 cd androidTests
 node updatebundle.js
 ```
 
-### Emulator Issues
+### Build Failure
 
-**Problem**: `connectedDebugAndroidTest` fails with "No connected devices"
-
-**Solutions**:
-1. Start an emulator from Android Studio or command line
-2. Verify connection: `adb devices`
-3. For headless CI, create an emulator:
-   ```bash
-   sdkmanager "system-images;android-30;google_apis;x86_64"
-   avdmanager create avd -n test -k "system-images;android-30;google_apis;x86_64"
-   emulator -avd test -no-window &
-   adb wait-for-device
-   ```
-
-## CI/CD Integration
-
-### GitHub Actions Example
-
-```yaml
-name: Android Tests
-
-on: [push, pull_request]
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v3
-    
-    - name: Setup Node
-      uses: actions/setup-node@v3
-      with:
-        node-version: '22'
-    
-    - name: Setup Java
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'temurin'
-        java-version: '17'
-    
-    - name: Setup Test Credentials
-      env:
-        SFDC_TEST_CLIENT_ID: ${{ secrets.TEST_CLIENT_ID }}
-        SFDC_TEST_USERNAME: ${{ secrets.TEST_USERNAME }}
-        SFDC_TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
-      run: |
-        cd androidTests
-        node create_test_credentials_from_env.js
-    
-    - name: Prepare Android Tests
-      run: |
-        cd androidTests
-        ./prepareandroid.js
-    
-    - name: Start Emulator
-      uses: reactivecircus/android-emulator-runner@v2
-      with:
-        api-level: 30
-        script: |
-          cd androidTests/android
-          ./gradlew :app:connectedDebugAndroidTest
+```bash
+cd androidTests/android
+./gradlew :app:assembleDebug :app:assembleDebugAndroidTest --info
 ```
+
+If the composite Android SDK dependency is absent, rerun `androidTests/updatesdk.js`
+or the full `prepareandroid.js` setup.
 
 ## Further Reading
 
-- [JavaScript API Reference](../javascript/API_REFERENCE.md) - Complete API documentation
-- [Architecture Guide](../ARCHITECTURE.md) - Overall architecture
-- [iOS Test Documentation](../ios-tests/README.md) - iOS testing (mirrors this structure)
-- [Main README](../../README.md) - Getting started guide
+- [Preparation details](./PREPAREANDROID_DETAILED.md)
+- [JavaScript API reference](../javascript/API_REFERENCE.md)
+- [Repository architecture](../ARCHITECTURE.md)
+- [iOS test documentation](../ios-tests/README.md)

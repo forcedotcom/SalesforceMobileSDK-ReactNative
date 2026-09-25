@@ -1,6 +1,6 @@
 # Android Tests
 
-UI-driven tests for the React Native bridge using UIAutomator.
+Headless instrumentation tests for the React Native bridge.
 
 ## Test Credentials
 
@@ -10,28 +10,24 @@ Tests require Salesforce org credentials. Copy `shared/test/test_credentials.jso
 
 ### From Android Studio
 1. Set up the test app: `./prepareandroid.js`
-2. Start the Metro bundler: `npm start`
-3. Open the project in Android Studio: `androidTests/android/`
-4. Right-click on a test class or method → Run
+2. Open the project in Android Studio: `androidTests/android/`
+3. Right-click on a test class or method → Run
 
 ### From Command Line
 ```bash
-cd androidTests
-./gradlew connectedAndroidTest
+cd androidTests/android
+./gradlew connectedDebugAndroidTest
 ```
 
 ## Test Structure
 
-Each test class extends `BaseReactNativeTest` and provides:
-
-- `testTimeoutMs`: Timeout for each test (optional, default: 15s)
+Each test class extends `BaseReactNativeTest` and maps its JUnit methods to the
+shared JavaScript test names.
 
 Example:
 
 ```kotlin
 class ReactNetTest : BaseReactNativeTest() {
-    override val testTimeoutMs: Long = 30_000
-    
     @Test fun testGetApiVersion() = runTest("testGetApiVersion")
     @Test fun testVersions() = runTest("testVersions")
     // ...
@@ -40,36 +36,35 @@ class ReactNetTest : BaseReactNativeTest() {
 
 ## Timeouts
 
-Default timeouts:
-- **OAuth, Harness, SmartStore**: 15 seconds (default)
-- **Net**: 30 seconds  
-- **MobileSync**: 60 seconds
-
-Override `testTimeoutMs` to customize per test class.
+Every headless test has a 30-second JavaScript timeout. The Android collector
+independently fails after 35 seconds without a new result, including a final
+logcat snapshot at the timeout boundary. This provides polling and scheduling
+slack while still catching a blocking native call that suppresses the JavaScript
+timer. Its 45-minute overall ceiling remains as a final guard for a suite that
+continues to make progress. The collector values can be overridden with the
+`progressTimeoutMs` and `maxRunMs` instrumentation arguments.
 
 ## How It Works
 
-1. Each test method triggers the activity to launch via `@Rule`
-2. `runTest()` waits for the React Native app to load
-3. Taps the individual test button in the UI (testID: `run_{testName}`)
-4. Waits for the test result element to appear (testID: `result_{testName}_pass` or `result_{testName}_fail`)
-5. Asserts the result
+1. The first JUnit test launches the app and authenticates from `test_credentials.json`.
+2. `HeadlessTestApp` runs the shared JavaScript tests sequentially.
+3. Each JavaScript result and the final summary are written to logcat sentinels.
+4. The Android collector reads finite logcat snapshots and caches all results.
+5. Each JUnit method asserts its corresponding cached result.
 
 ## Authentication
 
 Tests use instant authentication via `TestAuthenticationActivity`:
 - Credentials are loaded from `assets/test_credentials.json`
-- `ActivityScenarioRule` launches `TestAuthenticationActivity` with credentials as an intent extra
+- The headless collector launches `TestAuthenticationActivity` with credentials as an intent extra
 - Activity authenticates and launches the main React Native activity
-- Tests interact with the running React Native app via UIAutomator
+- The JavaScript suite reports results through logcat; no UI interaction is required
 
-## Test IDs
+## Result Protocol
 
-The JavaScript test app must expose these accessibility identifiers:
-- `testList`: The ScrollView containing all test buttons
-- `run_{testName}`: Button to run individual test
-- `result_{testName}_pass`: Success indicator
-- `result_{testName}_fail`: Failure indicator  
-- `error_{testName}`: Error message text (if test fails)
+The JavaScript test app emits `SFTESTBEGIN::`, one `SFTESTRESULT::` JSON line per
+test, and `SFTESTDONE::` when the suite completes. The instrumentation collector
+uses finite `logcat -d` snapshots so Android 12L cannot retain the final buffered
+line in a long-lived logcat pipe.
 
 See `docs/android-tests/README.md` for detailed documentation.
