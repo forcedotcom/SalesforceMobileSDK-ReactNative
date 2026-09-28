@@ -45,6 +45,7 @@ jobs:
 
   ios-pr:
     permissions:
+      checks: write
       contents: read
       pull-requests: write
     needs: [permission-check]

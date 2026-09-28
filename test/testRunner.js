@@ -49,9 +49,9 @@ export function registerSuite(name, { setUp, tearDown } = {}) {
   currentSuiteName = name;
 }
 
-export function registerTest(testFn) {
+export function registerTest(testFn, { excludeFromRunAll = false } = {}) {
   if (!currentSuiteName) throw new Error('registerTest called before registerSuite');
-  suites[currentSuiteName].tests.push({ name: testFn.name, fn: testFn });
+  suites[currentSuiteName].tests.push({ name: testFn.name, fn: testFn, excludeFromRunAll });
 }
 
 export function getSuites() {
@@ -115,6 +115,7 @@ export async function runSuite(suiteName) {
   if (!suite) return {};
   const results = {};
   for (const test of suite.tests) {
+    if (test.excludeFromRunAll) continue;
     results[test.name] = await runTest(suiteName, test.name);
   }
   return results;

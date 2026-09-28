@@ -225,6 +225,7 @@ function testCleanResyncGhosts() {
     var contactId;
     var otherContactId;
     var querySpec;
+    var phase = 'registerSoup';
 
     // Create two records remotely - do a sync down - check db
     // Delete one of the two records - do a cleanResyncGhosts - check db
@@ -232,13 +233,17 @@ function testCleanResyncGhosts() {
 
     registerSoup(storeConfig, soupName, indexSpecs)
         // Parallel creates: the two records are independent, so no need to serialize
-        .then(() => Promise.all([
-            netCreate('contact', {FirstName: firstName, LastName: 'Last' + uniq}),
-            netCreate('contact', {FirstName: otherFirstName, LastName: 'Last' + uniq}),
-        ]))
+        .then(() => {
+            phase = 'createContacts';
+            return Promise.all([
+                netCreate('contact', {FirstName: firstName, LastName: 'Last' + uniq}),
+                netCreate('contact', {FirstName: otherFirstName, LastName: 'Last' + uniq}),
+            ]);
+        })
         .then(([r1, r2]) => {
             contactId = r1.id;
             otherContactId = r2.id;
+            phase = 'syncDown';
             return syncDown(storeConfig,
                             {'type':'soql', 'query':"SELECT Id, FirstName, LastName FROM Contact WHERE Id IN ('" + contactId + "', '" + otherContactId + "')"},
                             soupName,
@@ -256,18 +261,32 @@ function testCleanResyncGhosts() {
         })
         .then((result) => {
             assert.deepEqual(result.currentPageOrderedEntries, [[firstName],[otherFirstName]]);
+            phase = 'deleteGhostCandidate';
             return netDel('contact', otherContactId);
         })
         // Brief pause so the deletion propagates before cleanResyncGhosts queries the server
         .then(() => timeoutPromiser(1000))
-        .then(() => cleanResyncGhosts(storeConfig, syncId))
+        .then(() => {
+            phase = 'cleanResyncGhosts';
+            return cleanResyncGhosts(storeConfig, syncId);
+        })
         .then(() => runSmartQuery(storeConfig, querySpec))
         .then((result) => {
             assert.deepEqual(result.currentPageOrderedEntries, [[firstName]]);
+            phase = 'cleanupRemainingContact';
             return netDel('contact', contactId);
         })
         .then(() => { testDone(); })
-        .catch((err) => { testDone(err); });
+        .catch((error) => {
+            const response = error && (error.response || (error.details && error.details.response));
+            const status = response && (response.statusCode || response.status);
+            const body = response && response.body;
+            const firstError = Array.isArray(body) ? body[0] : body;
+            const errorCode = firstError && firstError.errorCode;
+            const message = error && error.message ? error.message : String(error);
+            const diagnostic = 'phase=' + phase + ' message=' + message + ' status=' + (status || 'unknown') + ' errorCode=' + (errorCode || 'unknown');
+            testDone(new Error(diagnostic));
+        });
 };
 
 function testGetSyncStatusDeleteSync() {

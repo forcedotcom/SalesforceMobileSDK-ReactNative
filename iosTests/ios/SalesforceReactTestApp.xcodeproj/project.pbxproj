@@ -14,6 +14,7 @@
 		C955C9F2B54461750DCC56B1 /* Pods_SalesforceReactTestApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 070C882A5C716392B7B11A01 /* Pods_SalesforceReactTestApp.framework */; };
 		CEA8CA061F071C3300448B51 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CEA8CA051F071C3300448B51 /* Images.xcassets */; };
 		D32109E02DFA158700A206F1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D32109DF2DFA158700A206F1 /* AppDelegate.swift */; };
+		F5413A912F61A00100E52D27 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5413A902F61A00100E52D27 /* SceneDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,6 +41,7 @@
 		B77BD8AE2113632C0036B284 /* bootconfig.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = bootconfig.plist; path = SalesforceReactTestApp/bootconfig.plist; sourceTree = "<group>"; };
 		CEA8CA051F071C3300448B51 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = "../mobile_sdk/SalesforceMobileSDK-iOS/shared/resources/Images.xcassets"; sourceTree = "<group>"; };
 		D32109DF2DFA158700A206F1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = SalesforceReactTestApp/AppDelegate.swift; sourceTree = "<group>"; };
+		F5413A902F61A00100E52D27 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SceneDelegate.swift; path = SalesforceReactTestApp/SceneDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -90,6 +92,7 @@
 			isa = PBXGroup;
 			children = (
 				D32109DF2DFA158700A206F1 /* AppDelegate.swift */,
+				F5413A902F61A00100E52D27 /* SceneDelegate.swift */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -330,6 +333,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D32109E02DFA158700A206F1 /* AppDelegate.swift in Sources */,
+				F5413A912F61A00100E52D27 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -362,7 +366,7 @@
 				DEAD_CODE_STRIPPING = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(TOOLCHAIN_DIR)/usr/include",
 					"$(SRCROOT)/../node_modules/react-native/React/**",
 				);
 				INFOPLIST_FILE = SalesforceReactTestApp/Info.plist;
@@ -394,7 +398,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(TOOLCHAIN_DIR)/usr/include",
 					"$(SRCROOT)/../node_modules/react-native/React/**",
 				);
 				INFOPLIST_FILE = SalesforceReactTestApp/Info.plist;
@@ -538,7 +542,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(TOOLCHAIN_DIR)/usr/include",
 					"$(SRCROOT)/../node_modules/react-native/React/**",
 					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers",
 					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core",
@@ -634,7 +638,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(TOOLCHAIN_DIR)/usr/include",
 					"$(SRCROOT)/../node_modules/react-native/React/**",
 					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers",
 					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core",

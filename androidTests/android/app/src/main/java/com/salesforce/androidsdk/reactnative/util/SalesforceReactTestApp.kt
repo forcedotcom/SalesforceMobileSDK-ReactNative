@@ -63,5 +63,11 @@ class SalesforceReactTestApp : Application(), ReactApplication {
         SoLoader.init(this, OpenSourceMergedSoMapping)
         load()
         SalesforceReactSDKManager.initReactNative(applicationContext, MainActivity::class.java)
+        // This debuggable test app removes POST_NOTIFICATIONS so Firebase runs do
+        // not require UI interaction. Disable SDK developer support as well: its
+        // foreground notification otherwise requests the removed permission on
+        // every activity resume, creating a permission-activity resume loop on
+        // API 33+ that repeatedly pauses React Native and can stall the test run.
+        SalesforceReactSDKManager.getInstance().setIsDevSupportEnabled(false)
     }
 }

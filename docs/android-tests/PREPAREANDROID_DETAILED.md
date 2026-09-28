@@ -39,7 +39,8 @@ It then patches the SDK's build files to work as a composite build:
 
 Copies `shared/test/test_credentials.json` to `android/app/src/main/assets/test_credentials.json` where the Android `TestCredentials.java` class reads it at runtime.
 
-If the file is not found, a warning is printed and an empty `{}` placeholder is written (tests will fail at runtime with a clear error).
+If the file is not found, preparation exits with an error. This prevents a
+credential problem from being reported later as a headless test timeout.
 
 **Note:** The Gradle `copyTestCredentials` task in `app/build.gradle.kts` also copies this file at build time as a safety net, so credentials are picked up even if `prepareandroid.js` ran before the file was created.
 
@@ -82,7 +83,8 @@ The `app/build.gradle.kts` includes a `copyTestCredentials` task that runs befor
 
 | Issue | Cause | Fix |
 |-------|-------|-----|
-| `Failed to read test_credentials.json` at runtime | Missing or empty credentials file | Place valid credentials at `shared/test/test_credentials.json` |
+| Preparation reports that `test_credentials.json` is missing | The shared credentials file was not created | Copy `shared/test/test_credentials.json.sample` to `shared/test/test_credentials.json` and populate it |
+| Authentication fails at runtime | Credentials are invalid or incomplete | Verify the values in `shared/test/test_credentials.json`, then rebuild so the Gradle copy task refreshes the app asset |
 | `yarn install` fails | Network issue or incompatible Node version | Ensure Node 22+, check network |
 | Gradle build fails with dependency errors | Stale `mobile_sdk/` clone | Delete `mobile_sdk/` and re-run |
 | Bundle fails with Metro error | Incompatible babel config | Delete `node_modules/` and re-run |
