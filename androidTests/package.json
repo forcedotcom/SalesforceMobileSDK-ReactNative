@@ -6,13 +6,13 @@
     "start": "react-native start"
   },
   "sdkDependencies": {
-    "SalesforceMobileSDK-Android": "https://github.com/forcedotcom/SalesforceMobileSDK-Android.git#dev"
+    "SalesforceMobileSDK-Android": "https://github.com/forcedotcom/SalesforceMobileSDK-Android.git#v14.0.0"
   },
   "dependencies": {
     "create-react-class": "^15.7.0",
     "react": "19.2.3",
     "react-native": "0.86.0",
-    "react-native-force": "git+https://github.com/forcedotcom/SalesforceMobileSDK-ReactNative.git#dev"
+    "react-native-force": "git+https://github.com/forcedotcom/SalesforceMobileSDK-ReactNative.git#v14.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
