@@ -270,6 +270,10 @@ npm run build
 ```
 
 The compiled output will be in the `dist/` directory.
+`npm run typecheck` checks all library sources, including TurboModule specs,
+without emitting files. `npm run build:dist` emits the JavaScript, declarations
+and source maps consumed by apps. `npm run build` runs both steps. Packing the
+package also builds and verifies its contents before creating the archive.
 
 ### Running Tests
 
