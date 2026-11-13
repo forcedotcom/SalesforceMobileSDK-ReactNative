@@ -53,7 +53,9 @@
     "build": "tsc --build",
     "prepublish": "npm run build",
     "postinstall": "node -e \"var fs=require('fs'),p=require('path');var src=p.resolve(__dirname,'android','generated','source','codegen');var dstDir=p.resolve(__dirname,'android','build','generated','source');var dst=p.join(dstDir,'codegen');if(fs.existsSync(src)&&!fs.existsSync(dst)){fs.mkdirSync(dstDir,{recursive:true});fs.symlinkSync(p.relative(dstDir,src),dst,'dir');}\"",
-    "test:tooling": "node --test scripts/__tests__/*.test.js"
+    "test:tooling": "node --test scripts/__tests__/*.test.js",
+    "verify:package": "node scripts/verify-package.js",
+    "prepack": "npm run verify:package"
   },
   "peerDependencies": {
     "react-native": "0.87.0",
@@ -68,7 +70,13 @@
     "src/**/*",
     "ios/SalesforceReact/**/*",
     "SalesforceReact.podspec",
-    "android/**/*",
+    "android/AndroidManifest.xml",
+    "android/build.gradle",
+    "android/gradle.properties",
+    "android/settings.gradle.kts",
+    "android/generated/**/*",
+    "android/res/**/*",
+    "android/src/**/*",
     "react-native.config.js"
   ],
   "devDependencies": {
