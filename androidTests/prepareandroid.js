@@ -12,6 +12,8 @@ execSync('yarn install', {stdio:[0,1,2]});
 console.log("=== Removing nested node_modules from react-native-force (prevents duplicate React)");
 execSync('rm -rf ' + path.join('node_modules', 'react-native-force', 'node_modules'));
 
+require('../scripts/prepare-test-dependency').prepare(__dirname);
+
 
 console.log('=== Installing sdk dependencies');
 execSync('node ./updatesdk.js', {stdio: [0,1,2]});
