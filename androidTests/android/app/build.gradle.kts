@@ -4,6 +4,10 @@ plugins {
     id("com.facebook.react")
 }
 
+check(providers.gradleProperty("hermesEnabled").orNull.toBoolean()) {
+    "Mobile SDK React Native tests require Hermes; hermesEnabled must be true."
+}
+
 react {
     autolinkLibrariesWithApp()
 }

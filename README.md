@@ -277,6 +277,13 @@ package also builds and verifies its contents before creating the archive.
 
 ### Running Tests
 
+The Mobile SDK React Native templates and test apps support Hermes on both
+platforms. Keep `hermesEnabled=true` on Android; disabling it fails configuration
+before producing an app with a missing runtime. iOS enables Hermes in the
+Podfile. JavaScriptCore is outside this configuration's supported test matrix;
+it requires separate community runtime integration, not a Gradle switch alone.
+See React Native's [Hermes documentation](https://reactnative.dev/docs/0.87/hermes).
+
 #### JavaScript Tests
 The test suite in `test/` is executed through native test runners:
 
