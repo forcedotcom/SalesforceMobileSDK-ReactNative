@@ -10,7 +10,7 @@ def sdkVersion = new groovy.json.JsonSlurper().parse(file("../package.json")).ve
 
 android {
     namespace "com.salesforce.androidsdk.reactnative"
-    compileSdk 36
+    compileSdk 37
 
     defaultConfig {
         minSdk 31
@@ -47,7 +47,7 @@ kotlin {
 
 dependencies {
     api "com.salesforce.mobilesdk:MobileSync:${sdkVersion}"
-    api 'com.facebook.react:react-android:0.86.0'
+    api 'com.facebook.react:react-android:0.87.0'
     implementation 'androidx.core:core-ktx:1.18.0'
 }
 
