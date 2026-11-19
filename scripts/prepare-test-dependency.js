@@ -40,6 +40,17 @@ function fingerprint(root) {
     return hash.digest('hex');
 }
 
+function removeNestedDependencies(consumer) {
+    const installed = path.join(fs.realpathSync(consumer),
+        'node_modules/react-native-force');
+    if (fs.lstatSync(installed).isSymbolicLink() ||
+        fs.realpathSync(installed) !== installed) {
+        return false;
+    }
+    fs.rmSync(path.join(installed, 'node_modules'), {recursive: true, force: true});
+    return true;
+}
+
 function prepare(consumer, checkout = path.resolve(__dirname, '..')) {
     const installed = path.join(consumer, 'node_modules/react-native-force');
     const expected = JSON.parse(fs.readFileSync(path.join(checkout, 'package.json')));
@@ -64,7 +75,7 @@ function prepare(consumer, checkout = path.resolve(__dirname, '..')) {
     return receipt;
 }
 
-module.exports = {prepare, fingerprint};
+module.exports = {prepare, fingerprint, removeNestedDependencies};
 
 if (require.main === module) {
     prepare(path.resolve(process.argv[2] || '.'));

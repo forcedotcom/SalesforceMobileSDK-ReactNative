@@ -8,7 +8,7 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const {test} = require('node:test');
-const {prepare} = require('../prepare-test-dependency');
+const {prepare, removeNestedDependencies} = require('../prepare-test-dependency');
 
 function fixture(t) {
     const root = fs.mkdtempSync(path.join(os.tmpdir(), 'msdk-source-'));
@@ -52,4 +52,47 @@ test('rejects stale peer requirements even when the SDK version matches', t => {
         version: '14.1.0', peerDependencies: {'react-native': '0.86.0'},
     }));
     assert.throws(() => prepare(consumer, checkout), /peer requirements/);
+});
+
+test('removes nested dependencies from a copied bridge', t => {
+    const {consumer, installed} = fixture(t);
+    fs.mkdirSync(path.join(installed, 'node_modules'));
+    fs.writeFileSync(path.join(installed, 'node_modules/duplicate-react'), 'copy');
+    assert.equal(removeNestedDependencies(consumer), true);
+    assert.equal(fs.existsSync(path.join(installed, 'node_modules')), false);
+});
+
+test('preserves checkout dependencies when the bridge is symlinked', t => {
+    const {checkout, consumer, installed} = fixture(t);
+    fs.mkdirSync(path.join(checkout, 'node_modules'));
+    const marker = path.join(checkout, 'node_modules/keep');
+    fs.writeFileSync(marker, 'checkout');
+    fs.rmSync(installed, {recursive: true});
+    fs.symlinkSync(checkout, installed, 'dir');
+    assert.equal(removeNestedDependencies(consumer), false);
+    assert.equal(fs.readFileSync(marker, 'utf8'), 'checkout');
+});
+
+test('preserves dependencies behind a symlinked node_modules directory', t => {
+    const {checkout, consumer} = fixture(t);
+    const modules = path.join(consumer, 'node_modules');
+    const external = path.join(checkout, 'external-modules');
+    fs.renameSync(modules, external);
+    fs.symlinkSync(external, modules, 'dir');
+    const marker = path.join(external, 'react-native-force/node_modules/keep');
+    fs.mkdirSync(path.dirname(marker));
+    fs.writeFileSync(marker, 'external');
+    assert.equal(removeNestedDependencies(consumer), false);
+    assert.equal(fs.readFileSync(marker, 'utf8'), 'external');
+});
+
+test('unlinks nested dependencies without deleting their symlink target', t => {
+    const {checkout, consumer, installed} = fixture(t);
+    const target = path.join(checkout, 'dependencies');
+    fs.mkdirSync(target);
+    fs.writeFileSync(path.join(target, 'keep'), 'target');
+    fs.symlinkSync(target, path.join(installed, 'node_modules'), 'dir');
+    assert.equal(removeNestedDependencies(consumer), true);
+    assert.equal(fs.readFileSync(path.join(target, 'keep'), 'utf8'), 'target');
+    assert.equal(fs.existsSync(path.join(installed, 'node_modules')), false);
 });

@@ -125,7 +125,7 @@ JS: net.sendRequest(...)
 ## Build & Test Setup
 
 ### Prerequisites
-- **Node.js**: 22+ (see `package.json` engines)
+- **Node.js**: ^22.13.0, ^24.3.0, or >=26.0.0 (see `package.json` engines)
 - **TypeScript**: Installed via devDependencies
 - **iOS Development**: Xcode 16+, macOS
 - **Android Development**: For Android bridge testing, see `androidTests/`

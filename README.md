@@ -266,7 +266,10 @@ Android uses AGP 9 with `android.builtInKotlin=false` and
 `android.newDsl=false`, as required by the React Native Gradle integration.
 These properties retain the Kotlin plugin and legacy Android DSL used by
 React Native and the SDK's Gradle plugins. Keep them until those plugins support
-the replacement APIs. The template Jest configuration uses
+the replacement APIs; the [AGP migration follow-up](docs/AGP-MIGRATION.md) records
+the scope and completion criteria. See the [14.1 release notes](docs/RELEASE-NOTES.md)
+for the upstream Node engine requirements and Android compile SDK policy.
+The template Jest configuration uses
 `@react-native/jest-preset`; the preset is no longer provided by `react-native`.
 See the [upstream 0.87 template](https://github.com/react-native-community/template/tree/0.87-stable/template)
 for the matching toolchain configuration.

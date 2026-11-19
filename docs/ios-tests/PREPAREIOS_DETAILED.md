@@ -59,8 +59,8 @@ From `iosTests/package.json`:
 {
   "dependencies": {
     "react": "19.2.3",
-    "react-native": "0.86.0",
-    "react-native-force": "git+https://github.com/forcedotcom/SalesforceMobileSDK-ReactNative.git#dev"
+    "react-native": "0.87.0",
+    "react-native-force": "file:.."
   },
   "devDependencies": {
     "@babel/core": "...",
@@ -70,12 +70,15 @@ From `iosTests/package.json`:
 }
 ```
 
-**Important**: `react-native-force` uses a git URL instead of `file:..` to avoid yarn cache conflicts when both iOS and Android test apps install dependencies sequentially.
+**Important**: `react-native-force` uses `file:..` so tests exercise the current
+checkout. Preparation verifies the installed source fingerprint. Nested
+dependencies are removed only from a copy; symlinked packages or containing
+`node_modules` directories retain their dependencies.
 
 ### Why This Phase Is Needed
 
 - React Native and its peer dependencies must be available for bundling
-- `react-native-force` (the SDK being tested) must be installed from git
+- `react-native-force` (the SDK being tested) must match the local checkout
 - Build tools (Babel, Metro) must be installed
 
 ### Console Output Example
@@ -240,7 +243,7 @@ end
 - `MobileSync` - Sync framework
 
 **Bridge module**:
-- `SalesforceReact` (from `../node_modules/react-native-force`, installed via git URL)
+- `SalesforceReact` (from `../node_modules/react-native-force`, installed from the local checkout)
 
 ### Console Output Example
 
