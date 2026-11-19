@@ -24,7 +24,7 @@ cd iosTests
 
 ```mermaid
 graph TB
-    A[Start] --> B[Phase 1: npm install]
+    A[Start] --> B[Phase 1: yarn install]
     B --> C[Phase 2: Clone iOS SDK]
     C --> D[Phase 3: pod install]
     D --> E[Phase 4: Copy test_credentials.json]
@@ -32,7 +32,7 @@ graph TB
     F --> G[Complete]
     
     C1[Clean node_modules] --> B
-    C2[Install react-native-force via git URL] --> B
+    C2[Install react-native-force from local checkout] --> B
     
     D1[Read sdkDependencies] --> C
     D2[Clone iOS SDK repo] --> C
@@ -41,7 +41,7 @@ graph TB
     E2[Run pod update] --> D
     
     G1[Run updatebundle.js] --> F
-    G2[Bundle test/TestApp.js] --> F
+    G2[Bundle index.js and installed bridge tests] --> F
 ```
 
 ## Phase 1: Install npm Dependencies
@@ -74,6 +74,10 @@ From `iosTests/package.json`:
 checkout. Preparation verifies the installed source fingerprint. Nested
 dependencies are removed only from a copy; symlinked packages or containing
 `node_modules` directories retain their dependencies.
+Copied packages receive the checkout's shared tests; packages resolving to the
+checkout itself reuse its existing tests. The source receipt is written to
+`iosTests/.msdk-source.json`, outside the installed bridge, so linked preparation
+does not overwrite a receipt in the source checkout.
 
 ### Why This Phase Is Needed
 
@@ -212,7 +216,7 @@ target 'SalesforceReactTestApp' do
   pod 'SmartStore', :path => '../mobile_sdk/SalesforceMobileSDK-iOS'
   pod 'MobileSync', :path => '../mobile_sdk/SalesforceMobileSDK-iOS'
   
-  # Bridge modules (from git URL via npm)
+  # Bridge modules (from the local checkout via file:..)
   pod 'SalesforceReact', :path => '../node_modules/react-native-force'
 end
 
@@ -338,8 +342,8 @@ Bundles JavaScript with parameters:
 - Platform: iOS
 - Dev mode: false (to avoid DevTools bridge crashes)
 - Minify: false (to preserve test function names)
-- Entry file: `test/TestApp.js`
-- Output: `ios/main.jsbundle`
+- Entry file: `index.js`
+- Output: `ios/index.ios.bundle`
 - Assets: `ios/`
 
 ### Why This Phase Is Needed
@@ -348,33 +352,15 @@ Bundles JavaScript with parameters:
 
 The `TestApp.js` file renders a scrollable list of buttons for each test. When XCUITest taps a button, the corresponding test executes and displays results inline.
 
-### Entry Point: test/TestApp.js
+### Entry Point: iosTests/index.js
 
-**File**: `test/TestApp.js`
+`index.js` registers the UI from the installed bridge's shared `test/TestApp.js`:
 
 ```javascript
-import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
-import { runTest } from './testRunner';
+import {AppRegistry} from 'react-native';
+import TestApp from './node_modules/react-native-force/test/TestApp';
 
-// Import all test suites
-import * as oauth from './oauth.test';
-import * as net from './net.test';
-import * as smartstore from './smartstore.test';
-import * as mobilesync from './mobilesync.test';
-import * as harness from './harness.test';
-
-export default function TestApp() {
-  // Render buttons for each test
-  return (
-    <ScrollView testID="testList" accessibilityLabel="testList">
-      <TouchableOpacity testID="run_test_GetAuthCredentials" accessibilityLabel="run_test_GetAuthCredentials">
-        <Text>OAuth: GetAuthCredentials</Text>
-      </TouchableOpacity>
-      {/* ... more test buttons ... */}
-    </ScrollView>
-  );
-}
+AppRegistry.registerComponent('SalesforceReactTestApp', () => TestApp);
 ```
 
 **This bundles**:
@@ -387,7 +373,7 @@ export default function TestApp() {
 
 ### Bundle Contents
 
-The resulting `ios/main.jsbundle` is a single JavaScript file (~2-3 MB) containing:
+The resulting `ios/index.ios.bundle` is a single JavaScript file containing:
 - React Native framework code
 - Test app UI code
 - Pure JS test runner
@@ -397,12 +383,12 @@ The resulting `ios/main.jsbundle` is a single JavaScript file (~2-3 MB) containi
 ### Console Output Example
 
 ```
-=== Creating main.jsbundle
+=== Creating index.ios.bundle
 warning: the transform cache was reset.
                  Welcome to Metro
               Fast - Scalable - Integrated
 
-info Writing bundle output to:, ios/main.jsbundle
+info Writing bundle output to:, ios/index.ios.bundle
 info Done writing bundle output
 info Copying 0 asset files
 info Done copying assets
@@ -412,10 +398,11 @@ info Done copying assets
 
 ```
 iosTests/
+├── .msdk-source.json           # Verified bridge source receipt (Phase 1)
 ├── node_modules/               # npm dependencies (Phase 1)
 │   ├── react/
 │   ├── react-native/
-│   └── react-native-force/     # Installed from git URL
+│   └── react-native-force/     # Local checkout via file:.. (copy or symlink)
 ├── mobile_sdk/                 # Cloned iOS SDK (Phase 2)
 │   └── SalesforceMobileSDK-iOS/
 │       └── libs/
@@ -427,7 +414,7 @@ iosTests/
 │   ├── Pods/                   # CocoaPods dependencies (Phase 3)
 │   ├── Podfile
 │   ├── Podfile.lock
-│   ├── main.jsbundle           # JavaScript bundle (Phase 5)
+│   ├── index.ios.bundle        # JavaScript bundle (Phase 5)
 │   ├── test_credentials.json   # Test credentials (Phase 4)
 │   ├── SalesforceReactTestApp.xcodeproj
 │   ├── SalesforceReactTestApp.xcworkspace  # ← Open this in Xcode
@@ -503,10 +490,13 @@ pod install
 
 **Error**: Cannot find entry file
 
-**Solution**: Verify `test/TestApp.js` exists:
+**Solution**: From `iosTests/`, verify the entry and its imported test UI exist:
 ```bash
-ls -la ../test/TestApp.js
+ls -la index.js node_modules/react-native-force/test/TestApp.js
 ```
+
+If shared tests changed in a copied dependency, rerun preparation to copy and
+verify the checkout before bundling again.
 
 ## Manual Setup (Alternative to Script)
 
@@ -543,6 +533,9 @@ node updatebundle.js
 - After modifying test files (`test/*.test.js`)
 - After modifying SDK source (`src/`)
 - After modifying test app UI (`test/TestApp.js`)
+
+Run `prepareios.js` after changing checkout sources or shared tests so copied
+dependencies are refreshed and their source fingerprint is verified.
 
 ### create_test_credentials_from_env.js
 Generates `test_credentials.json` from environment variables.
@@ -588,7 +581,7 @@ When running tests in CI:
 ## Summary
 
 `prepareios.js` orchestrates a streamlined setup for UI-driven testing:
-1. Installs npm dependencies (React Native, SDK via git URL, build tools)
+1. Installs npm dependencies (React Native, local bridge via `file:..`, build tools)
 2. Clones iOS SDK from configured repository
 3. Configures and installs CocoaPods dependencies
 4. Copies test credentials from `shared/test/test_credentials.json`
@@ -596,7 +589,7 @@ When running tests in CI:
 
 **Why this approach?**
 - No coupling to React Native internal APIs (no RCTTestModule)
-- Git URL dependencies avoid yarn cache conflicts
+- The local bridge fingerprint verifies tests use the current checkout
 - CocoaPods needs local SDK for development
 - XCUITest drives the app like a real user would
 - Tests display results inline in the app UI
