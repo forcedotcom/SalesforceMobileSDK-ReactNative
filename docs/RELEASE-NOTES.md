@@ -2,6 +2,8 @@
 
 ## 14.1 — React Native 0.87
 
+JavaScriptCore is no longer supported. Hermes is required on Android and iOS.
+
 React Native 0.87 requires Node.js `^22.13.0 || ^24.3.0 || >=26.0.0`.
 The bridge and templates adopt that upstream requirement, including the
 intentional exclusion of Node 23 and 25. Node 22 before 22.13.0 and Node 24
