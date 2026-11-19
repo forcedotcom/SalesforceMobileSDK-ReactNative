@@ -4,7 +4,7 @@
  */
 
 const assert = require('node:assert/strict');
-const {execFileSync} = require('node:child_process');
+const {execSync} = require('node:child_process');
 const path = require('node:path');
 
 const required = [
@@ -29,8 +29,7 @@ function validate(files) {
 }
 
 function verify(root = path.resolve(__dirname, '..')) {
-    const data = JSON.parse(execFileSync('npm',
-        ['pack', '--dry-run', '--ignore-scripts', '--json'],
+    const data = JSON.parse(execSync('npm pack --dry-run --ignore-scripts --json',
         {cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'inherit']}))[0];
     const files = data.files.map(file => file.path);
     validate(files);

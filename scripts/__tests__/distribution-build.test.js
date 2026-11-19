@@ -4,7 +4,7 @@
  */
 
 const assert = require('node:assert/strict');
-const {execFileSync} = require('node:child_process');
+const {execSync} = require('node:child_process');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
@@ -23,7 +23,7 @@ test('documented build emits changed source and declarations', t => {
         path.join(fixture, 'node_modules'), 'dir');
     fs.appendFileSync(path.join(fixture, 'src/index.ts'),
         '\nexport const distributionEmissionProbe = "fixture";\n');
-    execFileSync('npm', ['run', 'build'], {cwd: fixture, stdio: 'pipe'});
+    execSync('npm run build', {cwd: fixture, stdio: 'pipe'});
     for (const relative of ['dist/index.js', 'dist/index.d.ts']) {
         assert.match(fs.readFileSync(path.join(fixture, relative), 'utf8'),
             /distributionEmissionProbe/);
