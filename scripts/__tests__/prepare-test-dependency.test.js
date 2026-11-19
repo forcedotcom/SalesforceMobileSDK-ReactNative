@@ -33,12 +33,51 @@ function fixture(t) {
 
 test('verifies the checkout and supplies unpackaged harness tests', t => {
     const {checkout, consumer, installed} = fixture(t);
+    fs.mkdirSync(path.join(installed, 'node_modules'));
+    assert.equal(removeNestedDependencies(consumer), true);
     const receipt = prepare(consumer, checkout);
     assert.equal(receipt.reactNativeVersion, '0.87.0');
     assert.match(receipt.sourceSha256, /^[a-f0-9]{64}$/);
     assert.equal(fs.readFileSync(path.join(installed, 'test/suite.js'), 'utf8'),
         'exports.test = true;');
+    assert.deepEqual(JSON.parse(fs.readFileSync(path.join(consumer,
+        '.msdk-source.json'))), receipt);
+    assert.equal(fs.existsSync(path.join(installed, '.msdk-source.json')), false);
+    assert.equal(fs.existsSync(path.join(installed, 'node_modules')), false);
 });
+
+for (const linkedModules of [false, true]) {
+    test(`prepares a linked checkout with linked node_modules=${linkedModules}`, t => {
+        const {checkout, consumer, installed} = fixture(t);
+        fs.mkdirSync(path.join(checkout, 'node_modules'));
+        const marker = path.join(checkout, 'node_modules/keep');
+        fs.writeFileSync(marker, 'checkout dependencies');
+        const sourceReceipt = path.join(checkout, '.msdk-source.json');
+        fs.writeFileSync(sourceReceipt, 'existing checkout receipt');
+        fs.rmSync(installed, {recursive: true});
+        fs.symlinkSync(checkout, installed, 'dir');
+        if (linkedModules) {
+            const modules = path.join(consumer, 'node_modules');
+            const external = path.join(path.dirname(consumer), 'external modules');
+            fs.renameSync(modules, external);
+            fs.symlinkSync(external, modules, 'dir');
+        }
+        const alias = path.join(path.dirname(checkout), 'checkout alias');
+        fs.symlinkSync(checkout, alias, 'dir');
+
+        assert.equal(removeNestedDependencies(consumer), false);
+        const receipt = prepare(consumer, alias);
+
+        assert.equal(receipt.reactNativeVersion, '0.87.0');
+        assert.deepEqual(JSON.parse(fs.readFileSync(path.join(consumer,
+            '.msdk-source.json'))), receipt);
+        assert.equal(fs.readFileSync(marker, 'utf8'), 'checkout dependencies');
+        assert.equal(fs.readFileSync(sourceReceipt, 'utf8'),
+            'existing checkout receipt');
+        assert.equal(fs.readFileSync(path.join(checkout, 'test/suite.js'),
+            'utf8'), 'exports.test = true;');
+    });
+}
 
 test('rejects stale installed bridge sources', t => {
     const {checkout, consumer, installed} = fixture(t);

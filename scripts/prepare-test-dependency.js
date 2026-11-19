@@ -65,11 +65,13 @@ function prepare(consumer, checkout = path.resolve(__dirname, '..')) {
     const sourceSha256 = fingerprint(checkout);
     assert.equal(fingerprint(installed), sourceSha256,
         'Test app must install the checked-out bridge sources');
-    fs.cpSync(path.join(checkout, 'test'), path.join(installed, 'test'),
-        {recursive: true});
+    if (fs.realpathSync(installed) !== fs.realpathSync(checkout)) {
+        fs.cpSync(path.join(checkout, 'test'), path.join(installed, 'test'),
+            {recursive: true});
+    }
     const receipt = {bridgeVersion: actual.version,
         reactNativeVersion: native.version, sourceSha256};
-    fs.writeFileSync(path.join(installed, '.msdk-source.json'),
+    fs.writeFileSync(path.join(consumer, '.msdk-source.json'),
         JSON.stringify(receipt, null, 2) + '\n');
     console.log('Verified test bridge source:', JSON.stringify(receipt));
     return receipt;
