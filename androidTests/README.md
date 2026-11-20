@@ -38,11 +38,14 @@ class ReactNetTest : BaseReactNativeTest() {
 callback ordering. It uses a synthetic client without a live account or React
 surface, and verifies callback completion before login recreates the Activity,
 single delivery on repeated resume, and recreation without a pending callback.
-Run just these cases with:
+`ReactOAuthDispatchLifecycleTest` independently checks main-thread dispatch,
+replacement of finishing or destroyed Activities, and the bounded missing-Activity
+error callback. Both classes use synthetic clients without signing in.
+Run both classes with:
 
 ```bash
 ./gradlew connectedDebugAndroidTest \
-  -Pandroid.testInstrumentationRunnerArguments.class=com.salesforce.androidsdk.reactnative.ReactAuthCallbackLifecycleTest
+  -Pandroid.testInstrumentationRunnerArguments.class=com.salesforce.androidsdk.reactnative.ReactAuthCallbackLifecycleTest,com.salesforce.androidsdk.reactnative.ReactOAuthDispatchLifecycleTest
 ```
 
 ## Timeouts

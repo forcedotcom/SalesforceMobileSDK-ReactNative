@@ -91,14 +91,43 @@ class ReactAuthCallbackLifecycleTest {
     }
 
     private fun authenticatedActivity(): RecordingActivity {
-        val info = RestClient.ClientInfo(
-            null, null, null, null, null, user.userId, user.orgId,
-            null, null, null, null, null, null, null, null, emptyMap(),
-            null, null, null, null, null, null, null,
+        val info = clientInfoForTest(
+            userId = user.userId,
+            orgId = user.orgId,
         )
         val client = RestClient(info, null, HttpAccess.DEFAULT, null)
         return RecordingActivity().apply { supplyClient(client) }
     }
+
+    /**
+     * Only the cache owner's user and org IDs matter for this account-free
+     * fixture.
+     */
+    private fun clientInfoForTest(userId: String, orgId: String) = RestClient.ClientInfo(
+        /* instanceUrl = */ null,
+        /* loginUrl = */ null,
+        /* identityUrl = */ null,
+        /* accountName = */ null,
+        /* username = */ null,
+        /* userId = */ userId,
+        /* orgId = */ orgId,
+        /* communityId = */ null,
+        /* communityUrl = */ null,
+        /* firstName = */ null,
+        /* lastName = */ null,
+        /* displayName = */ null,
+        /* email = */ null,
+        /* photoUrl = */ null,
+        /* thumbnailUrl = */ null,
+        /* additionalOauthValues = */ emptyMap(),
+        /* lightningDomain = */ null,
+        /* lightningSid = */ null,
+        /* vfDomain = */ null,
+        /* vfSid = */ null,
+        /* contentDomain = */ null,
+        /* contentSid = */ null,
+        /* csrfToken = */ null,
+    )
 
     private fun onMainThread(block: () -> Unit) {
         InstrumentationRegistry.getInstrumentation().runOnMainSync(block)
