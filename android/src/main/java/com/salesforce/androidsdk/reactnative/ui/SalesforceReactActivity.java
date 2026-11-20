@@ -56,11 +56,13 @@ public abstract class SalesforceReactActivity extends ReactActivity implements S
     private final SalesforceActivityDelegate delegate;
     private RestClient client;
     private ClientManager clientManager;
+    // ReactAuthCallbackLifecycleTest sets this field by name via reflection.
     private boolean loginInProgress = false;
 
     /**
      * Pending callback for authentication requests from the React Native bridge.
      * Uses single-callback pattern: callback(null, result) for success, callback(error) for error.
+     * ReactAuthCallbackLifecycleTest sets this field by name via reflection.
      */
     private Callback pendingAuthCallback;
 
