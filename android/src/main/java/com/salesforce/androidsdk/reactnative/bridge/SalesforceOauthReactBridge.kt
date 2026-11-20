@@ -33,6 +33,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.turbomodule.core.interfaces.TurboModule
 import com.salesforce.androidsdk.reactnative.ui.SalesforceReactActivity
 
@@ -63,15 +64,17 @@ class SalesforceOauthReactBridge(reactContext: ReactApplicationContext) :
     }
 
     private fun withActivity(callback: Callback, retries: Int = 5, action: (SalesforceReactActivity) -> Unit) {
-        val activity = getCurrentActivity() as? SalesforceReactActivity
-        if (activity != null) {
-            action(activity)
-        } else if (retries > 0) {
-            Handler(Looper.getMainLooper()).postDelayed({
-                withActivity(callback, retries - 1, action)
-            }, 500)
-        } else {
-            ReactBridgeHelper.invokeError(callback, "SalesforceReactActivity not found")
+        UiThreadUtil.runOnUiThread {
+            val activity = reactApplicationContext.currentActivity as? SalesforceReactActivity
+            if (activity != null && !activity.isFinishing && !activity.isDestroyed) {
+                action(activity)
+            } else if (retries > 0) {
+                Handler(Looper.getMainLooper()).postDelayed({
+                    withActivity(callback, retries - 1, action)
+                }, 500)
+            } else {
+                ReactBridgeHelper.invokeError(callback, "SalesforceReactActivity not found")
+            }
         }
     }
 

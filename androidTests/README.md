@@ -21,8 +21,8 @@ cd androidTests/android
 
 ## Test Structure
 
-Each test class extends `BaseReactNativeTest` and maps its JUnit methods to the
-shared JavaScript test names.
+The JavaScript bridge test classes extend `BaseReactNativeTest` and map their
+JUnit methods to the shared JavaScript test names.
 
 Example:
 
@@ -32,6 +32,20 @@ class ReactNetTest : BaseReactNativeTest() {
     @Test fun testVersions() = runTest("testVersions")
     // ...
 }
+```
+
+`ReactAuthCallbackLifecycleTest` independently exercises native authentication
+callback ordering. It uses a synthetic client without a live account or React
+surface, and verifies callback completion before login recreates the Activity,
+single delivery on repeated resume, and recreation without a pending callback.
+`ReactOAuthDispatchLifecycleTest` independently checks main-thread dispatch,
+replacement of finishing or destroyed Activities, and the bounded missing-Activity
+error callback. Both classes use synthetic clients without signing in.
+Run both classes with:
+
+```bash
+./gradlew connectedDebugAndroidTest \
+  -Pandroid.testInstrumentationRunnerArguments.class=com.salesforce.androidsdk.reactnative.ReactAuthCallbackLifecycleTest,com.salesforce.androidsdk.reactnative.ReactOAuthDispatchLifecycleTest
 ```
 
 ## Timeouts

@@ -56,11 +56,13 @@ public abstract class SalesforceReactActivity extends ReactActivity implements S
     private final SalesforceActivityDelegate delegate;
     private RestClient client;
     private ClientManager clientManager;
+    // ReactAuthCallbackLifecycleTest sets this field by name via reflection.
     private boolean loginInProgress = false;
 
     /**
      * Pending callback for authentication requests from the React Native bridge.
      * Uses single-callback pattern: callback(null, result) for success, callback(error) for error.
+     * ReactAuthCallbackLifecycleTest sets this field by name via reflection.
      */
     private Callback pendingAuthCallback;
 
@@ -122,18 +124,18 @@ public abstract class SalesforceReactActivity extends ReactActivity implements S
         else {
             SalesforceReactLogger.i(TAG, "onResume - already logged in");
 
+            if (pendingAuthCallback != null) {
+                SalesforceReactLogger.i(TAG, "onResume - invoking pending auth callback");
+                getAuthCredentials(pendingAuthCallback);
+                pendingAuthCallback = null;
+            }
+
             // If we just completed login, recreate to get a fresh React surface
             if (loginInProgress) {
                 loginInProgress = false;
                 SalesforceReactLogger.i(TAG, "onResume - login just completed, recreating for fresh surface");
                 recreate();
                 return;
-            }
-
-            if (pendingAuthCallback != null) {
-                SalesforceReactLogger.i(TAG, "onResume - invoking pending auth callback");
-                getAuthCredentials(pendingAuthCallback);
-                pendingAuthCallback = null;
             }
         }
     }
