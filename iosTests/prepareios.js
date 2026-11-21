@@ -9,7 +9,9 @@ execSync('rm -f yarn.lock', {stdio:[0,1,2]})
 execSync('yarn install', {stdio:[0,1,2]});
 
 console.log("=== Removing nested node_modules from react-native-force (prevents duplicate React)");
-execSync("rm -rf node_modules/react-native-force/node_modules", {stdio:[0,1,2]});
+require('../scripts/prepare-test-dependency').removeNestedDependencies(__dirname);
+
+require('../scripts/prepare-test-dependency').prepare(__dirname);
 
 // RCTTest/ is now tracked in the repo (customized for RN 0.82+ bridgeless mode).
 // No longer cloned from react-native source.

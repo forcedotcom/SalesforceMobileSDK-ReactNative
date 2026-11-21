@@ -24,6 +24,14 @@ Removes stale `node_modules` and `yarn.lock` for a clean install. Installs:
 - `react-native-force` via `file:..` (local bridge code from this repo)
 - Babel, Metro, and other dev dependencies
 
+Nested dependencies are removed only from a copied bridge package. Preparation
+skips that cleanup when the package or its containing `node_modules` resolves
+through a symlink, preserving the checkout's own dependencies.
+Preparation verifies the installed bridge fingerprint and copies the shared
+tests into copied packages. When the package resolves to the checkout itself,
+it reuses the existing tests. The source receipt is written to
+`androidTests/.msdk-source.json`, outside the installed bridge.
+
 ### 2. Clone Android SDK (`updatesdk.js`)
 
 `updatesdk.js` reads `sdkDependencies` from `package.json` and clones the Android SDK repo to `mobile_sdk/SalesforceMobileSDK-Android/`.
@@ -68,7 +76,7 @@ androidTests/
 │   └── SalesforceMobileSDK-Android/  ← cloned + patched SDK
 └── node_modules/
     ├── react-native/                  ← RN framework
-    └── react-native-force/            ← symlink to ../..
+    └── react-native-force/            ← local copy or symlink to ../..
 ```
 
 ---

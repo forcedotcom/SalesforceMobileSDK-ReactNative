@@ -62,9 +62,9 @@ npm install react-native-force
 
 ### Prerequisites
 
-- **Node.js**: 22 or higher
-- **React Native**: 0.85.3 (see `package.json` for current version)
-- **iOS Development**: Xcode 16+, macOS (for iOS builds)
+- **Node.js**: ^22.13.0, ^24.3.0, or >=26.0.0
+- **React Native**: 0.87.0 (see `package.json` for current version)
+- **iOS Development**: Xcode 16.1+, macOS (for iOS builds)
 - **Android Development**: Android Studio, Java 17+ (for Android builds)
 
 ### Creating a New App
@@ -257,6 +257,23 @@ This package is part of a larger SDK ecosystem:
 
 ### Building from Source
 
+For the React Native 0.87 upgrade, use a Node version allowed by `package.json`
+and align the bridge, native test apps and generated templates on React Native
+0.87.0 and React 19.2.3. Mobile SDK's deployment minimums remain iOS 18 and
+Android API 31.
+
+Android uses AGP 9 with `android.builtInKotlin=false` and
+`android.newDsl=false`, as required by the React Native Gradle integration.
+These properties retain the Kotlin plugin and legacy Android DSL used by
+React Native and the SDK's Gradle plugins. Keep them until those plugins support
+the replacement APIs; the [AGP migration follow-up](docs/AGP-MIGRATION.md) records
+the scope and completion criteria. See the [14.1 release notes](docs/RELEASE-NOTES.md)
+for the upstream Node engine requirements and Android compile SDK policy.
+The template Jest configuration uses
+`@react-native/jest-preset`; the preset is no longer provided by `react-native`.
+See the [upstream 0.87 template](https://github.com/react-native-community/template/tree/0.87-stable/template)
+for the matching toolchain configuration.
+
 ```bash
 # Clone the repository
 git clone https://github.com/forcedotcom/SalesforceMobileSDK-ReactNative.git
@@ -270,8 +287,19 @@ npm run build
 ```
 
 The compiled output will be in the `dist/` directory.
+`npm run typecheck` checks all library sources, including TurboModule specs,
+without emitting files. `npm run build:dist` emits the JavaScript, declarations
+and source maps consumed by apps. `npm run build` runs both steps. Packing the
+package also builds and verifies its contents before creating the archive.
 
 ### Running Tests
+
+The Mobile SDK React Native templates and test apps support Hermes on both
+platforms. Keep `hermesEnabled=true` on Android; disabling it fails configuration
+before producing an app with a missing runtime. iOS enables Hermes in the
+Podfile. JavaScriptCore is outside this configuration's supported test matrix;
+it requires separate community runtime integration, not a Gradle switch alone.
+See React Native's [Hermes documentation](https://reactnative.dev/docs/0.87/hermes).
 
 #### JavaScript Tests
 The test suite in `test/` is executed through native test runners:
@@ -344,6 +372,7 @@ The TypeScript definitions in `src/typings/` provide inline documentation for al
 
 | React Native SDK | React Native | iOS SDK | Android SDK | iOS Min | Android Min |
 |-----------------|--------------|---------|-------------|---------|-------------|
+| dev141          | 0.87.0       | dev141  | dev141      | 18.0    | 31 (12.0)   |
 | 14.0.0          | 0.85.3       | 14.0.0  | 14.0.0      | 18.0    | 31 (12.0)   |
 | 13.2.0          | 0.81.5       | 13.2.0  | 13.2.0      | 17.0    | 28 (9.0)    |
 | 13.1.0          | 0.79.3       | 13.1.0  | 13.1.0      | 17.0    | 28 (9.0)    |

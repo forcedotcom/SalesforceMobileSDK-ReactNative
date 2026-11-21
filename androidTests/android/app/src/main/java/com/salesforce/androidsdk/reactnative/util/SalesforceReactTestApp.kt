@@ -43,7 +43,7 @@ import com.salesforce.androidsdk.reactnative.app.SalesforceReactSDKManager
 class SalesforceReactTestApp : Application(), ReactApplication {
 
     override val reactNativeHost: ReactNativeHost =
-        object : DefaultReactNativeHost(this) {
+        object : DefaultReactNativeHost(this@SalesforceReactTestApp) {
             override fun getPackages(): List<ReactPackage> =
                 PackageList(this).packages
 
@@ -52,7 +52,6 @@ class SalesforceReactTestApp : Application(), ReactApplication {
             override fun getUseDeveloperSupport(): Boolean = false
 
             override val isNewArchEnabled: Boolean = true
-            override val isHermesEnabled: Boolean = true
         }
 
     override val reactHost: ReactHost

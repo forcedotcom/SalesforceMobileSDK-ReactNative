@@ -1,0 +1,30 @@
+name: React Native tooling
+
+on:
+  pull_request:
+    branches: [dev, 'dev[0-9]*', master]
+    paths:
+      - 'scripts/**'
+      - 'src/**'
+      - 'dist/**'
+      - 'package.json'
+      - 'tsconfig*.json'
+      - '.github/workflows/tooling-checks.yaml'
+
+permissions:
+  contents: read
+
+jobs:
+  tooling:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '24'
+      - name: Install tooling dependencies
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Test tooling
+        run: npm run test:tooling

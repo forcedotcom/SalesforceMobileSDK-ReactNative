@@ -66,17 +66,17 @@ libNames.forEach(function(lib) {
 });
 console.log('Removed dokka from lib build files');
 
-// Patch AGP version to 8.12.0 for compatibility with test project
+// Patch AGP version to 9.2.1 for compatibility with test project
 var buildSrcBuildFile = path.join(targetDir, 'buildSrc', 'build.gradle.kts');
 if (fs.existsSync(buildSrcBuildFile)) {
     var bsContent = fs.readFileSync(buildSrcBuildFile, 'utf8');
-    bsContent = bsContent.replace(/"com\.android\.tools\.build:gradle:[^"]+"/g, '"com.android.tools.build:gradle:8.12.0"');
+    bsContent = bsContent.replace(/"com\.android\.tools\.build:gradle:[^"]+"/g, '"com.android.tools.build:gradle:9.2.1"');
     fs.writeFileSync(buildSrcBuildFile, bsContent, 'utf8');
-    console.log('Patched buildSrc AGP to 8.12.0');
+    console.log('Patched buildSrc AGP to 9.2.1');
 }
 if (fs.existsSync(rootBuildFile)) {
     var rootContent = fs.readFileSync(rootBuildFile, 'utf8');
-    rootContent = rootContent.replace(/"com\.android\.tools\.build:gradle:[^"]+"/g, '"com.android.tools.build:gradle:8.12.0"');
+    rootContent = rootContent.replace(/"com\.android\.tools\.build:gradle:[^"]+"/g, '"com.android.tools.build:gradle:9.2.1"');
     fs.writeFileSync(rootBuildFile, rootContent, 'utf8');
-    console.log('Patched root build.gradle.kts AGP to 8.12.0');
+    console.log('Patched root build.gradle.kts AGP to 9.2.1');
 }

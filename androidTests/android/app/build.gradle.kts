@@ -4,13 +4,17 @@ plugins {
     id("com.facebook.react")
 }
 
+check(providers.gradleProperty("hermesEnabled").orNull.toBoolean()) {
+    "Mobile SDK React Native tests require Hermes; hermesEnabled must be true."
+}
+
 react {
     autolinkLibrariesWithApp()
 }
 
 android {
     namespace = "com.salesforce.androidsdk.reactnative.tests"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.salesforce.androidsdk.reactnative.tests"
@@ -65,8 +69,8 @@ tasks.matching { it.name.startsWith("merge") && it.name.contains("Assets") }.con
 }
 
 dependencies {
-    implementation("com.facebook.react:react-android:0.86.0")
-    implementation("com.facebook.react:hermes-android:0.86.0")
+    implementation("com.facebook.react:react-android:0.87.0")
+    implementation("com.facebook.react:hermes-android:0.87.0")
 
     androidTestImplementation("androidx.test:runner:1.6.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")

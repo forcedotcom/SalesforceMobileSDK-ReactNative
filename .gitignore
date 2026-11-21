@@ -12,10 +12,12 @@ iosTests/ios/SalesforceReactTests/test_credentials.json
 androidTests/android/app/src/main/assets/test_credentials.json
 
 # iOS test generated files
+iosTests/.msdk-source.json
 iosTests/ios/index.ios.bundle
 iosTests/mobile_sdk/
 
 # Android test generated files
+androidTests/.msdk-source.json
 androidTests/android/app/src/main/assets/index.android.bundle
 androidTests/android/app/src/main/assets/drawable-mdpi/
 androidTests/mobile_sdk/
