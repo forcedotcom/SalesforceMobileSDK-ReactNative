@@ -14,6 +14,8 @@ Sources: the React Native 0.87
 [package manifest](https://github.com/facebook/react-native/blob/v0.87.0/packages/react-native/package.json)
 and [Gradle plugin manifest](https://github.com/facebook/react-native/blob/v0.87.0/packages/gradle-plugin/package.json).
 
-The shipped Android bridge compiles against SDK 36.1, matching the native SDK
-libraries. Generated apps and test apps continue to compile against SDK 37
-with AGP 9.2.1. The library's compile SDK does not set the app's target SDK.
+The Android bridge and native SDK libraries compile against SDK 36. Generated
+apps and test apps continue to compile against SDK 37 with AGP 9.1.1. The app
+builds pin AGP resolution because React Native 0.87 defaults to 9.2.1; the
+AGP 9.2+ upgrade is deferred to MSDK 15.0. The library's compile SDK does not
+set the app's target SDK.

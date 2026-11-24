@@ -11,7 +11,6 @@ def sdkVersion = new groovy.json.JsonSlurper().parse(file("../package.json")).ve
 android {
     namespace "com.salesforce.androidsdk.reactnative"
     compileSdk 36
-    compileSdkMinor = 1
 
     defaultConfig {
         minSdk 31
